@@ -13,7 +13,7 @@ DetectHiddenWindows(true)
 #Requires Autohotkey v2.0+
 #Include <gdi_plus_plus>
 #Include <Gdip_All>
-TraySetIcon("C:\Users\bacona\AppData\Local\AutoHotKey\v2\Lib\HznHorizon.ico")
+TraySetIcon("HznHorizon.ico")
 ; //TODO: 2023.07.17 ...: Work on the below but consider if needed due to new FreeLibraryAndExitThread
 ; //TODO: Library_Load(winuser.dll)
 ; //TODO: Library_Load(processthreadsapi.dll)
