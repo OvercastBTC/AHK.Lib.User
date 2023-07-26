@@ -10,14 +10,15 @@ SetTitleMatchMode(2) ; sets title matching to search for "containing" instead of
 DetectHiddenText(true)
 DetectHiddenWindows(true)
 CoordMode("ToolTip", "Screen")
-#Requires Autohotkey v2.0+
+#Requires Autohotkey v2
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Initiation Section
 ; --------------------------------------------------------------------------------
-;global A_Process	; set a super-global variable that can be accessible within all functions by default.
-A_Process()
+#1::
+A_Process(*)
 {
 	Static HSHELL_RUDEAPPACTIVATED := 32772
+	Global A_Process	; set a super-global variable that can be accessible within all functions by default.
 	apGui := Gui()
 	apGui.Opt("+LastFound")
 	DllCall('RegisterShellHookWindow', 'UInt', WinExist())
@@ -53,17 +54,17 @@ WinActiveChange(wParam, hwnd*)
 ; Comment: [x] NOT IN USE
 ; --------------------------------------------------------------------------------
 
-WinActiveChange1(wParam, hwnd*) {
-	HSHELL_RUDEAPPACTIVATED := 32772
-	global A_Process
+; WinActiveChange1(wParam, hwnd*) {
+; 	HSHELL_RUDEAPPACTIVATED := 32772
+; 	global A_Process
 	
-	if (wParam != HSHELL_RUDEAPPACTIVATED) ; only listen for HSHELL_RUDEAPPACTIVATED
-		return
-	getActiveProcessName()
-	;WinGet,  a_process,  ProcessName,  A
-	ToolTip("Original: " a_process "`npname: " getActiveProcessName(),0,0,1)
-	return A_Process
-}
+; 	if (wParam != HSHELL_RUDEAPPACTIVATED) ; only listen for HSHELL_RUDEAPPACTIVATED
+; 		return
+; 	getActiveProcessName()
+; 	;WinGet,  a_process,  ProcessName,  A
+; 	ToolTip("Original: " a_process "`npname: " getActiveProcessName(),0,0,1)
+; 	return A_Process
+; }
 ; --------------------------------------------------------------------------------
 
 ; --------------------------------------------------------------------------------
@@ -73,6 +74,7 @@ WinActiveChange1(wParam, hwnd*) {
 WinActiveChange2(wParam, hwnd*) ; hwnd)
 {
 	HSHELL_RUDEAPPACTIVATED := 32772, ;pId
+	
 	wParam != HSHELL_RUDEAPPACTIVATED
 	{
 		Return ; only listen for HSHELL_RUDEAPPACTIVATED

@@ -20,7 +20,8 @@ SetTitleMatchMode, 2 ; sets title matching to search for "containing" instead of
 DetectHiddenText,On
 DetectHiddenWindows, On
 #Requires AutoHotkey 1.1+
-
+; --------------------------------------------------------------------------------
+#Include, <AHK-libs-and-classes-collection-master\libs\o-z\Toolbar>
 Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
 ; --------------------------------------------------------------------------------
 ; #Include <AHK-libs-and-classes-collection-master\libs\g-n\gdip>
@@ -181,10 +182,32 @@ button(){
     ControlGet, hToolbar, hWnd,,% "msvb_lib_toolbar" bID, A
     hIDx := A_ThisHotkey = "^i" ? 2 ; ..............: italic = 2
           : A_ThisHotkey = "^b" ? 1 ; ..............: bold = 1
-          : A_ThisHotkey = "^u" ? 9 : 10 ; .........: underline = 9 and 10 (if available, else italic or bold)
+          : A_ThisHotkey = "^u" ? 3 : 9 ;10 ; .........: underline = 9 and 10 (if available, else italic or bold)
     HznButton(hToolbar,hIDx)
 }
+; TODO Test stuff for above function
+; Global X := NumGet(RECT, 0, "int"),
+; Global Y := NumGet(RECT, 4, "int"),
+; Global W := NumGet(RECT, 8, "int")-X,
+; Global H := NumGet(RECT, 12, "int")-Y ;, prevDelay := A_ControlDelay
+; Global x1 := NumGet(rect, 0, "Int") 
+; Global x2 := NumGet(rect, 8, "Int") 
+; Global y1 := NumGet(rect, 4, "Int") 
+; Global y2 := NumGet(rect, 12,"Int")
+; Global X, Y, W, H, x1, x2, y1, y2 ;, ctrlh, ctrlw, ctrlx, ctrly
+; ctrlh:="", ctrlw:="", ctrlx:="", ctrly:="", x1 :="", x2 :="", y1 :="", y2 :=""
+; ControlGetPos, ctrlx, ctrly, ctrlw, ctrlh,, % "ahk_id " hToolbar
 
+; xCtl := ctrlx - (x2+x1//2)
+; yCtl := ctrly - (y2+y1//2)
+
+; MouseMove xCtl, yCtl
+; ; ControlClick, % "x" x " y" y,% "ahk_id " hToolbar,,,, NA 
+; ControlClick, % "x" xCtl " y" yCtl,% "ahk_id " hToolbar,,,, NA 
+; ; ControlClick, % "x" (X+W//2) " y" (Y+H//2), % "ahk_id " hToolbar,,,, NA
+; MouseMove, % "x" (X+W//2), % "y" (Y+H//2), 
+; MouseMove % ctrlx + (x2+x1//2), ctrly + (y2+y1//2)
+; MouseMove, % "x" W, % "y" H
 ; --------------------------------------------------------------------------------
 ; Function .....: Horizon Hotkeys - Cut, Copy, Paste, Undo, Redo
 ; ChangeLog ....: 06/05/2023 - Validated for the Human Element Screen only. Commented out due to irratic behavior.
@@ -228,22 +251,28 @@ HznSelectAll()
 ; Definition ...: n = the index for the specified button
 ; Author .......: Descolada, Overcast (Adam Bacon)
 ; --------------------------------------------------------------------------------
-
+SendMessage(hWnd, Msg, wParam, lParam)
+{
+	return DllCall("SendMessage", "UInt", hWnd, "UInt", Msg, "UInt", wParam, "UInt", lParam)
+}
 HznButton(hToolbar, n)
 {
-    ; Step: set the Static variables
-    Static TB_BUTTONCOUNT  := 0x0418
-    Static TB_GETBUTTON    := 0x417,
-    Static TB_GETITEMRECT  := 0x41D,
-    Static MEM_COMMIT      := 0x1000, ; 0x00001000, ; via MSDN Win32 
-    Static MEM_RESERVE     := 0x2000, ; 0x00002000, ; via MSDN Win32
-    Static MEM_PHYSICAL    := 0x04    ; 0x00400000, ; via MSDN Win32
-    ; [in]   SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
-    Static  dwSize          := 128  
-; Thanks to LabelControl code from 
-    ; Step: count and load all the msvb_lib_toolbar buttons into memory
-	SendMessage, TB_BUTTONCOUNT, 0, 0,,% "ahk_id " hToolbar
-	buttonCount := ErrorLevel
+;   Step: set the Static variables
+    Static TB_BUTTONCOUNT  := 1048 ; 0x0418
+    Static TB_GETBUTTON    := 1047 ; 0x417,
+    Static TB_GETITEMRECT  := 1053 ; 0x41D,
+    Static MEM_COMMIT      := 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
+    Static MEM_RESERVE     := 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
+    Static MEM_PHYSICAL    := 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+    Static MEM_PROTECT     := 0x40 ;  
+    Static MEM_RELEASE     := 0x8000 ;  
+;   [in]   SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
+    Static  dwSize          := 32  
+;   Step: count and load all the msvb_lib_toolbar buttons into memory
+	; SendMessage, TB_BUTTONCOUNT, 0, 0,,% "ahk_id " hToolbar
+	; buttonCount := ErrorLevel
+    ; buttonCount := HznButtonCount( hToolbar )
+    buttonCount := HznButtonCount( hToolbar )
 	if (n >= 1 && n <= buttonCount) {
 		; Step: Get the PIDfromHwnd() using DllCall
 		DllCall("GetWindowThreadProcessId", "Ptr", hToolbar, "UIntP", targetProcessID)
@@ -263,48 +292,54 @@ HznButton(hToolbar, n)
         , "UPtr",   dwSize                      ; [in]           SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
         , "UInt",   MEM_COMMIT | MEM_RESERVE    ; [in]           DWORD  flAllocationType,
         , "UInt",   MEM_PHYSICAL                ; Note: original had MEM_COMMIT only [; , "UInt", 0x1000 ]
-        , "Ptr",    0x40)                       ; [in]           DWORD  flProtect ; The memory protection for the region of pages to be allocated.
+        , "Ptr",    MEM_PROTECT) ; 0x40)                       ; [in]           DWORD  flProtect ; The memory protection for the region of pages to be allocated.
         ; , "Ptr") ; original
         ; If the pages are being committed, you can specify any one of the memory protection constants
         ; reference <https://learn.microsoft.com/en-us/windows/win32/Memory/memory-protection-constants>.
 		SendMessage, TB_GETITEMRECT, % n-1, remoteMemory, ,% "ahk_id " hToolbar
+        ; SendMessage(hToolbar,TB_GETITEMRECT, &(n-1), remoteMemory)
 		VarSetCapacity(RECT, dwSize, 0)
 		DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", &RECT, "UPtr", dwSize, "UIntP", bytesRead, "Int")
-		;DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
         DllCall(  "VirtualFreeEx" 
                 , "UInt", hProcess 
                 , "UInt", remoteMemory 
                 , "UInt", 0 
-                , "UInt", 0x8000 )     ; MEM_RELEASE 
-        ; result := DllCall( "VirtualFreeEx" 
-        ;                 , "UInt", hpRemote 
-        ;                 , "UInt", remote_buffer 
-        ;                 , "UInt", 0 
-        ;                 , "UInt", 0x8000 )     ; MEM_RELEASE 
-		; get the bounding rectangle for the specified button
+                , "UInt", MEM_RELEASE)     ; MEM_RELEASE 
+		
+        ; get the bounding rectangle for the specified button
+        ControlGetPos, ctrlx, ctrly, ctrlw, ctrlh,, % "ahk_id " hToolbar
 		X := NumGet(RECT, 0, "int"),
         Y := NumGet(RECT, 4, "int"),
-        W := NumGet(RECT, 8, "int")-X,
-        H := NumGet(RECT, 12, "int")-Y ;, prevDelay := A_ControlDelay
-		
+        W := NumGet(RECT, 8, "int") - X,
+        H := NumGet(RECT, 12, "int") - Y,
+        ; prevDelay := A_ControlDelay ;,
+
 		ControlClick, % "x" (X+W//2) " y" (Y+H//2), % "ahk_id " hToolbar,,,, NA
 		;SetControlDelay, %prevDelay%
 	} else {
 		MsgBox, 48, Error, % "The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount "."
 	}
 	DllCall("FreeLibrary", "Ptr", hProcess) ; added 06.23.2023
-	DllCall("FreeLibrary", "Ptr", hProcess) ; added 06.23.2023
+	DllCall("FreeLibrary", "Ptr", remoteMemory) ; added 06.23.2023
 	DllCall("CloseHandle", "Ptr", hToolbar) ; added 06.23.2023
 }
 
-
+HznButtonCount( hToolbar )
+{
+    Static TB_BUTTONCOUNT  := 1048 ; 0x0418
+    SendMessage, TB_BUTTONCOUNT, 0, 0,,% "ahk_id " hToolbar
+	buttonCount := ErrorLevel
+    Return buttonCount
+}
 #6::
 #Warn All, OutputDebug
 SendLevel 1
 ControlGetFocus, fCtl, A
 bID:= SubStr(fCtl, 0, 1)
-ControlGet, ctrlhwnd, hWnd,,% "msvb_lib_toolbar" bID, A
-EnumToolbarButtons(ctrlhwnd)
+; ControlGet, ctrlhwnd, hWnd,,% "msvb_lib_toolbar" bID, A
+; EnumToolbarButtons(ctrlhwnd)
+ControlGet, hCtl, hWnd,,% "msvb_lib_toolbar" bID, A
+
 
 return
 
@@ -501,32 +536,32 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false)
 		If (x1>ctrlw Or y1>ctrlh)
 			Continue
 		
-        arbtn.Insert({"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":bTxtW})
+        arbtn.Insert({"x": x1, "y": 1, "w": x2-x1, "h": y2-y1, "cmd": idButton, "text": bTxtW})
         ;arbtn.Insert( {"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":BtnText} )
         ;line:=100000000+Floor((ctrly+y1)/same)*10000+(ctrlx+x1)
         ;lines=%lines%%line%%A_Tab%%ctrlid%%A_Tab%%class%`n
         arbtn := ({"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":bTxtW})
         For key, value in arbtn
             {
-                FileAppend, % "Key:" . key . " = " . value . "`n", _arbtn.txt
+                FileAppend, % "Key :" . key . " = " . " Value: " . value . "`n", _arbtn.txt
             }
 	}
-	result := DllCall( "VirtualFreeEx"
-                     , "UInt", hpRemote
-                     , "UInt", remote_buffer
-                     , "UInt", 0
-                     , "UInt", 0x8000 )     ; MEM_RELEASE 
+	result := DllCall("VirtualFreeEx"
+                    , "UInt", hpRemote
+                    , "UInt", remote_buffer
+                    , "UInt", 0
+                    , "UInt", 0x8000 )     ; MEM_RELEASE 
 	result := DllCall( "CloseHandle", "UInt", hpRemote )
 	return arbtn
 }
 
 ReadRemoteBuffer(hpRemote, RemoteBuffer, ByRef LocalVar, bytes) {
-	result := DllCall( "ReadProcessMemory"
-                  , "Ptr", hpRemote
-                  , "Ptr", RemoteBuffer
-                  , "Ptr", &LocalVar
-                  , "UInt", bytes
-                  , "UInt", 0 ) 
+	result := DllCall("ReadProcessMemory"
+                    , "Ptr", hpRemote
+                    , "Ptr", RemoteBuffer
+                    , "Ptr", &LocalVar
+                    , "UInt", bytes
+                    , "UInt", 0 ) 
 }
 
 #IfWinActive

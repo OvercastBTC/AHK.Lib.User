@@ -88,23 +88,29 @@ MsgBox % UHexToInt64(0xC05DA800000000FF) ;-0x3FA257FFFFFFFF01
 
 
 */
-UDec(i) { ; internal Int64 --> UInt64 string
-   
-   VarSetStrCapacity(&S,20)
-   DllCall("msvcrt\sprintf", "Str",S, "Str","%I64u", "Int64",i)
-   Return S
+
+; Description: ; internal Int64 --> UInt64 string
+UDec(i)
+{ 
+    VarSetStrCapacity(&S,20)
+    DllCall("msvcrt\sprintf", "Str",S, "Str","%I64u", "Int64",i)
+    Return S
 }
 
-UHex(i) { ; internal Int64 --> Unsigned Hex string
+; Description: internal Int64 --> Unsigned Hex string
+UHex(i)
+{ 
    VarSetStrCapacity(&S,18)
    DllCall("msvcrt\sprintf", "Str",S, "Str","0x%I64x", "Int64",i)
    Return S
 }
 
-UDecToInt64(d) { ; unsigned <= 20 digit decimal string --> Int64
+; Description: ; unsigned <= 20 digit decimal string --> Int64
+UDecToInt64(d) { 
    Return StrLen(d) < 19 ? d : SubStr(d,1,StrLen(d)-2)*100 + SubStr(d,-1)
 }
 
-UHexToInt64(x) { ; unsigned <= 16 digit hex string --> Int64
+; Description: unsigned <= 16 digit hex string --> Int64
+UHexToInt64(x) { 
    Return StrLen(x) < 18 ? x : (SubStr(x,1,StrLen(x)-1)<<4) + abs("0x" . SubStr(x,0))
 }
