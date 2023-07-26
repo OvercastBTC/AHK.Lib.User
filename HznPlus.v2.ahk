@@ -10,9 +10,9 @@ SetWorkingDir(A_ScriptDir) ; A consistent starting directory.
 SetTitleMatchMode(2) ; Match = "containing" instead of "exact"
 DetectHiddenText(true)
 DetectHiddenWindows(true)
-#Requires Autohotkey v2.0+
+#Requires Autohotkey v1
 #Include <gdi_plus_plus>
-#Include <Gdip_All>
+
 TraySetIcon("HznHorizon.ico")
 ; //TODO: 2023.07.17 ...: Work on the below but consider if needed due to new FreeLibraryAndExitThread
 ; //TODO: Library_Load(winuser.dll)
@@ -157,7 +157,8 @@ Return
 	; fCtl := ControlGetClassNN(ControlGetFocus("A"))
 	fCtl := ControlGetFocus("A")
 	hCtl := ControlGethWnd(fCtl, "A")
-	Shift & Enter::DllCall("PostMessage", "Ptr", hCtl, "UInt", 0x0203, "Ptr", 0, "Ptr", 0)
+	; Shift & Enter::DllCall("PostMessage", "Ptr", &hCtl, "UInt", 0x0203, "Ptr", 0, "Ptr", 0)
+	Shift & Enter::DllCall("PostMessage", "Str", &hCtl, "UInt", 0x0203, "Ptr", 0, "Ptr", 0)
 }
 return
 #HotIf
@@ -417,12 +418,13 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 	; Allocate memory for the TBBUTTON structure in the target process's address space
 	
 	remote_buffer := DllCall( "VirtualAllocEx" 
-														, "Ptr", hpRemote                            ; "UInt", hpRemote     ; == original
-														, "Ptr", 0                            ; , "Ptr", hProcess      ; ==> from HznButton()
-														; , "Ptr", 0 ; ==> from HznButton() => same
-														, "UPtr", 16                            , "UInt", 0x1000                            ; , "UInt", 0x1000        ; size to allocate, 4KB
-														; , "UInt", 0x1000       ; ==> from HznButton() => same
-														, "UInt", 0x04                            , "Ptr")                            ; , "UInt", 0x4)          ; PAGE_READWRITE
+					, "Ptr", hpRemote	; , "UInt", hpRemote    ; == original
+					, "Ptr", 0 			; , "Ptr", hProcess     ; ==> from HznButton()
+										; , "Ptr", 0 			; ==> from HznButton() => same
+					, "UPtr", 16 		; , "UInt", 0x1000      ; size to allocate, 4KB
+										; , "UInt", 0x1000      ; ==> from HznButton() => same
+					, "UInt", 0x04 		; , "UInt", 0x4)        ;PAGE_READWRITE
+					, "Ptr")                            
 	
 	x1 :="", x2 :="", y1 :="", y2 :=""
 	
@@ -457,7 +459,7 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		; 1. get command-id from button-index,
 		; 2. get button text from command-id
 		ErrorLevel := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer, , "ahk_id " ctrlhwnd)
-		ReadRemoteBuffer(hpRemote, remote_buffer, BtnStruct, 32)
+		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
 		
 		idButton := NumGet(BtnStruct, 4, "IntP")
 		OutputDebug("idButton: " . idButton . "`n")
@@ -481,7 +483,7 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 			btntextbytes := 1 ? btntextcharsW*2 : btntextcharsW
 			
 			BtnTextBuf := Buffer(btntextbytes+2, 0) ; +2 is for trailing-NUL ; V1toV2: if 'BtnTextBuf' is a UTF-16 string, use 'VarSetStrCapacity(&BtnTextBuf, btntextbytes+2)'
-			ReadRemoteBuffer(hpRemote, remote_buffer, BtnTextBuf, btntextbytes)
+			ReadRemoteBuffer(hpRemote, remote_buffer, &BtnTextBuf, btntextbytes)
 			BtnTextW := StrGet(BtnTextBuf,,"UTF-16")
 		} else {
 			BtnTextW := ""
@@ -509,7 +511,7 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		
 		ErrorLevel := SendMessage(TB_GETITEMRECT, A_Index-1, remote_buffer, , "ahk_id " ctrlhwnd)
 		
-		ReadRemoteBuffer(hpRemote, remote_buffer, rect, 32)
+		ReadRemoteBuffer(hpRemote, remote_buffer, &rect, 32)
 		oldx1:=x1
 		oldx2:=x2
 		oldy1:=y1
@@ -914,8 +916,8 @@ B64ToPBitmap( Input ){
 		Return False
 	DllCall("Kernel32.dll\RtlMoveMemory", "Ptr", pData := DllCall("Kernel32.dll\GlobalLock", "Ptr", hData := DllCall("Kernel32.dll\GlobalAlloc", "UInt", 2, UPtr := A_PtrSize ? "UPtr" : "UInt", DecLen, "UPtr"), "UPtr"), "Ptr", Dec, "UPtr", DecLen)
 	DllCall("Kernel32.dll\GlobalUnlock", "Ptr", hData)
-	DllCall("Ole32.dll\CreateStreamOnHGlobal", "Ptr", hData, "Int", True, Ptr "P", &pStream)
-	DllCall("Gdiplus.dll\GdipCreateBitmapFromStream", "Ptr", pStream, Ptr "P", &pBitmap)
+	DllCall("Ole32.dll\CreateStreamOnHGlobal", "Ptr", hData, "Int", True, "Ptr", &pStream)
+	DllCall("Gdiplus.dll\GdipCreateBitmapFromStream", "Ptr", pStream, "Ptr", &pBitmap)
 	return pBitmap
 }
 
@@ -926,7 +928,7 @@ Library_Load(filename)
 	return 0
 	ref[ptr,"count"] := (ref[ptr]) ? ref[ptr,"count"]+1 : 1
 	p += NumGet(p+0, 0x3c, "Int")+24
-	o := {_ptr:ptr, __delete:FreeLibrary, _ref:ref[ptr]}
+	o := {_ptr:ptr, __delete: &FreeLibrary, _ref:ref[ptr]}
 	if (NumGet(p+0, (A_PtrSize=4) ? 92 : 108, "UInt")<1 || (ts := NumGet(p+0, (A_PtrSize=4) ? 96 : 112, "UInt")+ptr)=ptr || (te := NumGet(p+0, (A_PtrSize=4) ? 100 : 116, "UInt")+ts)=ts)
 	return o
 	n := ptr+NumGet(ts+0, 32, "UInt")

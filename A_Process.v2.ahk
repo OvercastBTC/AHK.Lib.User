@@ -1,5 +1,6 @@
-﻿; Section .....: Auto-Execution
-; -=======================================================================================================================
+﻿; --------------------------------------------------------------------------------
+; Section .....: Auto-Execution
+; --------------------------------------------------------------------------------
 #SingleInstance Force
 Persistent ; Keeps script permanently running
 ; #MaxThreads 255 ; Default: 10, Max: 255.
@@ -49,6 +50,7 @@ WinActiveChange(wParam, hwnd*)
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: WinActiveChange1()
 ; Description .....: removed WinGet, A_Process, ProcessName, A in place of getActiveProcessName()
+; Comment: [x] NOT IN USE
 ; --------------------------------------------------------------------------------
 
 WinActiveChange1(wParam, hwnd*) {
@@ -127,23 +129,22 @@ enumChildCallback(hwnd, pid) {
 	DllCall("CloseHandle", "Ptr", hwnd) ; added => not in original script
 	return 1
 }
-; .................: End Sub-Section
-;=======================================================================================================================
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-; ----------------------------------------------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+; --------------------------------------------------------------------------------
 ; Sub-Section .....: Script Name, Startup Path, and icon
-; ----------------------------------------------------------------------------------------------------------------------
-ICON := "Lib\ICON\dllcall.ico"
-; ----------------------------------------------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+ICON := "C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\ICON\DllCall.ico"
+; --------------------------------------------------------------------------------
 ; Sub-Section .....: Create Tray Menu
-; ----------------------------------------------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
 
-TraySetIcon(Icon) ; this changes the icon into a little dllcall thing.
-Tray:= A_TrayMenu
-Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
+; Tray:= A_TrayMenu
+TraySetIcon ICON ; this changes the icon into a little dllcall thing.
+; Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
 ; addTrayMenuOption("Made with nerd by Adam Bacon and Terry Keatts", "madeBy")
 ; addTrayMenuOption()
 ; addTrayMenuOption("Run at startup", "runAtStartup")
 ; Tray.fileExist(Startup_Shortcut) ? "check" : "unCheck"("Run at startup") ; update the tray menu status on startup
 ; addTrayMenuOption()
-Tray.AddStandard()
+; Tray.AddStandard()
