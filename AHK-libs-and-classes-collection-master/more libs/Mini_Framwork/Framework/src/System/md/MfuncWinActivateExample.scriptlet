@@ -1,4 +1,0 @@
-IfWinExist, Untitled - Notepad
-    Mfunc.WinActivate() ; use the window found above
-else
-    Mfunc.WinActivate("Calculator")

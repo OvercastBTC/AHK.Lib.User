@@ -1,4 +1,0 @@
-RMO
-===
-
-Remote Memory Object

@@ -1,3 +1,0 @@
-## Autohotkey Websocket Client
-
-WIP

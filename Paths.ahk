@@ -5,30 +5,39 @@ class Paths {
 	static User				:= "C:\Users\" A_UserName
 	static OneDrive			:= Paths.User "\OneDrive - FM Global"
 	static LocalAppData		:= Paths.User "\AppData\Local"
-	static AHKProg			:= Paths.LocalAppData "\AutoHotkey"
+	static AHKProg			:= A_ProgramFiles "\AutoHotkey"
 	static System32			:= "C:\Windows\System32"
 	static Startup			:= A_Startup
 	static Script			:= A_ScriptName
 	static ScriptDir		:= A_ScriptDir
 	static ShortCut			:= ".lnk"
+	static Lib				:= "\Lib"
+	static MyDocs			:= A_MyDocuments
+	static AHK				:= "\AutoHotkey"
+	static AHKMain			:= "\AHK.Main"
+	static v1				:= ".v1"
+	static v2				:= ".v2"
+	static Proj				:= "\AHK.Projects"
 
-	static myDocsAHKLib		:= A_MyDocuments "\AutoHotkey\Lib"
-	static LocalAHKLib		:= Paths.LocalAppData "\AutoHotkey\v2\Lib"
+	static LibLocal			:= Paths.LocalAppData.AHK.Lib
+	static LibMain			:= Paths.MyDocs.AHK.Lib
+	static LibMainv1		:= Paths.LibMain.Lib.v1
+	static LibMainv2		:= Paths.LibMain.Lib.v2
+	static LibScript		:= Paths.ScriptDir.Lib
+	static LibProjv1		:= Paths.ProjMainv1.Lib
+	static LibProjv2		:= Paths.ProjMainv2.Lib
 
-	static ProjMain  		:= Paths.OneDrive "\AHK.Main"
-	static v1ProjMain  		:= Paths.ProjMain "\AHK.Projects.v1"
-	static v2ProjMain  		:= Paths.ProjMain "\AHK.Projects.v2"
-	static v1Lib			:= Paths.AHKProg "v1\Lib"
-	static v2Lib			:= Paths.AHKProg "v2\Lib"
-	static ScriptLib		:= A_ScriptDir "\Lib"
-	static Music 			:= "C:\Programming\music"
-	static Shows 			:= "C:\Programming\shows"
-	static Info  			:= "C:\Programming\info"
-	static Test  			:= "C:\Programming\test"
-	static Reg   			:= "C:\Programming\registers"
+	static ProjMain  		:= Paths.OneDrive.AHKMain
+	static ProjMainv1  		:= Paths.ProjMain.Proj.v1
+	static ProjMainv2  		:= Paths.ProjMain.Proj.v2
+	; static Music 			:= "C:\Programming\music"
+	; static Shows 			:= "C:\Programming\shows"
+	; static Info  			:= "C:\Programming\info"
+	; static Test  			:= "C:\Programming\test"
+	; static Reg   			:= "C:\Programming\registers"
 
 	; static Files    		:= Paths.Main "\Files"
-	static Tools     		:= Paths.v2Lib "\Tools"
+	static Tools     		:= Paths.LibMain "\Tools"
 
 	static Pictures     	:= "C:\Pictures"
 	static Content      	:= Paths.Pictures "\Content"
