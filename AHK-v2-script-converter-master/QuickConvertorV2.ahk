@@ -37,8 +37,8 @@
     #SingleInstance Force
 }
 { ;INCLUDES:
-    #Include ConvertFuncs.ahk
-    #Include <_GuiCtlExt>
+    #Include <AHK-v2-script-converter-master\ConvertFuncs>
+    #Include <AHK-v2-script-converter-master\lib\_GuiCtlExt>
 }
 { ;VARIABLES:
     global icons, TestMode, FontSize, ViewExpectedCode, GuiWidth, GuiHeight

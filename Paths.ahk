@@ -3,8 +3,10 @@
 class Paths {
 
 	static User				:= "C:\Users\" A_UserName
+	static AppData			:= "\AppData"
+	static Local			:= "\Local"
 	static OneDrive			:= Paths.User "\OneDrive - FM Global"
-	static LocalAppData		:= Paths.User "\AppData\Local"
+
 	static AHKProg			:= A_ProgramFiles "\AutoHotkey"
 	static System32			:= "C:\Windows\System32"
 	static Startup			:= A_Startup
@@ -19,7 +21,6 @@ class Paths {
 	static v2				:= ".v2"
 	static Proj				:= "\AHK.Projects"
 
-	static LibLocal			:= Paths.LocalAppData.AHK.Lib
 	static LibMain			:= Paths.MyDocs.AHK.Lib
 	static LibMainv1		:= Paths.LibMain.Lib.v1
 	static LibMainv2		:= Paths.LibMain.Lib.v2
@@ -33,7 +34,7 @@ class Paths {
 	; static Music 			:= "C:\Programming\music"
 	; static Shows 			:= "C:\Programming\shows"
 	; static Info  			:= "C:\Programming\info"
-	; static Test  			:= "C:\Programming\test"
+	static Test  			:= Paths.ScriptDir "\Tests"
 	; static Reg   			:= "C:\Programming\registers"
 
 	; static Files    		:= Paths.Main "\Files"
@@ -56,7 +57,7 @@ class Paths {
 	static Sounds 			:= Paths.Audio "\Sounds"
 
 	static VsCodeExtensions := Paths.User "\.vscode-insiders\extensions"
-	static SavedScreenshots := Paths.LocalAppData "\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip"
+	static SavedScreenshots := Paths.AppData.Local "\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip"
 
 	static Ptf := Map(
 		; "playlist-sorter", Paths.Files "\Innit\playlist-sorter.txt",
@@ -93,17 +94,17 @@ class Paths {
 		"cyberpunk",         	Paths.Sounds "\cyberpunk.wav",
 		"better call saul",  	Paths.Sounds "\better call saul short.wav",
 
-		"Discovery log", 		Paths.Music "\Discovery log.txt",
-		"Unfinished",    		Paths.Music "\Unfinished.txt",
-		"Rappers",       		Paths.Music "\Rappers.txt",
-		"Artists",       		Paths.Music "\Favorites.md",
+		; "Discovery log", 		Paths.Music "\Discovery log.txt",
+		; "Unfinished",    		Paths.Music "\Unfinished.txt",
+		; "Rappers",       		Paths.Music "\Rappers.txt",
+		; "Artists",       		Paths.Music "\Favorites.md",
 
-		"Shows",    			Paths.Shows "\Shows.jsonc",
-		"Consumed", 			Paths.Shows "\Consumed.md",
+		; "Shows",    			Paths.Shows "\Shows.jsonc",
+		; "Consumed", 			Paths.Shows "\Consumed.md",
 
-		"Diary",     			Paths.Info "\diary.md",
-		"Events",    			Paths.Info "\events.jsonc",
-		"Birthdays", 			Paths.Info "\birthdays.jsonc",
+		; "Diary",     			Paths.Info "\diary.md",
+		; "Events",    			Paths.Info "\events.jsonc",
+		; "Birthdays", 			Paths.Info "\birthdays.jsonc",
 
 		"femboy",       		Paths.Memes "\femboy.png",
 		"writing fire", 		Paths.Memes "\writing fire.jpg",
@@ -116,7 +117,7 @@ class Paths {
 
 	static Apps := Map(
 
-		"AHK Script",       		"AHK Script.v2.ahk",
+		"AHK Script v2",       		"AHK Script.v2.ahk",
 		"Hzn+",						"HznPlus.ahk",
 		"Detect_ActiveProcess v2", 	"A_Process.v2.ahk",
 

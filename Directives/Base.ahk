@@ -1,4 +1,4 @@
-#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2
 #SingleInstance Force
 #WinActivateForce
 #InputLevel 5
@@ -12,3 +12,5 @@ SetDefaultMouseSpeed(0)
 #Hotstring t o
 CoordMode("Mouse", "Screen")
 CoordMode("Pixel", "Client")
+DetectHiddenText(1)
+DetectHiddenWindows(1)

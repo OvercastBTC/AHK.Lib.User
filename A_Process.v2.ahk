@@ -14,11 +14,17 @@ CoordMode("ToolTip", "Screen")
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Initiation Section
 ; --------------------------------------------------------------------------------
+#HotIf WinActive("ahk_exe Code.exe")
+~^s::
+{
+	Script.Reload()
+}
+#HotIf
 #1::
 A_Process(*)
 {
 	Static HSHELL_RUDEAPPACTIVATED := 32772
-	Global A_Process	; set a super-global variable that can be accessible within all functions by default.
+	&A_Process	; set a super-global variable that can be accessible within all functions by default.
 	apGui := Gui()
 	apGui.Opt("+LastFound")
 	DllCall('RegisterShellHookWindow', 'UInt', WinExist())
@@ -150,3 +156,5 @@ TraySetIcon ICON ; this changes the icon into a little dllcall thing.
 ; Tray.fileExist(Startup_Shortcut) ? "check" : "unCheck"("Run at startup") ; update the tray menu status on startup
 ; addTrayMenuOption()
 ; Tray.AddStandard()
+
+#Include <Abstractions\Script>

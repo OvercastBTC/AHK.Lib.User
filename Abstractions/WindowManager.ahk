@@ -11,7 +11,7 @@ class WindowManager {
 		id := WinGetID(winTitle)
 		Wait(
 			() => !WinActive(id,, excludeTitle?),
-			() => WindowManager.Close(id,, excludeTitle?),
+			() => WindowManager.Close(id,excludeTitle?),
 			, 100
 		)
 	}

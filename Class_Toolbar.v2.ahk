@@ -119,9 +119,9 @@ Class Toolbar extends Toolbar.Private
         {
             Struct := this.BtnSep(TBBUTTON, Options), this.DefaultBtnInfo.Push(Struct)
             if (type(TBBUTTON)="Buffer"){ ;V1toV2 If statement may be removed depending on type parameter
-               ErrorLevel := SendMessage(this.TB_ADDBUTTONS, 1, TBBUTTON, , "ahk_id " this.tbHwnd)
+                ErrorLevel := SendMessage(this.TB_ADDBUTTONS, 1, TBBUTTON, , "ahk_id " this.tbHwnd)
             } else{
-               ErrorLevel := SendMessage(this.TB_ADDBUTTONS, 1, StrPtr(TBBUTTON), , "ahk_id " this.tbHwnd)
+                ErrorLevel := SendMessage(this.TB_ADDBUTTONS, 1, StrPtr(TBBUTTON), , "ahk_id " this.tbHwnd)
             }
             If (ErrorLevel = "FAIL")
                 return false
@@ -135,7 +135,8 @@ Class Toolbar extends Toolbar.Private
         }
         this.AutoSize()
         return true
-    }
+    }'
+
 ;=======================================================================================
 ;    Method:             AutoSize
 ;    Description:        Auto-sizes toolbar.
