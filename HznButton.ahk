@@ -21,7 +21,7 @@ DetectHiddenText,On
 DetectHiddenWindows, On
 #Requires AutoHotkey 1.1+
 ; --------------------------------------------------------------------------------
-#Include, <AHK-libs-and-classes-collection-master\libs\o-z\Toolbar>
+; #Include, <AHK-libs-and-classes-collection-master\libs\o-z\Toolbar>
 Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
 ; --------------------------------------------------------------------------------
 ; #Include <AHK-libs-and-classes-collection-master\libs\g-n\gdip>
@@ -82,40 +82,6 @@ Menu, Tray, % fileExist(Startup_Shortcut) ? "Check" : "Uncheck", Run at startup 
 addTrayMenuOption()
 Menu, Tray, Standard
 ; }
-; --------------------------------------------------------------------------------
-; Sub-Section .....: Create Tray Menu Functions
-; Description .....: addTrayMenuOption() ; madeBy() ; runAtStartup() ; trayNotify()
-; --------------------------------------------------------------------------------
-
-addTrayMenuOption(label = "", command = "") {
-	if (label = "" && command = "") {
-		Menu, Tray, Add
-	} else {
-		Menu, Tray, Add, % label, % command
-	}
-}
-
-madeBy(){
-	; visit authors website
-	;Run, https://bibeka.com.np/
-	MsgBox This was made by nerds, for nerds. Regular people are ok too, lol.`nModified by Adam Bacon`nCredit:Made with ❤️ by Bibek Aryal
-}
-
-runAtStartup() {
-	if (FileExist(startup_shortcut)) {
-		FileDelete, % startup_shortcut
-		Menu, Tray, % "unCheck", Run at startup ; update the tray menu status on change
-		trayNotify("Startup shortcut removed", "This script will not run when you turn on your computer.")
-	} else {
-		FileCreateShortcut, % a_scriptFullPath, % startup_shortcut
-		Menu, Tray, % "check", Run at startup ; update the tray menu status on change
-		trayNotify("Startup shortcut added", "This script will now automatically run when your turn on your computer.")
-	}
-
-}
-trayNotify(title, message, seconds = "", options = 0) {
-	TrayTip, %title%, %message%, %seconds%, %options%
-}
 
 ; ********************************************** ... First Return ... **************************************************
 
@@ -264,8 +230,8 @@ HznButton(hToolbar, n)
     Static MEM_COMMIT      := 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
     Static MEM_RESERVE     := 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
     Static MEM_PHYSICAL    := 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
-    Static MEM_PROTECT     := 0x40 ;  
-    Static MEM_RELEASE     := 0x8000 ;  
+    Static MEM_PROTECT     := 64 ; 0x40 ;  
+    Static MEM_RELEASE     := 32768 ; 0x8000 ;  
 ;   [in]   SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
     Static  dwSize          := 32  
 ;   Step: count and load all the msvb_lib_toolbar buttons into memory
@@ -2183,7 +2149,41 @@ MyIcon_B64()
 		)"
 		return icostr
 } 
+; --------------------------------------------------------------------------------
+; Sub-Section .....: Create Tray Menu Functions
+; Description .....: addTrayMenuOption() ; madeBy() ; runAtStartup() ; trayNotify()
+; --------------------------------------------------------------------------------
 
+addTrayMenuOption(label = "", command = "") {
+	if (label = "" && command = "") {
+		Menu, Tray, Add
+	} else {
+		Menu, Tray, Add, % label, % command
+	}
+}
+
+madeBy(){
+	; visit authors website
+	;Run, https://bibeka.com.np/
+	MsgBox This was made by nerds, for nerds. Regular people are ok too, lol.`nModified by Adam Bacon`nCredit:Made with ❤️ by Bibek Aryal
+}
+
+runAtStartup() {
+	if (FileExist(startup_shortcut)) {
+		FileDelete, % startup_shortcut
+		Menu, Tray, % "unCheck", Run at startup ; update the tray menu status on change
+		trayNotify("Startup shortcut removed", "This script will not run when you turn on your computer.")
+	} else {
+		FileCreateShortcut, % a_scriptFullPath, % startup_shortcut
+		Menu, Tray, % "check", Run at startup ; update the tray menu status on change
+		trayNotify("Startup shortcut added", "This script will now automatically run when your turn on your computer.")
+	}
+
+}
+trayNotify(title, message, seconds = "", options = 0) {
+	TrayTip, %title%, %message%, %seconds%, %options%
+}
+; --------------------------------------------------------------------------------
 ; ; Static TB_ADDBUTTONS            := 0x0414
 ; Global TB_ADDSTRING             := A_IsUnicode ? 0x044D : 0x041C
 ; Global TB_AUTOSIZE              := 0x0421

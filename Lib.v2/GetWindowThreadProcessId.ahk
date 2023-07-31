@@ -10,13 +10,15 @@
     Ejemplo:
         MsgBox(WinGetProcessName('ahk_pid' . GetWindowThreadProcessId(WinExist('A')).ProcessID))
 */
+#Requires AutoHotkey v2
+#Include <Class_Toolbar.c2v2>
 Class GetWindowThreadProcessId extends Horizon {
     GetWindowThreadProcessId(hWnd) {
         Local ProcessID
-            , ThreadID  := DllCall('User32.dll\GetWindowThreadProcessId', 'Ptr'  , hWnd      ;hWnd
-                                                                        , 'UIntP', ProcessID ;lpdwProcessId
-                                                                        , 'UInt')            ;ReturnType    --> dwThreadId
-
-        Return (ThreadID ? {ThreadID: ThreadID, ProcessID: ProcessID} : FALSE)
+        ; , ThreadID  := DllCall('User32.dll\GetWindowThreadProcessId', 'Ptr'  , hWnd      ;hWnd
+                                                                    ; , 'UIntP', &ProcessID ;lpdwProcessId
+                                                                    ; , 'UInt')            ;ReturnType    --> dwThreadId
+        return    ProcessID := DllCall('User32.dll\GetWindowThreadProcessId', 'Ptr', hWnd, 'Ptr', 0, 'UInt')
+        ; Return (ThreadID ? {ThreadID: ThreadID, ProcessID: ProcessID} : FALSE)
     } ;https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522(v=vs.85).aspx
 }

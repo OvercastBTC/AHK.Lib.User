@@ -1,4 +1,4 @@
-﻿#Requires AutoHotKey v2.0-beta.3
+﻿; #Requires AutoHotKey v2
 ; #SingleInstance Force
 
 
@@ -42,7 +42,7 @@ class Toolbar {
         this.aButtons.Push(oButton)
         return oButton
     }
-}
+;}
 AddToolbar(Toolbar, GuiObj, Extra := "", Pos := "", Padding := "", ExStyle := 0x9){
     Toolbar.ImageList := IL_Create(Toolbar.aButtons.length)
     aButtons := Array()
@@ -53,16 +53,37 @@ AddToolbar(Toolbar, GuiObj, Extra := "", Pos := "", Padding := "", ExStyle := 0x
 
     options := Toolbar.options
 
-    Local fShowText, fTextOnly, Styles, TBB_Size, cButtons, TBBUTTONS
-    , Index, Button, iBitmap, idCommand, fsState, fsStyle, iString, Offset, SIZE
-    Static TOOLTIPS := 0x100, WRAPABLE := 0x200, FLAT := 0x800, LIST := 0x1000, TABSTOP := 0x10000
-    , BORDER := 0x800000, TEXTONLY := 0, BOTTOM := 0x3
-    , ADJUSTABLE := 0x20, NODIVIDER := 0x40, VERTICAL := 0x80
-    , CHECKED := 1, HIDDEN := 8, WRAP := 32, DISABLED := 0
-    , CHECK := 2, CHECKGROUP := 6, DROPDOWN := 8, AUTOSIZE := 16
-    , NOPREFIX := 32, SHOWTEXT := 64, WHOLEDROPDOWN := 128
+    Local   fShowText, fTextOnly, 
+            Styles, TBB_Size, 
+            cButtons, TBBUTTONS,
+            Index, iBitmap,
+            idCommand, fsState,
+            fsStyle, iString,
+            Offset, SIZE ; ,Button
+    Static  BOTTOM          := 0x3, 
+            ADJUSTABLE      := 0x20, 
+            NODIVIDER       := 0x40, 
+            VERTICAL        := 0x80, 
+            TEXTONLY        := 0, 
+            DISABLED        := 0, 
+            CHECKED         := 1, 
+            CHECK           := 2, 
+            CHECKGROUP      := 6, 
+            HIDDEN          := 8, 
+            DROPDOWN        := 8, 
+            AUTOSIZE        := 16, 
+            WRAP            := 32, 
+            NOPREFIX        := 32, 
+            SHOWTEXT        := 64, 
+            WHOLEDROPDOWN   := 128,
+            TOOLTIPS        := 0x100,
+            WRAPABLE        := 0x200, 
+            FLAT            := 0x800, 
+            LIST            := 0x1000, 
+            TABSTOP         := 0x10000, 
+            BORDER          := 0x800000
 
-    StrReplace(Options, "SHOWTEXT", "", , &fShowText, 1)
+    StrReplace(Options, "SHOWTEXT",,false, &fShowText, 1)
     fTextOnly := InStr(Options, "TEXTONLY")
 
     Styles := 0
@@ -213,4 +234,5 @@ Toolbar_Callback(GuiCtrlObj, lParam) {
     }
 
     %Callback%(hWnd, EventName, Text, Pos, ButtonId, Left, Bottom)
+}
 }

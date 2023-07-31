@@ -173,3 +173,4 @@
 2:101(0) bTxtW:  State: 41 Info:0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 0
 1:100(0) bTxtW:  State: 60 Info:0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 0
 1:100(0) bTxtW:  State: 60 Info:0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 0
+1:0() BtnTextW:  State:  Cmd2Indx:  Info: X1: 0 X2: 0 Y1: 0 Y2: 0 ErrorLevel: 

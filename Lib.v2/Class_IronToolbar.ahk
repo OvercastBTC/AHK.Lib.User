@@ -36,7 +36,7 @@ class IronToolbar extends Gui.Custom { ; extends Toolbar.Private {
 ;?  Toolbar Styles https://docs.microsoft.com/en-us/windows/win32/controls/toolbar-control-and-button-styles
 
         ;?  Window Styles https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
-    Static styles := {
+    Static Styles := {
         ToolTips                :0x100,             Wrapable                :0x200, 
         AltDrag                 :0x400,             Flat                    :0x800,             
         List                    :0x1000,            CustomErase             :0x2000, 
@@ -165,7 +165,7 @@ class IronToolbar extends Gui.Custom { ; extends Toolbar.Private {
     Static TbList := []
     Static padding := 7
 
-        ;? Static redraw_frequency := 5, redraw_count := 0, size_cb_set := false ; see OnMessage() entry below
+    ;? Static redraw_frequency := 5, redraw_count := 0, size_cb_set := false ; see OnMessage() entry below
     
     ; * Need to do it this way.
     ; * Multiple gui subclass extensions don't play well together.
@@ -335,7 +335,9 @@ class IronToolbar extends Gui.Custom { ; extends Toolbar.Private {
         files := this.ImageLists[this.IL_Default].files ; duplicate image list
         large := this.ImageLists[this.IL_Default].large, this.IL_Create("Customizer",files,large)
         
-        events := ObjBindMethod(IronToolbar,"CustomEvents", this) ; this will be confusing
+        ; events := ObjBindMethod(IronToolbar,"CustomEvents", this) ; this will be confusing
+        ; => not sure if its IronToolbar or Toolbar <=
+        events := ObjBindMethod(Toolbar,"CustomEvents", this) ; this will be confusing
         Custom := Gui("AlwaysOnTop -MinimizeBox -MaximizeBox Owner" this.gui.hwnd,"Customizer")
         LV := Custom.Add("ListView","w200 h200 vCustomList Report Checked -hdr",["Icon List"])
         LV.OnEvent("ItemCheck",events)

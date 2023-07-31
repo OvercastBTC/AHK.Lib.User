@@ -1,3 +1,12 @@
+/************************************************************************
+ * @description ..: Horizon Button ==> A Horizon function library
+ * @Description ..: This library is a collection of functions and buttons that deal with missing interfaces with Horizon.
+ * @file HznPlus.v2.ahk
+ * @author OvercastBTC
+ * @date 2023/07/31
+ * @version 0.5.1
+ ***********************************************************************/
+
 ; Section .....: Auto-Execution
 SetWinDelay(-1)     ;
 SetControlDelay(-1) ;
@@ -10,8 +19,11 @@ SetWorkingDir(A_ScriptDir) ; A consistent starting directory.
 SetTitleMatchMode(2) ; Match = "containing" instead of "exact"
 DetectHiddenText(true)
 DetectHiddenWindows(true)
-#Requires Autohotkey v1
+#Requires Autohotkey v2
 #Include <gdi_plus_plus>
+#Include <Class_Toolbar.c2v2>
+#Include <Tools\Hider>
+#Include <GetProcessHandles>
 
 TraySetIcon("HznHorizon.ico")
 ; //TODO: 2023.07.17 ...: Work on the below but consider if needed due to new FreeLibraryAndExitThread
@@ -71,6 +83,12 @@ Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
 Return
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ; -------------------------------------------------------------------------------------------------
+
+~^s::
+{
+	Reload()
+}
+
 ; Sub-Section .....: Create Tray Menu Functions
 ; Description .....: addTrayMenuOption() ; madeBy() ; runAtStartup() ; trayNotify()
 ; -------------------------------------------------------------------------------------------------
@@ -154,8 +172,7 @@ Return
 ; --------------------------------------------------------------------------------------------------
 #HotIf WinActive("ahk_exe hznhorizonmgr.exe") or WinActive("ahk_exe hznhorizon.exe")
 {
-	; fCtl := ControlGetClassNN(ControlGetFocus("A"))
-	fCtl := ControlGetFocus("A")
+	fCtl := ControlGetClassNN(ControlGetFocus("A"))
 	hCtl := ControlGethWnd(fCtl, "A")
 	; Shift & Enter::DllCall("PostMessage", "Ptr", &hCtl, "UInt", 0x0203, "Ptr", 0, "Ptr", 0)
 	Shift & Enter::DllCall("PostMessage", "Str", &hCtl, "UInt", 0x0203, "Ptr", 0, "Ptr", 0)
@@ -233,11 +250,10 @@ return
 HznSelectAll()
 {
 	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
-	; fCtl := ControlGetClassNN(ControlGetFocus("A"))
-	fCtl := ControlGetFocus("A")
+	fCtl := ControlGetClassNN(ControlGetFocus("A"))
 	hCtl := ControlGethWnd(fCtl, "A")
 	; DllCall("SendMessage", "Ptr", hCtl, "UInt", Msg, "UInt", wParam, "UIntP", &lParam)
-	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', &lParam)
+	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
 }
 
 ; .................................................................................................
@@ -272,19 +288,28 @@ HznSelectAll()
 ; -------------------------------------------------------------------------------------------------
 button()
 {
-		SendLevel(1)
-		fCtl := ControlGetFocus("A")
-		bID := SubStr(fCtl, -1, 1)
-		hToolbar := ControlGethWnd("msvb_lib_toolbar" bID, "A")
-		hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
-				:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-				:  A_ThisHotkey = "^u" ? 9 ; .........: underline = 9 and 10 (if exist, else italic or bold)
-				:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
-				:  A_ThisHotkey = "^c" ? 13 ; ........: copy
-				:  A_ThisHotkey = "^v" ? 16 ; ........: paste
-				:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
-				:  A_ThisHotkey = "^y" ? 20 : 20 ; ...: redo
-		HznButton(hToolbar,hIDx)
+	SendLevel(5)
+	fCtl := ControlGetClassNN(ControlGetFocus("A"))
+	OutputDebug("fCtl: " fCtl "`n")
+	bID := SubStr(fCtl, -1, 1)
+	OutputDebug("bID: " bID "`n")
+	hToolbar := ControlGethWnd("msvb_lib_toolbar" bID, "A")
+	OutputDebug("hToolbar: " hToolbar "`n")
+	; x1 := 0, x2 := 23, y1 := 0, y2 := 23
+	; X := x1, W := x2 - X, 
+	; X := NumGet(RECT, 0, "Int"), Y := NumGet(RECT, 4, "Int"), W := NumGet(RECT, 8, "Int")-X, H := NumGet(RECT, 12, "Int")-Y ;, prevDelay := A_ControlDelay
+	
+	; ControlClick("x" (X+W//2) " y" (Y+H//2), "ahk_id " hToolbar, , , , "NA")
+	hIDx:=		A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
+			:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
+			:  A_ThisHotkey = "^u" ? 3 ; .........: underline = 9 and 10 (if exist, else italic or bold)
+			:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
+			:  A_ThisHotkey = "^c" ? 13 ; ........: copy
+			:  A_ThisHotkey = "^v" ? 16 ; ........: paste
+			:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
+			:  A_ThisHotkey = "^y" ? 20 : 0 ; ...: redo
+	OutputDebug("hIDx: " hIDx "`n")	
+	HznButton(hToolbar,hIDx)
 }    
 return
 ; -------------------------------------------------------------------------------------------------
@@ -298,58 +323,122 @@ return
 
 HznButton(hToolbar, n)
 {
-	; Step: set the static variables
-		static  TB_BUTTONCOUNT          := 0x418,
-				TB_GETBUTTON            := 0x417,
-				TB_GETITEMRECT          := 0x41D,
-				MEM_COMMIT              := 0x1000, ; 0x00001000, ; via MSDN Win32 
-				MEM_RESERVE             := 0x2000, ; 0x00002000, ; via MSDN Win32
-				MEM_PHYSICAL            := 0x04    ; 0x00400000, ; via MSDN Win32
 
-		; Step: count and load all the msvb_lib_toolbar buttons into memory
-	ErrorLevel := SendMessage(TB_BUTTONCOUNT, 0, 0, , "ahk_id " hToolbar)
+	; Step: count and load all the msvb_lib_toolbar buttons into memory
+	buttonCount := SendMessage(Horizon.Msg["ButtonCount"], 0, 0, , Integer(hToolbar))
 	
-		; Step: result of TB_BUTTONCOUNT (num of buttons)
-	buttonCount := ErrorLevel
+	; Step: result of TB_BUTTONCOUNT (num of buttons)
 
 	if (n >= 1 && n <= buttonCount)
-				{
-		; Get the PIDfromHwnd() using DllCall
-				; DllCall("GetWindowThreadProcessId";note: original
-				DllCall('GetWindowThreadProcessId'
-				; , "Ptr", hToolbar;note: original
-				, 'Ptr', hToolbar
-				; , "UIntP", &targetProcessID) ;note: original
-				, 'UIntP', &targetProcessID)
-
+	{
+		; ; Get the PIDfromHwnd() using DllCall
+		; 		; DllCall("GetWindowThreadProcessId";note: original
+		; 		DllCall('GetWindowThreadProcessId'
+		; 		; , "Ptr", hToolbar;note: original
+		; 		, 'Ptr', hToolbar
+		; 		; , "UIntP", &ProcessID) ;note: original
+		; 		, 'UIntP', ProcessID)
+		ProcessID := DllCall('User32.dll\GetWindowThreadProcessId', 'UInt', hToolbar) ; , 'UInt', 0) ; , 'UInt')
+		OutputDebug("pID: " ProcessID "`n")
+		; ProcessID := DllCall('User32.dll\GetWindowThreadProcessId', 'UInt', hToolbar, 'UInt', 0, "UInt") ; , 'UInt')
+		; OutputDebug("pID1: " ProcessID "`n") ; ==> tested, and appears to be the same.
+		;- Step Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
+		; --------------------------------------------------------------------------------
+		hProcess := DllCall("OpenProcess", "Int" 
+		;, 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", ProcessID, "Ptr")
+		, 0x001F0FFF, "Int", 0, "UInt", ProcessID, "Ptr")
+		; --------------------------------------------------------------------------------
 		; Step Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
 		; hProcess := DllCall("OpenProcess"
-		hProcess := DllCall('OpenProcess'
-						  , 'UInt', 0x0018 | 0x0010 | 0x0020
-						  , 'Int', 0
-						  , 'UInt', targetProcessID
-						  , 'Ptr')
+		; hProcess :=  DllCall('OpenProcess'
+		; 					,'UInt', Horizon.Access["PROCESS_VM_OPERATION"] | Horizon.Access["PROCESS_VM_READ"] | Horizon.Access["PROCESS_VM_WRITE"]
+		; 					, 'UInt', ProcessID
+		; 					, 'Ptr')
+		; hProcess := DllCall("OpenProcess", "UInt", Horizon.Access["PROCESS_VM_OPERATION"] | Horizon.Access["PROCESS_VM_READ"], "Int", false, "UInt", ProcessID, "Ptr")
+		; hProcess := DllCall("OpenProcess" ,"Int",0x001F0FFF,"Int",true,"UInt",Integer(ProcessID), 'Ptr')
+		; hProcess := DllCall("OpenProcess", "UInt", Horizon.Access["PROCESS_VM_READ"] | Horizon.Access["PROCESS_VM_WRITE"], "Int", 0, "UInt", ProcessID, "Ptr")
+		
+		; hProcess := GetProcessHandles(ProcessID)
+		; OutputDebug("hProcess: " hProcess "`n")
+	; Class OpenProcess extends Horizon {
+		; Global hProcess := ""
+		; hProcess := OpenProcess(ProcessID,true)
+		; hProcess := DllCall('Kernel32.dll\GetCurrentProcess', 'Ptr') ; , ProcessID)
+		OutputDebug("hProcess: " hProcess "`n")
+; --------------------------------------------------------------------------------
+		; from https://www.autohotkey.com/boards/viewtopic.php?style=1&t=98789
+		; ReadUInt32(pAddr, hProcess := unset) {
+		; 	if !IsSet(hProcess)
+		; 		hProcess := DllCall('GetCurrentProcess', 'Ptr')
+		
+		; 	static sizeofUInt32 := 4
+		; 	if !DllCall('ReadProcessMemory', 'Ptr', hProcess, 'Ptr', pAddr, 'UInt*', &uint32 := 0, 'Ptr', sizeofUInt32, 'Ptr', 0)
+		; 		throw OSError(, -1)
+		
+		; 	return uint32
+		; }
+		; GET_PROCESS_HANDLE()
+		; {
+		; 	if (DllCall("OpenProcess", "int", 2035711, "char", 0, "UInt", PID, "UInt"))
+		; 	{
+		; 		global ProcessHandle := DllCall("OpenProcess", "int", 2035711, "char", 0, "UInt", PID, "UInt")
+		; 	}
+		; 	return False
+		; }
+; --------------------------------------------------------------------------------
+		; OpenProcess(ProcessId, InheritHandle, DesiredAccess*){
+		; 	DesiredAccess := Horizon.Access["PROCESS_ALL_ACCESS"]
+		; 	; InheritHandle := false
+		; 	; ProcessID := this.ProcessID
+		; 	hProcess := DllCall('Kernel32.dll\OpenProcess', 'UInt', DesiredAccess, 'Int', InheritHandle, 'UInt', ProcessId, 'Ptr')
+		; 	Return hProcess
+		; } ; https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320(v=vs.85).aspx
+		; ; OutputDebug("hProcess: " hProcess "`n")
+	; }
 
 	; Step: Allocate memory for the TBBUTTON structure in the target process's address space
 		; Reference: https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualallocex
 		; Description: LPVOID VirtualAllocEx(
-	remoteMemory := DllCall("VirtualAllocEx"
-				, "Ptr",                hProcess        ; [in]           HANDLE hProcess,
-				, "Ptr",                0        ; [in, optional] LPVOID lpAddress, 
-				, "UPtr",               16                ; [in]           SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
-				, "UInt",               MEM_COMMIT | MEM_RESERVE         ; [in]           DWORD  flAllocationType,
-				, "UInt", MEM_PHYSICAL        ; Note: original had MEM_COMMIT only [; , "UInt", 0x1000 ]
-				, "Ptr", 0x40)        ; [in]           DWORD  flProtect ; The memory protection for the region of pages to be allocated.
+		; remoteMemory := DllCall( "VirtualAllocEx" 
+		; , "Ptr", hProcess	; , "UInt", hpRemote    ; == original
+		; , "Ptr", 0 			; , "Ptr", hProcess     ; ==> from HznButton()
+		; 					; , "Ptr", 0 			; ==> from HznButton() => same
+		; , "UPtr", 16 		; , "UInt", 0x1000      ; size to allocate, 4KB
+		; 					; , "UInt", 0x1000      ; ==> from HznButton() => same
+		; , "UInt", 0x04 		; , "UInt", 0x4)        ;PAGE_READWRITE
+		; , "Ptr")     
+		remoteMemory := ;DllCall("VirtualAllocEx", "UInt", hProcess, "UInt", 0, "UInt", 4, "UInt", 0x1000, "UInt", 4, "Ptr")
+						DllCall("VirtualAllocEx", "Uint", hProcess, "Uint", 0, "Uint", 32, "Uint", 0x1000, "Uint", 0x4)
+		; remoteMemory :=   DllCall("VirtualAllocEx"
+							; , "UInt", hProcess        					; [in]           HANDLE hProcess,
+							; , "UInt", 0        							; [in, optional] LPVOID lpAddress, 
+							; , "UInt", Horizon.Con["dwSize"]                				; [in]           SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
+							; , 'UInt', Access["PROCESS_ALL_ACCESS"]
+							; , "UInt", Horizon.Access["MEM_COMMIT"] , "UInt", Horizon.Con["PAGE_READWRITE"] ) ; | Horizon.Access["MEM_RESERVE"]        ; [in]           DWORD  flAllocationType,
+							; , "UInt", Horizon.Access["MEM_PHYSICAL"]        ; Note: original had MEM_COMMIT only [; , "UInt", 0x1000 ]
+							; , "UInt", Horizon.Access["MEM_PROTECT"]) ; 0x40)     ; [in]           DWORD  flProtect ; The memory protection for the region of pages to be allocated.
 				; , "Ptr") ; original
 				; If the pages are being committed, you can specify any one of the memory protection constants
 				; reference <https://learn.microsoft.com/en-us/windows/win32/Memory/memory-protection-constants>.
 																
 				; Get the bounds of each button                        
-		ErrorLevel := SendMessage(TB_GETITEMRECT, n-1, remoteMemory, , "ahk_id " hToolbar)
+		; ErrorLevel := SendMessage(TB_GETITEMRECT, n-1, remoteMemory, , "ahk_id " hToolbar)
+		; VarSetStrCapacity(&RECT, 32) ; V1toV2: if 'RECT' is a UTF-16 string, use 'VarSetStrCapacity(&RECT, 16)'
+		bytesRead := DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "Ptr", 16, "Ptr",0) ;, &bytesRead, "Int")
+		; X := NumGet(&RECT, 0, "UInt"), Y := NumGet(&RECT, 4, "UInt"), W := NumGet(&RECT, 8, "UInt")-X, H := NumGet(&RECT, 12, "UInt")-Y ;, prevDelay := A_ControlDelay
+		X:=Buffer(0,0), Y := Buffer(4,0), W := Buffer(8,0), H := Buffer(12,0)
+		RECT := GetItemRect(Horizon.Message["TB_GETITEMRECT"], n-1, remoteMemory)
+		GetItemRect(Msg, wParam, lParam) { ;,Ctl*, hwnd*){
+			SendMessage(Msg, wParam, lParam,, "ahk_id " hToolbar)
+			; SendMessage(Horizon.Message["TB_GETITEMRECT"], n-1, remoteMemory, , "ahk_id " hToolbar)
 				; SendMessage,% TB_GETITEMRECT,% A_Index-1, remote_buffer, ,% "ahk_id " ctrlhwnd ; from EnumToolbarButtons()
-		RECT := Buffer(16, 0) ; V1toV2: if 'RECT' is a UTF-16 string, use 'VarSetStrCapacity(&RECT, 16)'
-		DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "UPtr", 16, "UIntP", &bytesRead, "Int")
-				; Begin freeing up the memory        
+				return RECT
+		}
+		; --------------------------------------------------------------------------------
+		; VarSetCapacity( pLocal, pSize ) replaced with RECT := Buffer(16, 0)
+		; return DllCall( "ReadProcessMemory", "Ptr", handle, "Ptr", adr + pOffset, "Ptr", &pLocal, "Ptr", size, "Ptr", 0 ), VarSetCapacity(pLocal, -1)	
+		; --------------------------------------------------------------------------------	
+; - Begin freeing up the memory        
 		DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
 		; get the bounding rectangle for the specified button
 		X := NumGet(RECT, 0, "Int"), Y := NumGet(RECT, 4, "Int"), W := NumGet(RECT, 8, "Int")-X, H := NumGet(RECT, 12, "Int")-Y ;, prevDelay := A_ControlDelay
@@ -360,8 +449,40 @@ HznButton(hToolbar, n)
 		MsgBox("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", "Error", 48)
 	}
 	DllCall("FreeLibrary", "Ptr", hProcess) ; added 06.23.2023
-}
+		; Step: set the static variables
 
+}
+; Access := Map(
+; 	; "PROCESS_ALL_ACCESS", 0x1F0FFF,
+; 	; https://www.magnumdb.com/search?q=PROCESS_ALL_ACCESS (review and add)
+; 	"PROCESS_DUP_HANDLE"                    , 0x0040,
+; 	"PROCESS_QUERY_INFORMATION"             , 0x0400,
+; 	"PROCESS_QUERY_LIMITED_INFORMATION"     , 0x1000,
+; 	"PROCESS_SET_INFORMATION"               , 0x0200,
+; 	"PROCESS_SET_QUOTA"                     , 0x0100,
+; 	"PROCESS_SUSPEND_RESUME"                , 0x0800,
+; 	"PROCESS_TERMINATE"                     , 0x0001,
+; 	"PROCESS_VM_OPERATION"                  , 0x0008,
+; 	"PROCESS_VM_READ"                       , 0x0010,
+; 	"PROCESS_VM_WRITE"                      , 0x0020,
+; 	"SYNCHRONIZE"                           , 0x100000,
+; 	"MEM_PHYSICAL"              			, 4,
+; 	"MEM_PROTECT"               			, 64 ; 0x40,                     
+; 	"MEM_RELEASE"               			, 32768, ; 0x8000
+; 	"MEM_COMMIT"                			, 4096,
+; 	"MEM_RESERVE"               			, 8192
+; )
+; Msg := Map(
+; 	"TB_GETBUTTON"              , 1047,
+; 	"TB_BUTTONCOUNT"            , 1048,
+; 	"TB_GETITEMRECT"            , 1053,                     
+; )
+; 	; static  TB_BUTTONCOUNT          := 0x418,
+; 	; 		TB_GETBUTTON            := 0x417,
+; 	; 		TB_GETITEMRECT          := 0x41D,
+; 	; 		MEM_COMMIT              := 0x1000, ; 0x00001000, ; via MSDN Win32 
+; 	; 		MEM_RESERVE             := 0x2000, ; 0x00002000, ; via MSDN Win32
+; 	; 		MEM_PHYSICAL            := 0x04    ; 0x00400000, ; via MSDN Win32
 ; ------------------------------------------
 ; Function .....: Horizon Button - Test function to gather data about the toolbar
 ; ------------------------------------------
@@ -370,7 +491,8 @@ HznButton(hToolbar, n)
 SendLevel(1)
 fCtl := ControlGetClassNN(ControlGetFocus("A"))
 bID:= SubStr(fCtl, -1, 1)
-ctrlhwnd := ControlGethWnd("msvb_lib_toolbar" bID, "A")
+global nCtl := "msvb_lib_toolbar" bID
+ctrlhwnd := ControlGethWnd(nCtl, "A")
 EnumToolbarButtons(ctrlhwnd)
 return
 } ; Added bracket before function
@@ -391,7 +513,7 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 	; get the bounding rectangle for the specified button
 	arbtn := []
 	
-	ControlGetPos(&ctrlx, &ctrly, &ctrlw, &ctrlh, , "ahk_id " ctrlhwnd)
+	ControlGetPos(&ctrlx, &ctrly, &ctrlw, &ctrlh,ctrlhwnd, "ahk_id " ctrlhwnd)
 	
 	;MsgBox % "X: "ctrlx " Y: "ctrly " W: " ctrlw " H: " ctrlh ; 06.25.2023 .. THIS WORKS!!!
 	;MouseMove, ctrlx, ctrly ; 06.25.2023 .. THIS WORKS!!! It actually moves the mouse to the right location!!!
@@ -404,11 +526,13 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 
 */
 
-	pid_target := WinGetPID("ahk_id " ctrlhwnd) ; ==> replaced with above DllCall()
+	pid_target := WinGetPID(ctrlhwnd) ; ==> replaced with above DllCall()
 	OutputDebug("pid_targetW: " . pid_target . "`n")
 	; Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
 	hpRemote := DllCall( "OpenProcess" 
-												, "UInt", 0x0018 | 0x0010 | 0x0020                        , "Int", false                        , "UInt", pid_target )	                    ; , "UInt", 0x18    ; PROCESS_VM_OPERATION|PROCESS_VM_READ ; ==> original
+						, "UInt", 0x0018 | 0x0010 | 0x0020
+						, "Int", false
+						, "UInt", pid_target )	                    ; , "UInt", 0x18    ; PROCESS_VM_OPERATION|PROCESS_VM_READ ; ==> original
 	
 	; hpRemote: Remote process handle
 	if(!hpRemote) {
@@ -417,22 +541,36 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 	}
 	; Allocate memory for the TBBUTTON structure in the target process's address space
 	
-	remote_buffer := DllCall( "VirtualAllocEx" 
-					, "Ptr", hpRemote	; , "UInt", hpRemote    ; == original
-					, "Ptr", 0 			; , "Ptr", hProcess     ; ==> from HznButton()
-										; , "Ptr", 0 			; ==> from HznButton() => same
-					, "UPtr", 16 		; , "UInt", 0x1000      ; size to allocate, 4KB
-										; , "UInt", 0x1000      ; ==> from HznButton() => same
-					, "UInt", 0x04 		; , "UInt", 0x4)        ;PAGE_READWRITE
-					, "Ptr")                            
+	; remote_buffer := DllCall( "VirtualAllocEx" 
+	; 				, "Ptr", hpRemote	; , "UInt", hpRemote    ; == original
+	; 				, "Ptr", 0 			; , "Ptr", hProcess     ; ==> from HznButton()
+	; 									; , "Ptr", 0 			; ==> from HznButton() => same
+	; 				, "UPtr", 16 		; , "UInt", 0x1000      ; size to allocate, 4KB
+	; 									; , "UInt", 0x1000      ; ==> from HznButton() => same
+	; 				, "UInt", 0x04 		; , "UInt", 0x4)        ;PAGE_READWRITE
+	; 				, "Ptr")    
+	If !(hProc := DllCall("OpenProcess", "UInt", 0x438, "Int", False, "UInt", pid_target, "Ptr")) {
+        Return
+    }
+
+    If (A_Is64bitOS) {
+        Try DllCall("IsWow64Process", "Ptr", hProc, "Int*", Is32bit := true)
+    } Else {
+        Is32bit := True
+    }
+
+    RPtrSize := Is32bit ? 4 : 8
+    TBBUTTON_SIZE := 8 + (RPtrSize * 3)  
+	                      
+	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hProc, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", 4, "Ptr")                
 	
 	x1 :="", x2 :="", y1 :="", y2 :=""
 	
 	Static WM_USER        := 0x400	, TB_GETSTATE       := WM_USER+18	, TB_GETBITMAP      := WM_USER+44	, TB_GETBUTTONSIZE  := WM_USER+58	, TB_GETBUTTON      := WM_USER+23	, TB_GETBUTTONTEXTA := WM_USER+45	, TB_GETBUTTONTEXTW := WM_USER+75	, TB_GETITEMRECT    := WM_USER+29	, TB_BUTTONCOUNT    := WM_USER+24    , WM_GETDLGCODE     := 135    , WM_NEXTDLGCTL     := 40	, TB_COMMANDTOINDEX := 1049    , TB_GETBUTTONINFOW := 1087
 	
-	Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0, control := ""
-	ErrorLevel := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, "ahk_id " ctrlhwnd)
-	buttons := ErrorLevel
+	Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0, control := ctrlhwnd
+	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, "ahk_id " ctrlhwnd)
+	buttons := BUTTONCOUNT
 	OutputDebug("buttons: " . buttons . "`n") ;tooltip, buttons=%buttons%	 ; OK
 	
 	rect := Buffer(16, 0)  ; V1toV2: if 'rect' is a UTF-16 string, use 'VarSetStrCapacity(&rect, 16)'
@@ -458,25 +596,30 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		; Try to get button text. Two Notes: 
 		; 1. get command-id from button-index,
 		; 2. get button text from command-id
-		ErrorLevel := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer, , "ahk_id " ctrlhwnd)
+		; Static gbCtl := 
+		Static gbCtl := ctrlhwnd
+		; Static gbCtl := Integer(ctrlhwnd)
+
+		GETBUTTON := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer,gbCtl, "ahk_id " ctrlhwnd) ; Integer(ctrlhwnd))
 		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
-		
+		OutputDebug("GETBUTTON: " GETBUTTON "`n")
 		idButton := NumGet(BtnStruct, 4, "IntP")
 		OutputDebug("idButton: " . idButton . "`n")
 		
-		ErrorLevel := SendMessage(TB_COMMANDTOINDEX, idButton, 0, , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
-		btnvar1 := % " Cmd2Indx: " . ErrorLevel %
+		COMMANDTOINDEX := SendMessage(TB_COMMANDTOINDEX, idButton, 0,gbCtl , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
+		btnvar1 := " Cmd2Indx: " . COMMANDTOINDEX
 		OutputDebug("Cmd2Indx: " . btnvar1 . "`n")
 
-		ErrorLevel := SendMessage(TB_GETBUTTONINFOW, btnvar1, remote_buffer, , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
-		btnvar2 := % " Info:" . ErrorLevel %
+		GETBUTTONINFOW := SendMessage(TB_GETBUTTONINFOW, btnvar1, remote_buffer,gbCtl , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
+		btnvar2 := " Info:" . GETBUTTONINFOW
+		OutputDebug("BtnInfoW: " . btnvar2 . "`n")
 
-		ErrorLevel := SendMessage(TB_GETSTATE, idButton, 0, , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
-		btnstate := ErrorLevel
+		GETSTATE := SendMessage(TB_GETSTATE, idButton, 0,gbCtl , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
+		btnstate := GETSTATE
 		OutputDebug("btnstate: " . btnstate . "`n")
 
-		ErrorLevel := SendMessage(TB_GETBUTTONTEXTW, idButton, remote_buffer, , "ahk_id " ctrlhwnd) ; hope that 4KB is enough
-		btntextcharsW := ErrorLevel
+		GETBUTTONTEXTW := SendMessage(TB_GETBUTTONTEXTW, idButton, remote_buffer, , "ahk_id " ctrlhwnd) ; hope that 4KB is enough
+		btntextcharsW := GETBUTTONTEXTW
 		OutputDebug("btntextcharsW: " . btntextcharsW . "`n")
 		
 		if(btntextcharsW>0){
