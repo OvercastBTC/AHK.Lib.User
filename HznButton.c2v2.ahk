@@ -1,25 +1,17 @@
-﻿;=======================================================================================================================
-; .............: Begin Section
-; Section .....: Auto-Execution
-;=======================================================================================================================
-; #Warn  ; Enable warnings to assist with detecting common errors.
-; SetWinDelay 0 ; (AJB - 06/2023) - comment out for testing
-; SetControlDelay 0 ; (AJB - 06/2023) - comment out for testing
-; REMOVED: ; SetBatchLines, -1 ; scrip run speed, The value -1 = max speed possible. ; (AJB - 05/2023)comment out for testing
-; https://www.autohotkey.com/docs/v1/lib/SetBatchLines.htm
-; SetWinDelay, -1 ; (AJB - 05/2023) - comment out for testing
-; SetControlDelay, -1 ; (AJB - 05/2023) - comment out for testing
-; REMOVED: ;#MaxMem 4095 ; Allows the maximum amount of MB per variable.
-;#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
-; REMOVED: #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.; Avoids checking empty variables to see if they are environment variables.
+﻿; --------------------------------------------------------------------------------
+#Requires Autohotkey v2
+#Warn All, OutputDebug
+#MaxThreads 100 ; Max = 255
 Persistent ; Keeps script permanently running
-#SingleInstance Force
+#SingleInstance("Force")
 SendMode("Input")  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir(A_ScriptDir)  ; Ensures a consistent starting directory.
 SetTitleMatchMode(2) ; sets title matching to search for "containing" instead of "exact"
+SetWinDelay(-1)
+SetControlDelay(-1)
+SetBatchLines(-1)
 DetectHiddenText(true)
 DetectHiddenWindows(true)
-#Requires Autohotkey v2.0
 ; --------------------------------------------------------------------------------
 ; #Include, <AHK-libs-and-classes-collection-master\libs\o-z\Toolbar>
 Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
@@ -185,7 +177,7 @@ button(){
 ^v::
 ^z::
 ^y::
-{ ; V1toV2: Added bracket
+; { ; V1toV2: Added bracket
 ControlGetFocus, focus, A
 bID:= SubStr(focus, 0, 1)
 hIDx:= A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
@@ -201,7 +193,7 @@ return
 ; --------------------------------------------------------------------------------
 ; Function .....: Horizon Hotkey - Select-All (Ctrl-A)
 ; --------------------------------------------------------------------------------
-} ; V1toV2: Added Bracket before hotkey or Hotstring
+;} ; V1toV2: Added Bracket before hotkey or Hotstring
 
 ^a::HznSelectAll()
 
@@ -220,10 +212,10 @@ HznSelectAll()
 ; Definition ...: n = the index for the specified button
 ; Author .......: Descolada, Overcast (Adam Bacon)
 ; --------------------------------------------------------------------------------
-SendMessage(hWnd, Msg, wParam, lParam)
-{
-	return DllCall("SendMessage", "UInt", hWnd, "UInt", Msg, "UInt", wParam, "UInt", lParam)
-}
+; SendMessage(hWnd, Msg, wParam, lParam)
+; {
+; 	return DllCall("SendMessage", "UInt", hWnd, "UInt", Msg, "UInt", wParam, "UInt", lParam)
+; }
 HznButton(hToolbar, n)
 {
 ;   Step: set the Static variables
@@ -286,8 +278,7 @@ HznButton(hToolbar, n)
 HznButtonCount( hToolbar )
 {
     Static TB_BUTTONCOUNT  := 1048 ; 0x0418
-    ErrorLevel := SendMessage(TB_BUTTONCOUNT, 0, 0, , "ahk_id " hToolbar)
-	buttonCount := ErrorLevel
+    buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0, , "ahk_id " hToolbar)
     Return buttonCount
 }
 #6::
@@ -307,10 +298,10 @@ return
 EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false)
 {
     ; Step: set the Static variables
-    Static TB_GETBUTTON    := 0x417,
-    Static TB_GETITEMRECT  := 0x41D,
-    Static MEM_COMMIT      := 0x1000, ; 0x00001000, ; via MSDN Win32 
-    Static MEM_RESERVE     := 0x2000, ; 0x00002000, ; via MSDN Win32
+    Static TB_GETBUTTON    := 0x417
+    Static TB_GETITEMRECT  := 0x41D
+    Static MEM_COMMIT      := 0x1000 ; 0x00001000, ; via MSDN Win32 
+    Static MEM_RESERVE     := 0x2000 ; 0x00002000, ; via MSDN Win32
     Static MEM_PHYSICAL    := 0x04    ; 0x00400000, ; via MSDN Win32
     ; [in]   SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
     Static  dwSize          := 128  

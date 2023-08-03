@@ -1,0 +1,16 @@
+﻿/*
+${workspaceFolder}         // Path of the folder opened.
+${workspaceFolderBasename} // Name of the folder opened (without any slashes).
+${file}                    // Current opened file.
+${relativeFile}            // Current opened file relative to workspaceFolder.
+${relativeFileDirname}     // Current opened file's dirname relative to workspaceFolder.
+${fileBasename}            // Current opened file's basename.
+${fileBasenameNoExtension} // Current opened file's basename with no file extension.
+${fileDirname}             // Current opened file's dirname.
+${fileExtname}             // Current opened file's extension.
+${cwd}                     // Task runner's current working directory on startup.
+${lineNumber}              // Current selected line number in the active file.
+${selectedText}            // Current selected text in the active file.
+${execPath}                // Path to the running VSCode executable.
+${defaultBuildTask}        // Name of the default build task.
+*/

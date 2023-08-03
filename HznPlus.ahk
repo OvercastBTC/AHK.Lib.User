@@ -1,17 +1,13 @@
-;=======================================================================================================================
-; .............: Begin Section
+; --------------------------------------------------------------------------------
 ; Section .....: Auto-Execution
-;=======================================================================================================================
+; --------------------------------------------------------------------------------
 #Warn All, OutputDebug ; Enable warnings to assist with detecting common errors.
-; SetWinDelay 0 ; (AJB - 06/2023) - comment out for testing
-; SetControlDelay 0 ; (AJB - 06/2023) - comment out for testing
-SetBatchLines, -1 ; scrip run speed, The value -1 = max speed possible. ; (AJB - 05/2023)comment out for testing
-; ; https://www.autohotkey.com/docs/v1/lib/SetBatchLines.htm
+SetBatchLines, -1 ; scrip run speed, The value -1 = max speed possible.
 SetWinDelay, -1 ; (AJB - 05/2023) - comment out for testing
 SetControlDelay, -1 ; (AJB - 05/2023) - comment out for testing
 ;#MaxMem 4095 ; Allows the maximum amount of MB per variable.
-;#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.; Avoids checking empty variables to see if they are environment variables.
+#MaxThreads 100 ; Allows a maximum of 255 instead of default threads.
+#NoEnv  ; Recommended
 #Persistent ; Keeps script permanently running
 #SingleInstance,Force
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
@@ -194,43 +190,25 @@ Return
 Return
 button(){
     SendLevel 5
+    ;- Get textbox instance # => toolbar# == TX11# 
     ControlGetFocus, fCtl, A
     bID := SubStr(fCtl, -1, 1)
     OutputDebug % "bID: " bID "`n"
+    ;- Get letter of hotkey, versus the whole hotkey
     cID := SubStr(A_ThisHotkey, 0, 1)
     OutputDebug % "cID: " cID "`n"
-    ControlGet, hToolbar, hWnd,,% "msvb_lib_toolbar" bID, A
+    ;- In v2, SendMessage() sometimes the control name/hwnd/some identifier is required, even if its the same as the hwnd (% "ahk_id" hwnd), set to static for use in the HznButton() => just in case
+    Static nCtl := % "msvb_lib_toolbar" bID
+    ControlGet, hToolbar, hWnd,,nCtl, A
     hIDx := (cID = "i") ? 2 ; ..............: italic = 2
           : (cID = "b") ? 1 ; ..............: bold = 1
-          : (cID = "u") ? 3 : 21 ;9 ;10 ; .........: underline = 9 and 10 (if available, else italic or bold)
+          : (cID = "u") ? 3 : 0 ; (if available, else bold)
     HznButton(hToolbar,hIDx)
 }
-; TODO Test stuff for above function
-; Global X := NumGet(RECT, 0, "int"),
-; Global Y := NumGet(RECT, 4, "int"),
-; Global W := NumGet(RECT, 8, "int")-X,
-; Global H := NumGet(RECT, 12, "int")-Y ;, prevDelay := A_ControlDelay
-; Global x1 := NumGet(rect, 0, "Int") 
-; Global x2 := NumGet(rect, 8, "Int") 
-; Global y1 := NumGet(rect, 4, "Int") 
-; Global y2 := NumGet(rect, 12,"Int")
-; Global X, Y, W, H, x1, x2, y1, y2 ;, ctrlh, ctrlw, ctrlx, ctrly
-; ctrlh:="", ctrlw:="", ctrlx:="", ctrly:="", x1 :="", x2 :="", y1 :="", y2 :=""
-; ControlGetPos, ctrlx, ctrly, ctrlw, ctrlh,, % "ahk_id " hToolbar
-
-; xCtl := ctrlx - (x2+x1//2)
-; yCtl := ctrly - (y2+y1//2)
-
-; MouseMove xCtl, yCtl
-; ; ControlClick, % "x" x " y" y,% "ahk_id " hToolbar,,,, NA 
-; ControlClick, % "x" xCtl " y" yCtl,% "ahk_id " hToolbar,,,, NA 
-; ; ControlClick, % "x" (X+W//2) " y" (Y+H//2), % "ahk_id " hToolbar,,,, NA
-; MouseMove, % "x" (X+W//2), % "y" (Y+H//2), 
-; MouseMove % ctrlx + (x2+x1//2), ctrly + (y2+y1//2)
-; MouseMove, % "x" W, % "y" H
 ; --------------------------------------------------------------------------------
 ; Function .....: Horizon Hotkeys - Cut, Copy, Paste, Undo, Redo
-; ChangeLog ....: 06/05/2023 - Validated for the Human Element Screen only. Commented out due to irratic behavior.
+; ChangeLog ....: 06/05/2023 - Validated for the Human Element Screen only.
+; [ ] Bug: Commented out due to irratic behavior.
 ; --------------------------------------------------------------------------------
 /*
 ^x::
@@ -287,14 +265,11 @@ return
 ; --------------------------------------------------------------------------------
 ; Function .....: HznButton()
 ; Description ..: Find and Control-Click the Horizon msvb_lib_toolbar buttons
-; Definition ...: hWndToolbar = the toolbar window's handle
-; Definition ...: n = the index for the specified button
+;@param: hToolbar = toolbar's hwnd
+;@param: n = button's index number [hIDx in function]
 ; Author .......: Descolada, Overcast (Adam Bacon)
 ; --------------------------------------------------------------------------------
-SendMessage(hWnd, Msg, wParam, lParam)
-{
-	return DllCall("SendMessage", "UInt", hWnd, "UInt", Msg, "UInt", wParam, "UInt", lParam)
-}
+
 HznButton(hToolbar, n)
 {
 ;   Step: set the Static variables
@@ -306,67 +281,81 @@ HznButton(hToolbar, n)
     Static MEM_PHYSICAL     := 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
     Static MEM_PROTECT      := 64 ; 0x40 ;  
     Static MEM_RELEASE      := 32768 ; 0x8000
-;   [in]   SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
-    Static dwSize           := 32
+    Static dwSize           := 32 ; SIZE_T dwSize ; The size of the region of memory to allocate, in bytes.
     Static TB_GETSTATE      := 1042 ; 0x0412
     Static TB_PRESSBUTTON   := 1027 ; 0x0403
-    targetProcessID := ""
-    bytesRead := ""
-;   Step: count and load all the msvb_lib_toolbar buttons into memory
+    ; --------------------------------------------------------------------------------    
+    ; Step: count and load all the msvb_lib_toolbar buttons into memory
+    ;@param: buttonCount
+    ; --------------------------------------------------------------------------------
 	SendMessage, TB_BUTTONCOUNT, 0, 0,,% "ahk_id " hToolbar
 	buttonCount := ErrorLevel
     OutputDebug, % "btnct: " . buttonCount "`n"
+    ; --------------------------------------------------------------------------------
+
 	if (n >= 1 && n <= buttonCount) {
 		; Step: Get the PIDfromHwnd() using DllCall
-		DllCall("GetWindowThreadProcessId", "Ptr", hToolbar, "UIntP", targetProcessID)
-
+		DllCall("GetWindowThreadProcessId", "Ptr", hToolbar, "UIntP", ProcessID)
+        ; --------------------------------------------------------------------------------
 		; Step Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
-		hProcess := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", targetProcessID, "Ptr")
-
-		; ; Allocate memory for the TBBUTTON structure in the target process's address space
-		; remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", 16, "UInt", 0x1000, "UInt", 0x04, "Ptr")
+		hProcess := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", ProcessID, "Ptr")
+        ; --------------------------------------------------------------------------------
+		; Allocate memory for the TBBUTTON structure in the target process's address space
         ; Step: Allocate memory for the TBBUTTON structure in the target process's address space
+		; Original [WORKS] => remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", 16, "UInt", 0x1000, "UInt", 0x04, "Ptr")
 		; Reference: https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualallocex
-		; Description: LPVOID VirtualAllocEx(
+		;- LPVOID VirtualAllocEx(
+        ;-  [in] HANDLE hProcess,
+        ;-  [in, optional] LPVOID lpAddress,
+        ;-  [in] SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
+        ;-  [in] DWORD  flAllocationType,
+        ;-  [in] DWORD  flProtect ; The memory protection for the region of pages to be allocated.
         remoteMemory := DllCall("VirtualAllocEx"
-        , "Ptr",    hProcess                    ; [in]           HANDLE hProcess,
-        , "Ptr",    0                           ; [in, optional] LPVOID lpAddress, 
-        ; , "UPtr",      16                     ; [in]           SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
-        , "UPtr",   dwSize                      ; [in]           SIZE_T dwSize, ; The size of the region of memory to allocate, in bytes.
-        , "UInt",   MEM_COMMIT | MEM_RESERVE    ; [in]           DWORD  flAllocationType,
+        , "Ptr",    hProcess                    ; 
+        , "Ptr",    0                           ;  
+        , "UPtr",   dwSize                      ; 
+        , "UInt",   MEM_COMMIT | MEM_RESERVE    ; 
         , "UInt",   MEM_PHYSICAL                ; Note: original had MEM_COMMIT only [; , "UInt", 0x1000 ]
-        , "Ptr",    MEM_PROTECT) ; 0x40)                       ; [in]           DWORD  flProtect ; The memory protection for the region of pages to be allocated.
-        ; , "Ptr") ; original
+        , "Ptr",    MEM_PROTECT) ; , "Ptr") ; original
+        ; --------------------------------------------------------------------------------
         ; If the pages are being committed, you can specify any one of the memory protection constants
         ; reference <https://learn.microsoft.com/en-us/windows/win32/Memory/memory-protection-constants>.
+        ; --------------------------------------------------------------------------------
         SendMessage, TB_GETITEMRECT, &n-1, remoteMemory, ,% "ahk_id " . hToolbar
-        ; SendMessage(hToolbar,TB_GETITEMRECT, &(n-1), remoteMemory)
+        ; --------------------------------------------------------------------------------
 		VarSetCapacity(RECT, dwSize, 0)
 		DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", &RECT, "UPtr", dwSize, "UIntP", bytesRead, "Int")
+        ; --------------------------------------------------------------------------------
         DllCall(  "VirtualFreeEx" 
                 , "UInt", hProcess 
                 , "UInt", remoteMemory 
                 , "UInt", 0 
-                , "UInt", MEM_RELEASE)     ; MEM_RELEASE 
-		
+                , "UInt", MEM_RELEASE) 
+		; --------------------------------------------------------------------------------
         ; get the bounding rectangle for the specified button
-        ControlGetPos, ctrlx, ctrly, ctrlw, ctrlh,, % "ahk_id " hToolbar
 		X := NumGet(RECT, 0, "int"),
         Y := NumGet(RECT, 4, "int"),
         W := NumGet(RECT, 8, "int") - X,
         H := NumGet(RECT, 12, "int") - Y,
-        ; prevDelay := A_ControlDelay ;,
-
+        ; --------------------------------------------------------------------------------
 		ControlClick, % "x" (X+W//2) " y" (Y+H//2), % "ahk_id " hToolbar,,,, NA
-		;SetControlDelay, %prevDelay%
+        ; --------------------------------------------------------------------------------
 	} else {
 		MsgBox, 48, Error, % "The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount "."
 	}
+    ; --------------------------------------------------------------------------------
+    ;- Note: Not in the original function => added due to erratic behavior unless a reload was completed, and based on other dllcall research, and MSDN documentation
 	DllCall("FreeLibrary", "Ptr", hProcess) ; added 06.23.2023
 	DllCall("FreeLibrary", "Ptr", remoteMemory) ; added 06.23.2023
 	DllCall("CloseHandle", "Ptr", hToolbar) ; added 06.23.2023
-    
+    ; --------------------------------------------------------------------------------
 }
+; --------------------------------------------------------------------------------
+
+; --------------------------------------------------------------------------------
+; Function: HznButtonCount()
+;- Starting to convert HznButton() steps into functions for conversion to Class Toolbar
+; --------------------------------------------------------------------------------
 
 HznButtonCount( hToolbar )
 {
