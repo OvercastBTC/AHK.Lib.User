@@ -1,0 +1,47 @@
+﻿{
+    "ExpenseReport": [
+        {
+            "DefaultSettings": {
+                "Default.Button.Settings": {
+                    "Name": "",
+                    "RoleText": "",
+                    "Role": ""
+                },
+            },    
+            "Buttons": {    
+                "Sort.Button": {
+                    "Name": "",
+                    "RoleText": "grouping",
+                    "Role": "20"
+                },
+                "Hotel.Button": {
+                    "Name": "Travel",
+                    "RoleText": "menu button",
+                    "Role": "57"
+                },
+                "Food.Button": {
+                    "Name": "Meals / Entertainment",
+                    "RoleText": "menu button",
+                    "Role": "57"
+                },
+            "Hotels": {
+                "Hilton": {
+                    "Hilton": "Hilton",
+                    "by Hilton": "Hilton"
+                },
+                "Marriot": {
+                    "Marriot": "Marriot",
+                    "Marriot Bonvoy": "Marriot",
+                    "Springhill Suites" : "Marriot"
+                }
+                }
+            },
+            "Text": {
+                "Name": "editable text",
+                "RoleText": "Business Purpose",
+                "Role":"42"
+            } 
+        }
+
+    ]
+}

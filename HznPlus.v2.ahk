@@ -4,14 +4,15 @@
  * @file HznPlus.v2.ahk
  * @author OvercastBTC
  * @date 2023/07/31
- * @version 0.5.5
+ * @version 1.0.0
  ***********************************************************************/
 
 ; Section .....: Auto-Execution
 SetWinDelay(-1)
 SetControlDelay(-1)
+SetMouseDelay(-1)
 ; //#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
-#MaxThreads 100 ; Allows a maximum of 255 instead of default threads.
+#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
 #Warn All, OutputDebug
 #SingleInstance Force
 SendMode("Input") ;* Superior speed and reliability.
@@ -19,13 +20,12 @@ SetWorkingDir(A_ScriptDir) ; A consistent starting directory.
 SetTitleMatchMode(2) ; Match = "containing" instead of "exact"
 DetectHiddenText(true)
 DetectHiddenWindows(true)
-CoordMode("Mouse", "Client")
+; CoordMode("Mouse", "Client")
 #Requires Autohotkey v2
 #Include <gdi_plus_plus>
 #Include <Class_Toolbar.c2v2>
 #Include <Tools\Hider>
 ; #Include <GetProcessHandles>
-
 TraySetIcon("HznHorizon.ico")
 ; //TODO: 2023.07.17 ...: Work on the below but consider if needed due to new FreeLibraryAndExitThread
 ; //TODO: Library_Load(winuser.dll)
@@ -246,6 +246,7 @@ return
 ; Function .....: Select-All() (Ctrl-A)
 ; -------------------------------------------------------------------------------------------------
 
+; ^a::HznSelectAll()
 ^a::HznSelectAll()
 
 HznSelectAll()
@@ -253,9 +254,9 @@ HznSelectAll()
 	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
 	fCtl := ControlGetClassNN(ControlGetFocus("A"))
 	hCtl := ControlGethWnd(fCtl, "A")
-	; DllCall("SendMessage", "Ptr", hCtl, "UInt", Msg, "UInt", wParam, "UIntP", &lParam)
 	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
 }
+
 
 ; .................................................................................................
 ;</s if (ErrorLevel != 1) {
@@ -290,40 +291,193 @@ HznSelectAll()
 button() {
 	SendLevel(5)
 	fCtl := ControlGetClassNN(ControlGetFocus("A"))
-	OutputDebug("fCtl: " fCtl "`n")
 	bID := SubStr(fCtl, -1, 1)
+	nCtl := "msvb_lib_toolbar" bID
+	hTb := ControlGethWnd(nCtl, "A")
+	hTX11 := ControlGethWnd(fCtl, "A")
+	hIDx := (A_ThisHotkey = "^i") ? 2 : (A_ThisHotkey = "^b") ? 1 : (A_ThisHotkey = "^u") ? 3 : 21
+	HznButton(hTb,hIDx,nCtl,fCtl)
+	; HznButtonTest(hTb,hIDx,nCtl,fCtl)
+	; HznTb(hTb,hIDx,nCtl)
+	; ClickToolbarButton(hToolbar,hIDx)
+	; --------------------------------------------------------------------------------
+	OutputDebug("fCtl: " fCtl "`n")
 	OutputDebug("bID: " bID "`n")
-	hToolbar := ControlGethWnd("msvb_lib_toolbar" bID, "A")
-	OutputDebug("hToolbar: " hToolbar "`n")
-	hIDx := A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
-		  : A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-		  : A_ThisHotkey = "^u" ? 3 : 0
 	OutputDebug("hIDx: " hIDx "`n")	
-	HznButton(hToolbar,hIDx)
-	; ClickToolbarButton(hToolbar,hIDx)
-	; ClickToolbarButton(hToolbar,hIDx)
+	OutputDebug("hTb: " hTb "`n")
+	OutputDebug("hTX11: " hTX11 "`n")
+	; --------------------------------------------------------------------------------
 }    
 return
+HznTb(hTb,hIDx,nCtl)
+{
+	; Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
+	; Static Msg := EM_SETSEL := 177, wParam := -1, lParam :=0 ; works, went to 0,0
+	fCtl := ControlGetClassNN(ControlGetFocus("A"))
+	bID := SubStr(fCtl, -1, 1)
+	OutputDebug("bID: " bID "`n")
+	nCtl := "msvb_lib_toolbar" bID
+	hTb := ControlGethWnd(nCtl, "A")
+	n := hIDx
+	o := 12*n
+	oX := +o
+	oY := 10
+	X := oX
+	Y := oY
+	OutputDebug("x" x " " "y" y " " "o" o " " "n" n " " )
+	; MouseMove(x,y,-1)
+	; ControlClick(hCtl,hCtl,,,,"x" X " " "y" X)
+	ControlClick("x" X " " "y" Y,hTb,,,,"NA")
+}
 ; -------------------------------------------------------------------------------------------------
 ; Sub-Section...: Horizon Click the ToolbarButton Function 
 ; Description ..: Find and Control-Click the Horizon msvb_lib_toolbar buttons
 ; Variable ...: hWndToolbar = the toolbar window's handle
 ; Variable ...: n = the index for the specified button
-; Author .......: Descolada, Overcast (Adam Bacon)
+; Author .......: Descolada, OvercastBTC
 ; Function .....: HznButton()
 ; -------------------------------------------------------------------------------------------------
 /**
  * Clicks the nth item in a Win32 application toolbar.
- * @param hWndToolbar - The handle of the toolbar control.
- * @param n - The index of the toolbar item to click (1-based). Note: Separators are considered items as well.
+ * @param hToolbar - The handle of the toolbar control.
+ * @param hTb - The handle of the toolbar control.
+ * @param fCtl* - [OPTIONAL] The ClassNN of the "focused" control.
+ * @param bID - The ClassNN instance of the "focused" control.
+ * @param nCtl - The ClassNN and instance of the toolbar control.
+ * @param n - The index (hIDx) of the toolbar item to click (1-based). Note: Separators are considered items as well.
  * @example
- * ControlGet, hToolbar, hWnd,, ToolbarWindow321, Test ; Replace with the actual ClassNN and WinTitle
- * ClickToolbarItem(hToolbar, 3) ; Clicks the third item
+ * fCtl := ControlGetClassNN(ControlGetFocus("A"))
+ * bID := SubStr(fCtl, -1, 1)
+ * nCtl := "msvb_lib_toolbar" bID
+ * hTb := ControlGethWnd(nCtl, "A")
+ * ClickToolbarButton(hToolbar, 3) ; Clicks the third item
  */
+
+HznButton(hToolbar, n, nCtl, fCtl*) {
+	; --------------------------------------------------------------------------------
+	; Step: [OPTIONAL] Block all input while the function running
+	; --------------------------------------------------------------------------------
+	BlockInput(1) ; 1 = On, 0 = Off
+	; --------------------------------------------------------------------------------
+	static TB_BUTTONCOUNT 		:= 1048
+	Static TB_GETBUTTON 		:= 1047
+	Static WM_COMMAND			:= 273 ; 0x111
+	Static TB_PRESSBUTTON		:= 1027 ; 0x403
+	Static TB_BUTTONCOUNT  		:= 1048 ; 0x0418
+	Static TB_GETBUTTON    		:= 1047 ; 0x417,
+	Static TB_GETITEMRECT  		:= 1053 ; 0x41D,
+	Static MEM_COMMIT      		:= 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
+	Static MEM_RESERVE     		:= 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
+	Static MEM_PHYSICAL    		:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+	Static MEM_PROTECT     		:= 64 ; 0x40 ;  
+	Static MEM_RELEASE     		:= 32768 ; 0x8000 ; 
+	Static WM_USER				:= 1024 ; 0x400
+	Static TB_Something			:= WM_USER+3 ; (1042)
+	Static TB_GETSTATE			:= WM_USER+18 ; (1042)
+	Static TB_GETBITMAP			:= WM_USER+44 ; (1068)
+	Static TB_GETBUTTONSIZE		:= WM_USER+58 ; 1082
+	Static TB_GETBUTTON			:= WM_USER+23 ; 1047
+	Static TB_GETBUTTONTEXTA	:= WM_USER+45 ; (1069)
+	Static TB_GETBUTTONTEXTW	:= WM_USER+75 ; (1099)
+	Static TB_GETITEMRECT		:= WM_USER+29 ; (1053)
+	Static TB_BUTTONCOUNT		:= WM_USER+24 ; (1048)
+	Static WM_GETDLGCODE		:= 135
+	Static WM_NEXTDLGCTL		:= 40
+	Static TB_COMMANDTOINDEX	:= 1049
+	Static TB_GETBUTTONINFOW	:= 1087
+	Static TB_SETSTATE 			:= 1041 ; 0x0411
+	Static TBSTATE_PRESSED		:= 2 ; 0x02 
+	Static WM_LBUTTONDOWN 		:= 513 ; 0x201
+	Static WM_LBUTTONUP 		:= 515 ; 0x202
+	Static BM_CLICK				:= 245 ; 0x000000F5
+	; --------------------------------------------------------------------------------
+	try ControlGetPos(&ctrlx:=0, &ctrly:=0,&ctrlw,&ctrlh, hToolbar, hToolbar)
+	OutputDebug("&ctrlx: " . ctrlx " &ctrly: " . ctrly " &ctrlw: " . ctrlw " &ctrlh: " . ctrlh . "`n")
+	; --------------------------------------------------------------------------------
+	; Step: count and load all the msvb_lib_toolbar buttons into memory
+	; --------------------------------------------------------------------------------
+	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0, , Integer(hToolbar))
+	OutputDebug("ButtonCount: " buttonCount "`n")
+	; --------------------------------------------------------------------------------
+	; Step: Use the @params to press the button
+	; --------------------------------------------------------------------------------
+	if (n >= 1 && n <= buttonCount)
+	{
+		; --------------------------------------------------------------------------------
+		; Step: Get the toolbar "thread" process ID (PID) 
+		DllCall("GetWindowThreadProcessId", "Ptr", hToolbar, "UInt*", &targetProcessID:=0)
+		OutputDebug("pID: " targetProcessID "`n")
+		; --------------------------------------------------------------------------------
+		; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
+        hProcess := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", targetProcessID, "Ptr")
+		OutputDebug("hProcess: " hProcess "`n")
+		; --------------------------------------------------------------------------------
+		; Step: [OPTIONAL] Identify if the process is 32 or 64 bit (efficiency step)
+		; --------------------------------------------------------------------------------
+		A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := true) : Is32bit := True
+		If (A_Is64bitOS) {
+			Try DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := true)
+		} Else {
+			Is32bit := True
+		}
+		; --------------------------------------------------------------------------------
+		; Step: Allocate memory for the TBBUTTON structure in the target process's address space
+		; --------------------------------------------------------------------------------
+		RPtrSize := Is32bit ? 4 : 8
+		TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
+		remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
+		OutputDebug("remoteMemory: " remoteMemory "`n")   
+		; --------------------------------------------------------------------------------
+		; Step: Get the bounds of each button (Get Item Rectangle)
+		; --------------------------------------------------------------------------------
+		SendMessage(TB_GETITEMRECT, n-1, remoteMemory,, hToolbar)
+		RECT := Buffer(TBBUTTON_SIZE, 0)
+		; Note: Winapi TBBUTTON struct(32 bytes on x64, 20 bytes on x86)
+		BtnStructSize := Is32bit ? 20 : 32
+		BtnStruct := Buffer(BtnStructSize, 0)
+		; --------------------------------------------------------------------------------
+		; Step: Read the button information stored in the RECT (remoteMemory)
+		; --------------------------------------------------------------------------------
+        DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "UPtr", 16, "UInt*", &bytesRead:=0, "Int")
+		OutputDebug("hProcess: " hProcess "`n bytesRead: " bytesRead "`n")
+        DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
+        DllCall("CloseHandle", "Ptr", hProcess)
+		; --------------------------------------------------------------------------------
+		; Step: Store previous and set min delay
+		; --------------------------------------------------------------------------------
+		prevDelay := A_ControlDelay
+		prevMDelay := A_MouseDelay
+		SetControlDelay(-1)
+		SetMouseDelay(-1)
+		; --------------------------------------------------------------------------------
+		X := NumGet(RECT, 0, "int"),
+		Y := NumGet(RECT, 4, "int"),
+		W := NumGet(RECT, 8, "int")-X,
+		H := NumGet(RECT, 12, "int")-Y
+		OutputDebug("X: " X " Y: " Y " W: " W " H: " H "`n")
+        ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hToolbar,,,, "NA")
+        prevDelay := SetControlDelay(-1)
+		OutputDebug("x" ((X+W)//2) " y" ((Y+H)//2) "`n")
+		; --------------------------------------------------------------------------------
+		; Step: Restore previous and set delay
+		; --------------------------------------------------------------------------------
+        SetControlDelay(prevDelay)
+		SetMouseDelay(prevMDelay)
+		; --------------------------------------------------------------------------------
+		BlockInput(0) ; 1 = On, 0 = Off
+		; --------------------------------------------------------------------------------
+    } else
+        throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
+    return
+}
+; --------------------------------------------------------------------------------
+
+; --------------------------------------------------------------------------------
 ClickToolbarItem(hWndToolbar, n) {
-	static  TB_BUTTONCOUNT := 1048 ; 0x418,
-			TB_GETBUTTON := 1047 ; 0x417, 
-			TB_GETITEMRECT := 1053 ; 0x41D
+	static TB_BUTTONCOUNT := 1048 ; 0x418,
+	static TB_GETBUTTON := 1047 ; 0x417, 
+	static TB_GETITEMRECT := 1053 ; 0x41D
+	static BM_SETCHECK:=0xF1
     buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0, , hWndToolbar)
 	OutputDebug("ButtonCount: " buttonCount "`n")
     if (n >= 1 && n <= buttonCount) {
@@ -348,8 +502,8 @@ ClickToolbarItem(hWndToolbar, n) {
 		H := NumGet(RECT, 12, "int")-Y
 		OutputDebug("X: " X " Y: " Y " W: " W " H: " H "`n")
         prevDelay := SetControlDelay(-1)
-        ControlClick("x" (X+W//2) " y" (Y+H//2), hWndToolbar,,,, "NA")
-		OutputDebug("x" (X+W//2) " y" (Y+H//2) "`n")
+        ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hWndToolbar,,,, "NA")
+		OutputDebug("x" ((X+W)//2) " y" ((Y+H)//2) "`n")
         SetControlDelay(prevDelay)
     } else
         throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
@@ -367,7 +521,7 @@ ClickToolbarItem(hWndToolbar, n) {
 ClickToolbarButton(hWndToolbar, n) {
     static TB_BUTTONCOUNT 	:= 1048
 	Static TB_GETBUTTON 	:= 1047
-	Static WM_COMMAND		:= 0x111
+	Static WM_COMMAND		:= 273 ; 0x111
 	Static TB_BUTTONCOUNT  	:= 1048 ; 0x0418
 	Static TB_GETBUTTON    	:= 1047 ; 0x417,
 	Static TB_GETITEMRECT  	:= 1053 ; 0x41D,
@@ -376,6 +530,23 @@ ClickToolbarButton(hWndToolbar, n) {
 	Static MEM_PHYSICAL    	:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
 	Static MEM_PROTECT     	:= 64 ; 0x40 ;  
 	Static MEM_RELEASE     	:= 32768 ; 0x8000 ; 
+
+	static BM_SETCHECK		:= 241 ; 0xF1
+	static  BST_CHECKED 	:= 1 ; 0x1,
+	BST_INDETERMINATE 		:= 2 ; 0x2,
+	BST_UNCHECKED 			:= 0 ; 0x0
+	static  BM_SETSTATE 	:=0xF3,
+			BM_GETSTATE		:=0xF2
+
+	; static  BST_CHECKED		:=0x1,
+	static	BST_FOCUS		:=0x8,
+			BST_HOT			:=0x0200,
+			; BST_INDETERMINATE:=0x2,
+			BST_PUSHED		:=0x4
+			; BST_UNCHECKED	:=0x0
+	Static WM_USER				:= 1024 ; 0x400
+	Static WM_IDUNNO			:= WM_USER+3
+	Static TB_GETSTATE			:= WM_USER+18 ; (1042		
     buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0, , hWndToolbar)
 	OutputDebug("ButtonCount: " buttonCount "`n")
     if (n >= 1 && n <= buttonCount) {
@@ -399,12 +570,15 @@ ClickToolbarButton(hWndToolbar, n) {
         ; button := SendMessage(TB_GETBUTTON, n-1, remoteMemory, , hWndToolbar)
         button := SendMessage(TB_GETBUTTON, n, remoteMemory, , hWndToolbar)
 		OutputDebug("Button: " button "`n")
-        DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory+4, "Int*", &idCommand:=0, "UPtr", 4, "UInt*", &bytesRead:=0, "Int")
+        DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory+4, "Int*", &idCommand:=0, "UPtr", RPtrSize, "UInt*", &bytesRead:=0, "Int")
 		OutputDebug("idCommand: " idCommand "`n")
 		OutputDebug("hProcess: " hProcess "`n" "bytesRead: " bytesRead "`n")
         DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
         DllCall("CloseHandle", "Ptr", hProcess)
-        pClick := SendMessage(WM_COMMAND, idCommand,,, hwndToolbar)
+		GETSTATE := SendMessage(TB_GETSTATE, idCommand, 0,hWndToolbar ,hWndToolbar)
+		btnstate := SubStr(GETSTATE,1,1)
+		OutputDebug("btnstate: " . btnstate . "`n")
+        pClick := SendMessage(BM_SETSTATE, 0x04,0,, hwndToolbar)
 		OutputDebug("Programmatic Click: " pClick)
     } else
         throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
@@ -413,7 +587,7 @@ ClickToolbarButton(hWndToolbar, n) {
 ; --------------------------------------------------------------------------------
 
 ; --------------------------------------------------------------------------------
-HznButton(hToolbar, n) {
+HznButtonTest(hToolbar, n, nCtl, fCtl*) {
 	; BlockInput(1) ; 1 = On, 0 = Off
 	static TB_BUTTONCOUNT 		:= 1048
 	Static TB_GETBUTTON 		:= 1047
@@ -428,6 +602,7 @@ HznButton(hToolbar, n) {
 	Static MEM_PROTECT     		:= 64 ; 0x40 ;  
 	Static MEM_RELEASE     		:= 32768 ; 0x8000 ; 
 	Static WM_USER				:= 1024 ; 0x400
+	Static TB_Something			:= WM_USER+3 ; (1042)
 	Static TB_GETSTATE			:= WM_USER+18 ; (1042)
 	Static TB_GETBITMAP			:= WM_USER+44 ; (1068)
 	Static TB_GETBUTTONSIZE		:= WM_USER+58 ; 1082
@@ -477,61 +652,71 @@ HznButton(hToolbar, n) {
 		OutputDebug("remoteMemory: " remoteMemory "`n")   
 		; --------------------------------------------------------------------------------
 		;/*
-		button := SendMessage(TB_GETBUTTON, n-1, remoteMemory,, hToolbar)
-		OutputDebug("Button: " button "`n")
-        DllCall("ReadProcessMemory",
-				"Ptr", hProcess,
-				"Ptr", remoteMemory+4,
-				"Int*", &idCommand:=0,
-				"UPtr", 4,
-				"UInt*", &bytesRead:=0,
-				"Int")
-		OutputDebug("idCommand: " idCommand "`n")
-		OutputDebug("hProcess: " hProcess "`n" "bytesRead: " bytesRead "`n")
-        DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
-        DllCall("CloseHandle", "Ptr", hProcess)
+		; button := SendMessage(TB_GETBUTTON, n-1, remoteMemory,, hToolbar)
+		; OutputDebug("Button: " button "`n")
+        ; DllCall("ReadProcessMemory",
+		; 		"Ptr", hProcess,
+		; 		"Ptr", remoteMemory+4,
+		; 		"Int*", &idCommand:=0,
+		; 		"UPtr", 4,
+		; 		"UInt*", &bytesRead:=0,
+		; 		"Int")
+		; OutputDebug("idCommand: " idCommand "`n")
+		; OutputDebug("hProcess: " hProcess "`n" "bytesRead: " bytesRead "`n")
+        ; DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
+        ; DllCall("CloseHandle", "Ptr", hProcess)
 		; WM_NOTIFY := 0x004e
 		; WM_NOTIFY	Int32	78	0x0000004E
-		WM_NOTIFY := 0x0000004E
+		WM_NOTIFY := 78 ; 0x0000004E
+		; BM_CLICK	Int32	245	0x000000F5
+		BM_CLICK	:= 245 ; 0x000000F5
 		; NM_LDOWN	Int32	-20	0xFFFFFFEC
 		; NM_CLICK	Int32	-2	0xFFFFFFFE
 		; NM_RELEASEDCAPTURE	Int32	-16	0xFFFFFFF0
         ; pClick := SendMessage(WM_COMMAND, 1 | idCommand,,, hToolbar)
-        pClick := SendMessage(WM_COMMAND, -20 | idCommand,htoolbar,, hToolbar)
-		OutputDebug("Programmatic Click: " pClick)
+        ; pClick := SendMessage(BM_CLICK, 0,0,htoolbar,, hToolbar)
+		; OutputDebug("Programmatic Click: " pClick)
 		;*/
 		; --------------------------------------------------------------------------------
 		;? Get the bounds of each button
-        /* 
+        ;/* 
 		SendMessage(TB_GETITEMRECT, n-1, remoteMemory,, hToolbar)
         ; RECT := Buffer(16, 0)
 		RECT := Buffer(TBBUTTON_SIZE, 0)
-		BtnStructSize := Is32bit ? 20 : 32
+		BtnStructSize := 32 ;Is32bit ? 20 : 32
 		BtnStruct := Buffer(BtnStructSize, 0) ; Winapi TBBUTTON struct(32 bytes on x64, 20 bytes on x86)
         DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "UPtr", 16, "UInt*", &bytesRead:=0, "Int")
 		OutputDebug("hProcess: " hProcess "`n bytesRead: " bytesRead "`n")
         DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
         DllCall("CloseHandle", "Ptr", hProcess)
-		x1 := NumGet(rect, 0, "Int") 
-		x2 := NumGet(rect, 8, "Int") 
-		y1 := NumGet(rect, 4, "Int") 
-		y2 := NumGet(rect, 12, "Int")
-		OutputDebug("x:" x1 " y:" y1 " w:" x2-x1 " h:" y2-y1 "`n")
-		X := (ctrlx + Ceil(x2+x1//2))
-		Y := (ctrly + Ceil(y2+y1//2))
-		OutputDebug("X" X A_Space "Y" Y)
-		
+		X := NumGet(RECT, 0, "int"),
+		Y := NumGet(RECT, 4, "int"),
+		W := NumGet(RECT, 8, "int")-X,
+		H := NumGet(RECT, 12, "int")-Y
+		OutputDebug("X: " X " Y: " Y " W: " W " H: " H "`n")
+        ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hToolbar,,,, "NA")
+        prevDelay := SetControlDelay(-1)
+		OutputDebug("x" ((X+W)//2) " y" ((Y+H)//2) "`n")
 		; --------------------------------------------------------------------------------
 		prevDelay := A_ControlDelay
 		prevMDelay := A_MouseDelay
 		SetControlDelay(-1)
 		SetMouseDelay(-1)
-		CaretGetPos(&cX, &cY)
+		; CaretGetPos(&cX, &cY)
 		; MouseGetPos(&mX, &mY,&mWin,&mCtl,3)
 		; --------------------------------------------------------------------------------
         ; ControlClick("x" X " y" Y, hToolbar,,,, "NA")
-		; ControlClick(hToolbar,,,,,"D " "X" X " " "Y" Y)
+		; ControlClick(hToolbar,,,,,"X" X " " "Y" Y)
+		WM_MOUSEHOVER 	:= 673 ; 0x02A1
+		MK_LBUTTON 		:= 1 ; 0x0001
+		; Static TB_PRESSBUTTON		:= 1027 ; 0x403
+		; pClick := SendMessage(WM_MOUSEHOVER, ,X|Y,htoolbar,hToolbar)
+		; pClick := SendMessage(TB_PRESSBUTTON,64,0,, hToolbar)
+		; PostMessage(WM_LBUTTONDOWN,,x | y,nCtl,hToolbar)
+		; PostMessage(WM_LBUTTONUP,,x | y,nCtl,hToolbar)
 		; MouseClick(,X,Y,,-1)
+		; ControlClick("x" X " " "y" Y,hToolbar,,,,"NA")
+
 		; --------------------------------------------------------------------------------
 		; MouseMove(mX,mY,0)
 		; MouseMove(cX,cY,-1)
@@ -540,7 +725,7 @@ HznButton(hToolbar, n) {
 		; OutputDebug("x: " Ceil(X+W//2) " y: " Ceil(Y+H//2) "`n")
         SetControlDelay(prevDelay)
 		SetMouseDelay(prevMDelay)
-		*/
+		;*/
 		; --------------------------------------------------------------------------------
 		;BlockInput(0) ; 1 = On, 0 = Off
     } else
@@ -581,18 +766,20 @@ HznButton(hToolbar, n) {
 ; ------------------------------------------
 ; Function .....: Horizon Button - Test function to gather data about the toolbar
 ; ------------------------------------------
-^+6::
+^+9::
 { ; V1toV2: Added bracket
-SendLevel(1)
-fCtl := ControlGetClassNN(ControlGetFocus("A"))
-bID:= SubStr(fCtl, -1, 1)
-global nCtl := "msvb_lib_toolbar" bID
-ctrlhwnd := ControlGethWnd(nCtl, "A")
-EnumToolbarButtons(ctrlhwnd)
-return
+	SendLevel(5)
+	fCtl := ControlGetClassNN(ControlGetFocus("A"))
+	bID := SubStr(fCtl, -1, 1)
+	nCtl := "msvb_lib_toolbar" bID
+	hTb := ControlGethWnd(nCtl, "A")
+	hTX11 := ControlGethWnd(fCtl, "A")
+	hIDx := (A_ThisHotkey = "^i") ? 2 : (A_ThisHotkey = "^b") ? 1 : (A_ThisHotkey = "^u") ? 3 : 21
+	EnumToolbarButtons(hTb,hIDx,nCtl,fCtl)
+	;return
 } ; Added bracket before function
 
-EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
+EnumToolbarButtons(ctrlhwnd, hIDx, nCtl, fCtl) ;, is_apply_scale:=false) {
 {
 	static TB_BUTTONCOUNT 		:= 1048
 	Static TB_GETBUTTON 		:= 1047
@@ -660,17 +847,17 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		return
 	}
 	; Allocate memory for the TBBUTTON structure in the target process's address space
-    If (A_Is64bitOS) {
-        ; Try DllCall("IsWow64Process", "Ptr", hProc, "Int*", Is32bit := true)
-        Try DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true)
-    } Else {
-        Is32bit := True
-    }
+    ; If (A_Is64bitOS) {
+    ;     ; Try DllCall("IsWow64Process", "Ptr", hProc, "Int*", Is32bit := true)
+    ;     Try DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true)
+    ; } Else {
+    ;     Is32bit := True
+    ; }
 
-    RPtrSize := Is32bit ? 4 : 8
-    TBBUTTON_SIZE := 8 + (RPtrSize * 3)
+    ; RPtrSize := Is32bit ? 4 : 8
+    ; TBBUTTON_SIZE := 8 + (RPtrSize * 3)
 
-	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")             
+	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", 32, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")             
 	
 	x1 :=0, x2 :=0, y1 :=0, y2 :=0
 	
@@ -693,8 +880,8 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 	buttons := BUTTONCOUNT
 	OutputDebug("buttons: " . buttons . "`n") ;tooltip, buttons=%buttons%	 ; OK
 	
-	rect := Buffer(16, 0)  ; V1toV2: if 'rect' is a UTF-16 string, use 'VarSetStrCapacity(&rect, 16)'
-	BtnStruct := Buffer(32, 0) ; Winapi TBBUTTON struct(32 bytes on x64, 20 bytes on x86) ; V1toV2: if 'BtnStruct' is a UTF-16 string, use 'VarSetStrCapacity(&BtnStruct, 32)'
+	rect := Buffer(16,0)
+	BtnStruct := Buffer(32,0)
 	/*
 		typedef struct _TBBUTTON {
 			int       iBitmap; 
@@ -718,40 +905,46 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		; 2. get button text from command-id
 		; Static gbCtl := 
 		Static gbCtl := ctrlhwnd
-		; Static gbCtl := Integer(ctrlhwnd)
+		Static tbHwnd := ctrlhwnd
+		Static gbCtl := Integer(ctrlhwnd)
 
-		GETBUTTON := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer,gbCtl, "ahk_id " ctrlhwnd) ; Integer(ctrlhwnd))
+		GETBUTTON := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer,gbCtl, ctrlhwnd) ; Integer(ctrlhwnd))
 		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
 		OutputDebug("GETBUTTON: " GETBUTTON "`n")
 		idButton := NumGet(BtnStruct, 4, "IntP")
 		OutputDebug("idButton: " . idButton . "`n")
 		
-		COMMANDTOINDEX := SendMessage(TB_COMMANDTOINDEX, idButton, 0,gbCtl , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
+		
+		COMMANDTOINDEX := SendMessage(TB_COMMANDTOINDEX, idButton, 0,gbCtl ,ctrlhwnd) ; hope that 4KB is enough ; just a test
 		btnvar1 := COMMANDTOINDEX
 		OutputDebug("Cmd2Indx: " . btnvar1 . "`n")
+		
+		CtrlID := DllCall("GetDlgCtrlID", "Ptr", CtrlHwnd, "Int")
+		hWndCtrl := DllCall("GetDlgItem", "Ptr", ctrlhwnd , "Int", CtrlID, "UPtr")
+		OutputDebug("hWndCtrl: " hWndCtrl "`n")
 
-		GETBUTTONINFOW := SendMessage(TB_GETBUTTONINFOW, btnvar1, remote_buffer,gbCtl , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
+		GETBUTTONINFOW := SendMessage(TB_GETBUTTONINFOW, btnvar1, remote_buffer,gbCtl , ctrlhwnd) ; hope that 4KB is enough ; just a test
 		btnvar2 := GETBUTTONINFOW
 		OutputDebug("BtnInfoW: " . btnvar2 . "`n")
 
-		GETSTATE := SendMessage(TB_GETSTATE, idButton, 0,gbCtl , "ahk_id " ctrlhwnd) ; hope that 4KB is enough ; just a test
+		GETSTATE := SendMessage(TB_GETSTATE, idButton, 0,gbCtl ,ctrlhwnd) ; hope that 4KB is enough ; just a test
 		btnstate := SubStr(GETSTATE,1,1)
 		OutputDebug("btnstate: " . btnstate . "`n")
 
-		GETBUTTONTEXTW := SendMessage(TB_GETBUTTONTEXTW, idButton, remote_buffer, , "ahk_id " ctrlhwnd) ; hope that 4KB is enough
-		btntextcharsW := GETBUTTONTEXTW
-		OutputDebug("btntextcharsW: " . btntextcharsW . "`n")
+		; GETBUTTONTEXTW := SendMessage(TB_GETBUTTONTEXTW, idButton, remote_buffer,gbCtl,ctrlhwnd) ; hope that 4KB is enough
+		; btntextcharsW := GETBUTTONTEXTW
+		; OutputDebug("btntextcharsW: " . btntextcharsW . "`n")
 		
-		if(btntextcharsW>0){
-			btntextbytes := 1 ? btntextcharsW*2 : btntextcharsW
+		; if(btntextcharsW>0){
+		; 	btntextbytes := 1 ? btntextcharsW*2 : btntextcharsW
 			
-			BtnTextBuf := Buffer(btntextbytes+2, 0) ; +2 is for trailing-NUL ; V1toV2: if 'BtnTextBuf' is a UTF-16 string, use 'VarSetStrCapacity(&BtnTextBuf, btntextbytes+2)'
-			ReadRemoteBuffer(hpRemote, remote_buffer, &BtnTextBuf, btntextbytes)
-			BtnTextW := StrGet(BtnTextBuf,,"UTF-16")
-		} else {
-			BtnTextW := ""
-		}
-		OutputDebug("BtnTextW: " . BtnTextW . "`n")
+		; 	BtnTextBuf := Buffer(btntextbytes+2, 0) ; +2 is for trailing-NUL ; V1toV2: if 'BtnTextBuf' is a UTF-16 string, use 'VarSetStrCapacity(&BtnTextBuf, btntextbytes+2)'
+		; 	ReadRemoteBuffer(hpRemote, remote_buffer, &BtnTextBuf, btntextbytes)
+		; 	BtnTextW := StrGet(BtnTextBuf,,"UTF-16")
+		; } else {
+		; 	BtnTextW := ""
+		; }
+		; OutputDebug("BtnTextW: " . BtnTextW . "`n")
 		
 		/*
 
@@ -783,8 +976,11 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		y1 := NumGet(rect, 4, "Int") 
 		y2 := NumGet(rect, 12, "Int")
 		
-		FileAppend(A_Index . ":" . idButton . "(" . btntextcharsW . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n", "_emeditor_toolbar_buttons.txt")  ; debug
-		OutputDebug(A_Index . ":" . idButton . "(" . btntextcharsW . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " btnvar1 . "" . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n")                                 ; debug
+		; FileAppend(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n", "_emeditor_toolbar_buttons.txt")  ; debug
+		output := A_Index . ":" . idButton . " " . "(" . "hWndCtrl: " . hWndCtrl . ")" . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n"
+		FileAppend(output, "_emeditor_toolbar_buttons.txt")  ; debug
+		; OutputDebug(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n")                                 ; debug
+		OutputDebug(output)                                 ; debug
 		
 		;MouseMove % ctrlx + (x2+x1//2), ctrly + (y2+y1//2)
 		;if(is_apply_scale) {
@@ -802,7 +998,7 @@ EnumToolbarButtons(ctrlhwnd) ;, is_apply_scale:=false) {
 		If (x1>ctrlw Or y1>ctrlh)
 			Continue
 		
-		arbtn.Push(A_Index,{x:x1, y:y1, w:x2-x1, h:y2-y1, cmd:idButton, text:BtnTextW})
+		arbtn.Push(A_Index,{x:x1, y:y1, w:x2-x1, h:y2-y1, cmd:idButton}) ; , text:BtnTextW})
 		;arbtn.Insert( {"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":BtnText} )
 		;line:=100000000+Floor((ctrly+y1)/same)*10000+(ctrlx+x1)
 		;lines=%lines%%line%%A_Tab%%ctrlid%%A_Tab%%class%`n
