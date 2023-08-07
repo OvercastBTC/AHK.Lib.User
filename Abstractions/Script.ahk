@@ -16,12 +16,12 @@ class Script {
 		}
 	}
 
-	; static Test() => Run(Paths.Ptf["AhkTest"])
+	static Test() => Run(Paths.Ptf["AhkTest"])
 
-	; static ExitTest() {
-	; 	WriteFile(Paths.Ptf["test-state"], 0)
-	; }
+	static ExitTest() {
+		WriteFile(Paths.Ptf["test-state"], 0)
+	}
 
-	; static RunTests() => Run(Paths.Ptf["Tests"])
+	static RunTests() => Run(Paths.Ptf["Tests"])
 
 }

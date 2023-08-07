@@ -511,3 +511,35 @@
 5:104 (hWndCtrl: 0) State: 8 Cmd2Indx: 4 BtnInfoW: 0 X1: 7 X2: 8 Y1: 104 Y2: 104 ErrorLevel: 0
 1:100 (hWndCtrl: 0) State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
 1:100 (hWndCtrl: 0) State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (hWndCtrl: 0) State: 6 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (hWndCtrl: 0) State: 6 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (hWndCtrl: 0) State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (hWndCtrl: 0) State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+3:102 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 2 BtnInfoW: 0 X1: 1 X2: 8 Y1: 102 Y2: 102 ErrorLevel: 0
+3:102 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 2 BtnInfoW: 0 X1: 1 X2: 8 Y1: 102 Y2: 102 ErrorLevel: 0
+4:103 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 3 BtnInfoW: 0 X1: 8 X2: 264 Y1: 103 Y2: 103 ErrorLevel: 0
+4:103 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 3 BtnInfoW: 0 X1: 8 X2: 264 Y1: 103 Y2: 103 ErrorLevel: 0
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+3:102 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 2 BtnInfoW: 0 X1: 1 X2: 8 Y1: 102 Y2: 102 ErrorLevel: 0
+3:102 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 2 BtnInfoW: 0 X1: 1 X2: 8 Y1: 102 Y2: 102 ErrorLevel: 0
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+1:100 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 0 BtnInfoW: 0 X1: 0 X2: 23 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+2:101 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 4 Cmd2Indx: 1 BtnInfoW: 0 X1: 23 X2: 46 Y1: 0 Y2: 22 ErrorLevel: 1
+3:102 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 2 BtnInfoW: 0 X1: 1 X2: 8 Y1: 102 Y2: 102 ErrorLevel: 0
+3:102 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 2 BtnInfoW: 0 X1: 1 X2: 8 Y1: 102 Y2: 102 ErrorLevel: 0
+4:103 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 3 BtnInfoW: 0 X1: 8 X2: 264 Y1: 103 Y2: 103 ErrorLevel: 0
+4:103 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 3 BtnInfoW: 0 X1: 8 X2: 264 Y1: 103 Y2: 103 ErrorLevel: 0
+5:104 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 4 BtnInfoW: 0 X1: 7 X2: 8 Y1: 104 Y2: 104 ErrorLevel: 0
+5:104 (text: 0)(hWndCtrl: 0) BtnTextW:  State: 8 Cmd2Indx: 4 BtnInfoW: 0 X1: 7 X2: 8 Y1: 104 Y2: 104 ErrorLevel: 0

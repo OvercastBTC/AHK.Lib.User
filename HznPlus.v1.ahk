@@ -278,12 +278,12 @@ button()
 		hToolbar := ControlGethWnd("msvb_lib_toolbar" bID, "A")
 		hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
 				:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-				:  A_ThisHotkey = "^u" ? 9 ; .........: underline = 9 and 10 (if exist, else italic or bold)
+				:  A_ThisHotkey = "^u" ? 3 ; .........: u = 3 (???9 and 10???) (else i or b)
 				:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
 				:  A_ThisHotkey = "^c" ? 13 ; ........: copy
 				:  A_ThisHotkey = "^v" ? 16 ; ........: paste
 				:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
-				:  A_ThisHotkey = "^y" ? 20 : 20 ; ...: redo
+				:  A_ThisHotkey = "^y" ? 20 : 21 ; ...: redo
 		HznButton(hToolbar,hIDx)
 }    
 return
