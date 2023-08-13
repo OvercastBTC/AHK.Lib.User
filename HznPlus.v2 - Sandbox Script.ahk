@@ -84,12 +84,12 @@ Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
 Return
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ; -------------------------------------------------------------------------------------------------
-
+#HotIf WinActive(A_ScriptName) && WinActive("Code.exe")
 ~^s::
 {
 	Reload()
 }
-
+#HotIf
 ; Sub-Section .....: Create Tray Menu Functions
 ; Description .....: addTrayMenuOption() ; madeBy() ; runAtStartup() ; trayNotify()
 ; -------------------------------------------------------------------------------------------------
@@ -218,6 +218,7 @@ return
 ^i::button()
 ^b::button()
 ^u::button()
+^a::HznSelectAll()
 
 ; --------------------------------------------------------------------------------------------------
 ; Function .....: Horizon Hotkeys - Cut, Copy, Paste, Undo, Redo
@@ -245,10 +246,6 @@ return
 ; Section ......: Horizon Hotkey - Select-All (Ctrl-A)
 ; Function .....: Select-All() (Ctrl-A)
 ; -------------------------------------------------------------------------------------------------
-
-; ^a::HznSelectAll()
-^a::HznSelectAll()
-
 HznSelectAll()
 {
 	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
@@ -297,7 +294,7 @@ button() {
 	hTx := ControlGethWnd(fCtl, "A")
 	hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
 		:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-		:  A_ThisHotkey = "^u" ? 3 ; .........: u = 3 (???9 and 10???) (else i or b)
+		:  A_ThisHotkey = "^u" ? 5 ; .........: u = 3? trying 4 (???9 and 10???) (else i or b)
 		:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
 		:  A_ThisHotkey = "^c" ? 13 ; ........: copy
 		:  A_ThisHotkey = "^v" ? 16 ; ........: paste
@@ -331,13 +328,15 @@ return
  * @param bID - The ClassNN instance of the "focused" control.
  * @param nCtl - The ClassNN and instance of the toolbar control.
  * @param n - The index (hIDx) of the toolbar item to click (1-based). Note: Separators are considered items as well.
+ * @param HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0)
+ * @param param:=0 => in AHK v2 => optional
  * @example
  * fCtl := ControlGetClassNN(ControlGetFocus("A"))
  * bID := SubStr(fCtl, -1, 1)
  * nCtl := "msvb_lib_toolbar" bID
  * hTb := ControlGethWnd(nCtl, "A")
  * hTx := ControlGethWnd(fCtl, "A")
- * ClickToolbarButton(hToolbar, 3) ; Clicks the third item
+ * HznButton(hToolbar, 3) ; Clicks the third item
  */
 
 HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
@@ -460,7 +459,8 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		BlockInput(0) ; 1 = On, 0 = Off
 		; --------------------------------------------------------------------------------
     } else
-        throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
+        ; throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
+        throw ValueError("The specified toolbar " nCtl " was not found. Please ensure the edit field has been selected and try again.", -1)
     return
 }
 ; --------------------------------------------------------------------------------
@@ -488,16 +488,32 @@ ClickToolbarItem(hWndToolbar, n) {
 		OutputDebug("hProcess: " hProcess "`n bytesRead: " bytesRead "`n")
         DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
         DllCall("CloseHandle", "Ptr", hProcess)
-
-        X := NumGet(RECT, 0, "int"),
-		Y := NumGet(RECT, 4, "int"),
-		W := NumGet(RECT, 8, "int")-X,
-		H := NumGet(RECT, 12, "int")-Y
-		OutputDebug("X: " X " Y: " Y " W: " W " H: " H "`n")
-        prevDelay := SetControlDelay(-1)
-        ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hWndToolbar,,,, "NA")
-		OutputDebug("x" ((X+W)//2) " y" ((Y+H)//2) "`n")
+		; --------------------------------------------------------------------------------
+		; Step: Store previous and set min delay
+		; --------------------------------------------------------------------------------
+		prevDelay := A_ControlDelay
+		prevMDelay := A_MouseDelay
+		prevWDelay := A_WinDelay
+		SetControlDelay(-1)
+		SetMouseDelay(-1)
+		SetWinDelay(-1)
+		; --------------------------------------------------------------------------------
+		Left 	:= NumGet(RECT, 0, "int")
+		Top 	:= NumGet(RECT, 4, "int")
+		Right 	:= NumGet(RECT, 8, "int")
+		Bottom 	:= NumGet(RECT, 12, "int")
+		X 		:= Left
+		Y 		:= Top
+		W 		:= Right-Left
+		H 		:= Bottom-Top
+		; --------------------------------------------------------------------------------
+		ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hwndToolbar,,,, "NA")
+		; --------------------------------------------------------------------------------
+		; Step: Restore previous and set delay
+		; --------------------------------------------------------------------------------
         SetControlDelay(prevDelay)
+		SetMouseDelay(prevMDelay)
+		SetWinDelay(prevWDelay)
     } else
         throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
     return
@@ -758,14 +774,15 @@ HznButtonTest(hToolbar, n, nCtl, fCtl*) {
 ^+9::
 { ; V1toV2: Added bracket
 	SendLevel(5)
-	fCtl := ControlGetClassNN(ControlGetFocus("A"))
-	bID := SubStr(fCtl, -1, 1)
-	nCtl := "msvb_lib_toolbar" bID
+	fCtl := ControlGetClassNN(ControlGetFocus(,"Main"))
+	MsgBox(fCtl)
+	; bID := SubStr(fCtl, -1, 1)
+	; nCtl := "msvb_lib_toolbar" bID
 	hTb := ControlGethWnd(nCtl, "A")
-	hTX11 := ControlGethWnd(fCtl, "A")
+	hTx := ControlGethWnd(fCtl, "A")
 	hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
 	:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-	:  A_ThisHotkey = "^u" ? 3 ; .........: u = 3 (???9 and 10???) (else i or b)
+	:  A_ThisHotkey = "^u" ? 9 ; .........: u = 3 (???9 and 10???) (else i or b)
 	:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
 	:  A_ThisHotkey = "^c" ? 13 ; ........: copy
 	:  A_ThisHotkey = "^v" ? 16 ; ........: paste
@@ -774,38 +791,57 @@ HznButtonTest(hToolbar, n, nCtl, fCtl*) {
 	EnumToolbarButtons(hTb,hIDx,nCtl,fCtl)
 	return
 } ; Added bracket before function
+; -------------------------------------------------------------------------------------------------
+/**
+ * Clicks the nth item in a Win32 application toolbar.
+ * @param ctrlhwnd - The handle of the toolbar control.
+ * @param hTb - The handle of the toolbar control.
+ * @param fCtl* - [OPTIONAL] The ClassNN of the "focused" control.
+ * @param bID - The ClassNN instance of the "focused" control.
+ * @param nCtl - The ClassNN and instance of the toolbar control.
+ * @param n - The index (hIDx) of the toolbar item to click (1-based). Note: Separators are considered items as well.
+ * @param hIDx - The index (n) of the toolbar item to click (1-based). Note: Separators are considered items as well.
+ * @param HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0)
+ * @param param:=0 => in AHK v2 => optional
+ * @example
+ * fCtl := ControlGetClassNN(ControlGetFocus("A"))
+ * bID := SubStr(fCtl, -1, 1)
+ * nCtl := "msvb_lib_toolbar" bID
+ * hTb := ControlGethWnd(nCtl, "A")
+ * hTx := ControlGethWnd(fCtl, "A")
+ * HznButton(hToolbar, 3) ; Clicks the third item
+ */
 
-EnumToolbarButtons(ctrlhwnd, hIDx, nCtl, fCtl) ;, is_apply_scale:=false) {
+EnumToolbarButtons(ctrlhwnd, n, nCtl, fCtl:=0, hTx:=0, bID:=0) ;, is_apply_scale:=false) {
 {
-	static TB_BUTTONCOUNT 		:= 1048
-	Static TB_GETBUTTON 		:= 1047
-	Static WM_COMMAND			:= 273 ; 0x111
-	Static TB_PRESSBUTTON		:= 1027 ; 0x403
-	Static TB_BUTTONCOUNT  		:= 1048 ; 0x0418
-	Static TB_GETBUTTON    		:= 1047 ; 0x417,
-	Static TB_GETITEMRECT  		:= 1053 ; 0x41D,
-	Static MEM_COMMIT      		:= 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
-	Static MEM_RESERVE     		:= 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
-	Static MEM_PHYSICAL    		:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
-	Static MEM_PROTECT     		:= 64 ; 0x40 ;  
-	Static MEM_RELEASE     		:= 32768 ; 0x8000 ; 
-	Static WM_USER				:= 1024 ; 0x400
-	Static TB_GETSTATE			:= WM_USER+18 ; (1042)
-	Static TB_GETBITMAP			:= WM_USER+44 ; (1068)
-	Static TB_GETBUTTONSIZE		:= WM_USER+58 ; 1082
-	Static TB_GETBUTTON			:= WM_USER+23 ; 1047
-	Static TB_GETBUTTONTEXTA	:= WM_USER+45 ; (1069)
-	Static TB_GETBUTTONTEXTW	:= WM_USER+75 ; (1099)
-	Static TB_GETITEMRECT		:= WM_USER+29 ; (1053)
-	Static TB_BUTTONCOUNT		:= WM_USER+24 ; (1048)
-	Static WM_GETDLGCODE		:= 135
-	Static WM_NEXTDLGCTL		:= 40
-	Static TB_COMMANDTOINDEX	:= 1049
-	Static TB_GETBUTTONINFOW	:= 1087
-	Static TB_SETSTATE 			:= 1041 ; 0x0411
-	Static TBSTATE_PRESSED		:= 2 ; 0x02 
-	Static WM_LBUTTONDOWN 		:= 513 ; 0x201
-	Static WM_LBUTTONUP 		:= 515 ; 0x202
+	Static 	WM_COMMAND				:= 273 ; 0x111
+	Static 	TB_PRESSBUTTON			:= 1027 ; 0x403
+	Static 	TB_BUTTONCOUNT  		:= 1048 ; 0x0418, WM_USER+24
+	Static 	TB_GETBUTTON    		:= 1047 ; 0x417,
+	Static 	TB_GETITEMRECT  		:= 1053 ; 0x41D, WM_USER+29
+	Static 	MEM_COMMIT      		:= 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
+	Static 	MEM_RESERVE     		:= 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
+	Static 	MEM_PHYSICAL    		:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+	Static 	MEM_PROTECT     		:= 64 ; 0x40 ;  
+	Static 	MEM_RELEASE     		:= 32768 ; 0x8000 ; 
+	Static 	WM_USER					:= 1024 ; 0x400
+	Static 	TB_GETSTATE				:= 1042 ; WM_USER+18
+	Static 	TB_GETBITMAP			:= 1068 ; WM_USER+44
+	Static 	TB_GETBUTTONSIZE		:= 1082 ; WM_USER+58
+	Static 	TB_GETBUTTON			:= 1047 ; WM_USER+23
+	Static 	TB_GETBUTTONTEXTA		:= 1069 ; WM_USER+45
+	Static 	TB_GETBUTTONTEXTW		:= 1099 ; WM_USER+75
+	Static 	WM_GETDLGCODE			:= 135
+	Static 	WM_NEXTDLGCTL			:= 40
+	Static 	TB_COMMANDTOINDEX		:= 1049
+	Static 	TB_GETBUTTONINFOW		:= 1087
+	Static 	TB_SETSTATE 			:= 1041 ; 0x0411
+	Static 	TBSTATE_PRESSED			:= 2 ; 0x02 
+	Static 	WM_LBUTTONDOWN 			:= 513 ; 0x201
+	Static 	WM_LBUTTONUP 			:= 515 ; 0x202
+
+	x1 :=0, x2 :=0, y1 :=0, y2 :=0
+	
 	; Thanks to LabelControl code from 
 	; https://www.donationcoder.com/Software/Skrommel/
 	;
@@ -832,66 +868,60 @@ EnumToolbarButtons(ctrlhwnd, hIDx, nCtl, fCtl) ;, is_apply_scale:=false) {
 	OutputDebug, % "pid_target: " . pid_target
 
 */
-
+	; --------------------------------------------------------------------------------
+	; Step: Get the toolbar "thread" process ID (PID) 
+	DllCall("GetWindowThreadProcessId", "Ptr", ctrlhwnd, "UInt*", &targetProcessID:=0)
 	pid_target := WinGetPID(ctrlhwnd) ; ==> replaced with above DllCall()
-	OutputDebug("pid_targetW: " . pid_target . "`n")
+	OutputDebug("pid_targetW: " . pid_target . "`n" "targetProcessID: " targetProcessID "`n")
 	; Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
+	; --------------------------------------------------------------------------------
+	; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
 	hpRemote := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", pid_target, "Ptr")
 	; hpRemote: Remote process handle
 	if(!hpRemote) {
 		ToolTip("Autohotkey: Cannot OpenProcess(pid=" . pid_target . ")")
 		return
 	}
-	; Allocate memory for the TBBUTTON structure in the target process's address space
-    ; If (A_Is64bitOS) {
-    ;     ; Try DllCall("IsWow64Process", "Ptr", hProc, "Int*", Is32bit := true)
-    ;     Try DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true)
-    ; } Else {
-    ;     Is32bit := True
-    ; }
-
-    ; RPtrSize := Is32bit ? 4 : 8
-    ; TBBUTTON_SIZE := 8 + (RPtrSize * 3)
-
-	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", 32, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")             
-	
-	x1 :=0, x2 :=0, y1 :=0, y2 :=0
-	
-	Static WM_USER        := 0x400	,
-	TB_GETSTATE       := WM_USER+18	, 
-	TB_GETBITMAP      := WM_USER+44	, 
-	TB_GETBUTTONSIZE  := WM_USER+58	, 
-	TB_GETBUTTON      := WM_USER+23	, 
-	TB_GETBUTTONTEXTA := WM_USER+45	, 
-	TB_GETBUTTONTEXTW := WM_USER+75	, 
-	TB_GETITEMRECT    := WM_USER+29	, 
-	TB_BUTTONCOUNT    := WM_USER+24    , 
-	WM_GETDLGCODE     := 135    , 
-	WM_NEXTDLGCTL     := 40	, 
-	TB_COMMANDTOINDEX := 1049    , 
-	TB_GETBUTTONINFOW := 1087
-	
+	; --------------------------------------------------------------------------------
+	; Step: [OPTIONAL] Identify if the process is 32 or 64 bit (efficiency step)
+	; --------------------------------------------------------------------------------
+	A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true) : Is32bit := True
+	If (A_Is64bitOS) {
+		Try DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true)
+	} Else {
+		Is32bit := True
+	}
+	; --------------------------------------------------------------------------------
+	; Step: Allocate memory for the TBBUTTON structure in the target process's address space
+	; --------------------------------------------------------------------------------
+	RPtrSize := Is32bit ? 4 : 8
+	TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
+	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
+	; --------------------------------------------------------------------------------
 	Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0, control := ctrlhwnd
-	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, "ahk_id " ctrlhwnd)
-	buttons := BUTTONCOUNT
-	OutputDebug("buttons: " . buttons . "`n") ;tooltip, buttons=%buttons%	 ; OK
-	
+	; --------------------------------------------------------------------------------
+	; Step: count and load all the msvb_lib_toolbar buttons into memory
+	; --------------------------------------------------------------------------------
+	; BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, "ahk_id " ctrlhwnd)
+	buttons := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, "ahk_id " ctrlhwnd)
+	; buttons := BUTTONCOUNT
+	OutputDebug("buttons: " . buttons . "`n") 
 	rect := Buffer(16,0)
 	BtnStruct := Buffer(32,0)
 	/*
-		typedef struct _TBBUTTON {
-			int       iBitmap; 
-			int       idCommand; 
-			BYTE      fsState; 
-			BYTE      fsStyle; 
-			#ifdef _WIN64
-			BYTE      bReserved[6]     // padding for alignment
-			#elif defined(_WIN32)
-			BYTE      bReserved[2]     // padding for alignment
-			#endif
-			DWORD_PTR dwData; 
-			INT_PTR   iString; 
-		} TBBUTTON, NEAR* PTBBUTTON, FAR* LPTBBUTTON; 
+typedef struct _TBBUTTON {
+	int       iBitmap; 
+	int       idCommand; 
+	BYTE      fsState; 
+	BYTE      fsStyle; 
+	#ifdef _WIN64
+	BYTE      bReserved[6]     // padding for alignment
+	#elif defined(_WIN32)
+	BYTE      bReserved[2]     // padding for alignment
+	#endif
+	DWORD_PTR dwData; 
+	INT_PTR   iString; 
+} TBBUTTON, NEAR* PTBBUTTON, FAR* LPTBBUTTON; 
 	*/
 	
 	Loop buttons
@@ -910,14 +940,14 @@ EnumToolbarButtons(ctrlhwnd, hIDx, nCtl, fCtl) ;, is_apply_scale:=false) {
 		idButton := NumGet(BtnStruct, 4, "IntP")
 		OutputDebug("idButton: " . idButton . "`n")
 		
-		
 		COMMANDTOINDEX := SendMessage(TB_COMMANDTOINDEX, idButton, 0,gbCtl ,ctrlhwnd) ; hope that 4KB is enough ; just a test
 		btnvar1 := COMMANDTOINDEX
 		OutputDebug("Cmd2Indx: " . btnvar1 . "`n")
 		
-		CtrlID := DllCall("GetDlgCtrlID", "Ptr", CtrlHwnd, "Int")
+		; CtrlID := DllCall("GetDlgCtrlID", "Ptr", CtrlHwnd, "Int")
+		CtrlID := idButton
 		hWndCtrl := DllCall("GetDlgItem", "Ptr", ctrlhwnd , "Int", CtrlID, "UPtr")
-		OutputDebug("hWndCtrl: " hWndCtrl "`n")
+		OutputDebug('CtrlID: ' CtrlID "`nhWndCtrl: " hWndCtrl "`n")
 
 		GETBUTTONINFOW := SendMessage(TB_GETBUTTONINFOW, btnvar1, remote_buffer,gbCtl , ctrlhwnd) ; hope that 4KB is enough ; just a test
 		btnvar2 := GETBUTTONINFOW
@@ -1005,13 +1035,13 @@ EnumToolbarButtons(ctrlhwnd, hIDx, nCtl, fCtl) ;, is_apply_scale:=false) {
 		; }
 	}
 	
-	result := DllCall("VirtualFreeEx", "UInt", hpRemote, "UInt", remote_buffer, "UInt", 0, "UInt", 0x8000)
-	result := DllCall("CloseHandle", "UInt", hpRemote)
+	DllCall("VirtualFreeEx", "UInt", hpRemote, "UInt", remote_buffer, "UInt", 0, "UInt", 0x8000)
+	DllCall("CloseHandle", "UInt", hpRemote)
 	return arbtn
 }
 
 ReadRemoteBuffer(hpRemote, RemoteBuffer, &LocalVar, bytes) {
-	result := DllCall("ReadProcessMemory", "Ptr", hpRemote, "Ptr", RemoteBuffer, "Ptr", LocalVar, "UInt", bytes, "UInt", 0) 
+	DllCall("ReadProcessMemory", "Ptr", hpRemote, "Ptr", RemoteBuffer, "Ptr", LocalVar, "UInt", bytes, "UInt", 0) 
 }
 
 #HotIf
@@ -1040,7 +1070,87 @@ return
 ; . Continued ..: Added FindText() function to bottom of script using the-automator.com script
 ; . Continued ..: Added the "specific text", which is really a picture convereted to base64 (to text) of the Save icon
 ; -------------------------------------------------------------------------------------------------
+#Include <Lib.v2\UIA>
+^s::HznSave()
+
+HznSave()
+{
+	; hznHorizonEl := UIA.ElementFromHandle("[Main] ahk_exe hznHorizon.exe")
+	; hznHorizonEl.ElementFromPath("c").Highlight()
+	; hznHorizonEl.ElementFromPath("c").ControlClick()
+	; Send("!f")
+	; Sleep(300)
+	; Send("s")
+	hznHorizonEl := UIA.ElementFromHandle("ahk_exe hznHorizon.exe")
+	hznHorizonEl.ElementFromPath("c").Highlight()
+	hznHorizonEl.ElementFromPath("YXcAB").ControlClick()
+	return
+}
 /*
+2023.08.12
+Type: 50032 (Window) Name: "Genesis Alkali Holdings LLC - 07554855 01 - 0000490949-153   2456930  Green River, WY US  - [Main]" LocalizedControlType: "window" ClassName: "ThunderRT6MDIForm"
+1 Type: 50033 (Pane) Name: "Workspace" LocalizedControlType: "pane" AutomationId: "3244" ClassName: "MDIClient"
+1.1 Type: 50032 (Window) Name: "Main" LocalizedControlType: "window" AutomationId: "32768" ClassName: "ThunderRT6FormDC"
+1.1.1 Type: 50033 (Pane) Name: "FE Data" LocalizedControlType: "pane" ClassName: "AfxOleControl42"
+1.1.1.1 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "150" ClassName: "AfxWnd42"
+1.1.1.2 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "107" ClassName: "AfxFrameOrView42"
+1.1.1.2.1 Type: 50023 (Tree) LocalizedControlType: "tree" AutomationId: "1" ClassName: "SysTreeView32"
+1.1.1.2.1.1 Type: 50024 (TreeItem) Name: "Admin Detail" LocalizedControlType: "tree item"
+1.1.1.2.1.2 Type: 50024 (TreeItem) Name: "Construction" LocalizedControlType: "tree item"
+1.1.1.2.1.3 Type: 50024 (TreeItem) Name: "Occupancy" LocalizedControlType: "tree item"
+1.1.1.2.1.4 Type: 50024 (TreeItem) Name: "Fire Protection" LocalizedControlType: "tree item"
+1.1.1.2.1.4.1 Type: 50024 (TreeItem) Name: "Fire Pumps" LocalizedControlType: "tree item"
+1.1.1.2.1.4.2 Type: 50024 (TreeItem) Name: "Water Supplies" LocalizedControlType: "tree item"
+1.1.1.2.1.5 Type: 50024 (TreeItem) Name: "Values" LocalizedControlType: "tree item"
+1.1.1.2.1.6 Type: 50024 (TreeItem) Name: "Specialized Processes" LocalizedControlType: "tree item"
+1.1.1.2.1.7 Type: 50024 (TreeItem) Name: "Equipment" LocalizedControlType: "tree item"
+1.1.1.2.1.8 Type: 50024 (TreeItem) Name: "Exposure Summary" LocalizedControlType: "tree item"
+1.1.1.2.1.8.1 Type: 50024 (TreeItem) Name: "Other Clients in Site MFL" LocalizedControlType: "tree item"
+1.1.1.2.1.9 Type: 50024 (TreeItem) Name: "Recommendations" LocalizedControlType: "tree item"
+1.1.1.2.1.10 Type: 50024 (TreeItem) Name: "Human Element Policies" LocalizedControlType: "tree item"
+1.1.1.2.1.11 Type: 50024 (TreeItem) Name: "Uninvestigated Losses" LocalizedControlType: "tree item"
+1.1.1.2.1.12 Type: 50024 (TreeItem) Name: "Risk Conclusions" LocalizedControlType: "tree item"
+1.1.1.2.1.12.1 Type: 50024 (TreeItem) Name: "Underwriting Factors" LocalizedControlType: "tree item"
+1.1.1.2.1.12.2 Type: 50024 (TreeItem) Name: "Change Reason" LocalizedControlType: "tree item"
+1.1.1.2.2 Type: 50018 (Tab) LocalizedControlType: "tab" AutomationId: "288" ClassName: "SysTabControl32"
+1.1.1.2.2.1 Type: 50019 (TabItem) Name: "Site" LocalizedControlType: "tab item"
+1.1.1.2.2.2 Type: 50019 (TabItem) Name: "Building" LocalizedControlType: "tab item"
+1.1.1.3 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "108" ClassName: "AfxFrameOrView42"
+1.1.1.4 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "100" ClassName: "PVSPLITTERWNDCLASS"
+1.1.1.5 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "100" ClassName: "PVSPLITTERWNDCLASS"
+1.1.1.6 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "2" ClassName: "AfxFrameOrView42"
+1.1.1.6.1 Type: 50033 (Pane) Name: "Form1" LocalizedControlType: "pane" ClassName: "ThunderRT6FormDC"
+1.1.1.6.1.1 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
+1.1.1.6.1.1.1 Type: 50000 (Button) Name: "Duplicate" LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
+1.1.1.6.1.2 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "SSUltraGridWndClass"
+1.1.1.6.1.3 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
+1.1.1.6.1.3.1 Type: 50000 (Button) Name: "New" LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
+1.1.1.6.1.4 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
+1.1.1.6.1.5 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
+1.1.1.6.1.5.1 Type: 50000 (Button) Name: "Delete" LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
+1.1.1.6.1.6 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
+1.1.1.6.1.6.1 Type: 50000 (Button) LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
+1.1.2 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
+1.1.2.1 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "1" ClassName: "ThunderRT6PictureBoxDC"
+1.1.2.1.1 Type: 50000 (Button) Name: "1. Order" LocalizedControlType: "button" AutomationId: "2" ClassName: "ThunderRT6CommandButton"
+1.1.2.1.2 Type: 50000 (Button) Name: "2. Tracking" LocalizedControlType: "button" AutomationId: "3" ClassName: "ThunderRT6CommandButton"
+1.1.2.1.3 Type: 50000 (Button) Name: "3. FE Data" LocalizedControlType: "button" AutomationId: "4" ClassName: "ThunderRT6CommandButton"
+1.1.2.1.4 Type: 50000 (Button) Name: "4. Location CSP" LocalizedControlType: "button" AutomationId: "5" ClassName: "ThunderRT6CommandButton"
+1.1.2.1.5 Type: 50000 (Button) Name: "5. Reporting" LocalizedControlType: "button" AutomationId: "6" ClassName: "ThunderRT6CommandButton"
+1.1.2.1.6 Type: 50000 (Button) Name: "6. Closing" LocalizedControlType: "button" AutomationId: "7" ClassName: "ThunderRT6CommandButton"
+1.1.3 Type: 50037 (TitleBar) Value: "Main" LocalizedControlType: "title bar" AutomationId: "TitleBar"
+1.1.3.1 Type: 50010 (MenuBar) Name: "System" LocalizedControlType: "menu bar" AutomationId: "MenuBar"
+1.1.3.1.1 Type: 50011 (MenuItem) Name: "Document Window" LocalizedControlType: "menu item"
+1.1.3.2 Type: 50000 (Button) Name: "Minimize" LocalizedControlType: "button"
+1.1.3.3 Type: 50000 (Button) Name: "Restore" LocalizedControlType: "button"
+1.1.3.4 Type: 50000 (Button) Name: "Close" LocalizedControlType: "button"
+2 Type: 50037 (TitleBar) Value: "Genesis Alkali Holdings LLC - 07554855 01 - 0000490949-153   2456930  Green River, WY US  - [Main]" LocalizedControlType: "title bar" AutomationId: "TitleBar"
+2.1 Type: 50010 (MenuBar) Name: "System" LocalizedControlType: "menu bar" AutomationId: "MenuBar"
+2.1.1 Type: 50011 (MenuItem) Name: "System" LocalizedControlType: "menu item"
+2.2 Type: 50000 (Button) Name: "Minimize" LocalizedControlType: "button"
+2.3 Type: 50000 (Button) Name: "Restore" LocalizedControlType: "button"
+2.4 Type: 50000 (Button) Name: "Close" LocalizedControlType: "button"
+
 ^s::
 
 { ; V1toV2: Added bracket
