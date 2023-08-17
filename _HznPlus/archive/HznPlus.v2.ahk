@@ -15,11 +15,11 @@
  * @date 2023.08.15
  * @version 2.0.8
  ***********************************************************************/
-;@Ahk2Exe-SetMainIcon HznPlus256.ico
-;@Ahk2Exe-AddResource HznPlus256.ico, 160  ; Replaces 'H on blue'
-;@Ahk2Exe-AddResource HznPlus256.ico, 206  ; Replaces 'S on green'
-;@Ahk2Exe-AddResource HznPlus256.ico, 207  ; Replaces 'H on red'
-;@Ahk2Exe-AddResource HznPlus256.ico, 208  ; Replaces 'S on red'
+;@Ahk2Exe-SetMainIcon 512.png
+;@Ahk2Exe-AddResource 512.png, 160  ; Replaces 'H on blue'
+;@Ahk2Exe-AddResource 512.png, 206  ; Replaces 'S on green'
+;@Ahk2Exe-AddResource 512.png, 207  ; Replaces 'H on red'
+;@Ahk2Exe-AddResource 512.png, 208  ; Replaces 'S on red'
 ;@include-winapi
 ; --------------------------------------------------------------------------------
 #MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
@@ -47,17 +47,17 @@ SetMouseDelay(-1)
 ; //TODO: Library_Load(memoryapi.dll)
 
 ; Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
-; Startup_Shortcut := A_Startup "\" A_ScriptName
-; If !(FileExist(Startup_Shortcut)){
-; 	FileCopy(A_ScriptName,Startup_Shortcut)
-; 	MsgBox("Shortcut added to your Startup folder at " Startup_Shortcut)
-; } 
+Startup_Shortcut := A_Startup "\" A_ScriptName
+If !(FileExist(Startup_Shortcut)){
+	FileCopy(A_ScriptName,Startup_Shortcut)
+	MsgBox("Shortcut added to your Startup folder at " Startup_Shortcut)
+} 
 ; Else {
 ; 	MsgBox("Shortcut Exists")
 ; }
 ; --------------------------------------------------------------------------------
 /************************************************************************
-* ;Description ...: Create Tray Icon
+* @Title .........: Create Tray Icon
 * @description ...: Create the tray icon using the embedded B64 via Create_HznHorizon_ico()
 * @author OverastBTC
 * @date 2023.08.15
@@ -89,6 +89,9 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 * @TODO ;[ ] TODO	.: Convert from v1 to v2
  ***********************************************************************/
 ; -------------------------------------------------------------------------------------------------
+; Sub-Section .....: Create Tray Menu Functions
+; Description .....: addTrayMenuOption() ; madeBy() ; runAtStartup() ; trayNotify()
+
 
 ; HznTray := A_TrayMenu
 ; see at the bottom for the functions
@@ -104,7 +107,18 @@ return
 @function Underline - (CTRL+U) (where applicable)
 @function SelectAll - (CTRL+A)
 @function Save - (CTRL+S)
- ***********************************************************************/
+***********************************************************************/
+; -------------------------------------------------------------------------------------------------
+/************************************************************************
+* ;desc ......: Horizon Save Button (Ctrl-S)
+* @desc ......: Use UIAutomation (UIA) to find the element where the save button exists
+* @author OvercastBTC, Descolada and his UIA librarys
+* @function HznSave() - (Ctrl-S)
+* @param Msg - EM_SETSEL := 177 - the Windows API message for "Set Selection"
+* @param wParam - := 0
+* @param lParam := -1
+***********************************************************************/
+; -------------------------------------------------------------------------------------------------
 
 #HotIf WinActive("ahk_exe hznhorizon.exe")
 
@@ -119,11 +133,11 @@ return
 
 ; --------------------------------------------------------------------------------
 /************************************************************************
-* ;desc ......: Horizon Save Button (Ctrl-S)
+* @desc ......: Horizon Save Button (Ctrl-S)
 * @Desc ......: Use UIAutomation (UIA) to find the element where the save button exists
 * @Author OvercastBTC 
 * @Credit Descolada and his UIA library and functions
-* Function HznSave() (Ctrl-S)
+* @Function HznSave() (Ctrl-S)
 * @param Msg - EM_SETSEL := 177 - the Windows API message for "Set Selection"
 * @param wParam - := 0
 * @param lParam := -1
@@ -135,25 +149,24 @@ HznSave()
 	global IUIAutomationActivateScreenReader:=0
 	global IUIAutomationMaxVersion:=0
 	idWin := WinGetID("[Main] ahk_exe hznHorizon.exe")
+	idControl := ControlGetHwnd("msvb_lib_toolbar1")
 	hznWin := UIA.ElementFromHandle(idWin)
 	hznMenuBar := HznWin.FindElement({
-		LocalizedType: "title bar",
-		; Name: "",
-		Value: "Main"})
-		; AutomationID: "title bar"})
-	hznSave := hznMenuBar.Highlight().ControlClick(0,0)
+		LocalizedType: "menu bar",
+		Name: "System"})
+	hznSave := hznMenuBar.Highlight().ControlClick()
 	return
 }
 
 ; -------------------------------------------------------------------------------------------------
-/************************************************************************
+/**
  * Desc ......: Horizon Hotkey - Select-All (Ctrl-A)
  * @author ...: Descolada, OvercastBTC
  * Function ..: Select-All() (Ctrl-A)
  * @param Msg - EM_SETSEL := 177 - the Windows API message for "Set Selection"
  * @param wParam - := 0
  * @param lParam := -1
-***********************************************************************/
+ */
 ; -------------------------------------------------------------------------------------------------
 HznSelectAll()
 {
@@ -163,12 +176,12 @@ HznSelectAll()
 	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
 }
 ; -------------------------------------------------------------------------------------------------
-/************************************************************************
+/**
  * Desc ......:  Call the Horizon msvb_lib_toolbar buttons using the button() function
  * @author ....: Descolada, OvercastBTC
  * @function button()
  * @param A_ThisHotkey - AHK's built in variabl.
-***********************************************************************/
+ */
 ; -------------------------------------------------------------------------------------------------
 button(*) {
 	SendLevel(5)
@@ -194,7 +207,7 @@ button(*) {
 ; --------------------------------------------------------------------------------
 
 ; -------------------------------------------------------------------------------------------------
-/************************************************************************
+/**
  * Desc:  Clicks the nth item in a Win32 application toolbar.
  * @author ......: Descolada, OvercastBTC
  * Function .....: HznButton()
@@ -213,7 +226,7 @@ button(*) {
  * hTb := ControlGethWnd(nCtl, "A")
  * hTx := ControlGethWnd(fCtl, "A")
  * HznButton(hToolbar, 3) ; Clicks the third item
- ***********************************************************************/
+ */
 ; --------------------------------------------------------------------------------
 
 HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
@@ -364,13 +377,6 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 return
 #HotIf
 ; --------------------------------------------------------------------------------
-/************************************************************************
- * Desc ......:  Create the .ico file for use in as the Tray Icon
- * @author 2.0.00.00 - 2023-07-31 - iPhilip - converted script to AutoHotkey v2
- * @function Create_HznHorizon_ico()
- * @param B64 - A picture converted to a string and encoded via b64
- * @forum ;-> https://www.autohotkey.com/boards/viewtopic.php?f=83&t=119966
-***********************************************************************/
 ; ##################################################################################
 ; # This #Include file was generated by Image2Include.ahk, you must not change it! #
 ; ##################################################################################
@@ -401,7 +407,6 @@ Create_HznHorizon_ico(NewHandle := False) {
 	DllCall("Kernel32.dll\FreeLibrary", "Ptr", hGdip)
 	Return hBitmap
 	}
-; --------------------------------------------------------------------------------
 /*
 @resource ...: https://www.autohotkey.com/boards/viewtopic.php?t=73851
 @ahkversion .: v1

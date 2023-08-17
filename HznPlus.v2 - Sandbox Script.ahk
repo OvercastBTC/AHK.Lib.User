@@ -1,5 +1,5 @@
 /************************************************************************
- * @description ..: Horizon Button ==> A Horizon function library
+ * Description ..: Horizon Button ==> A Horizon function library
  * @Description ..: This library is a collection of functions and buttons that deal with missing interfaces with Horizon.
  * @file HznPlus.v2.ahk
  * @author OvercastBTC
@@ -38,10 +38,6 @@ TraySetIcon("HznHorizon.ico")
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ; ------------------------------------------------------------------------
 
-; Section .........: Horizon Button ==> A Horizon function library
-; Description ..: This library is a collection of functions and buttons that deal with missing interfaces with Horizon.
-; --------------------------------------------------------------------------------------------------
-
 ; --------------------------------------------------------------------------------------------------
 ; Section .....: Script Name, Startup Path, and icon
 ; --------------------------------------------------------------------------------------------------
@@ -54,22 +50,6 @@ TraySetIcon("HznHorizon.ico")
 ; Variable ........: icostr
 ; Function ........: MyIcon_B64()
 ; --------------------------------------------------------------------------------------------------
-
-; ; Note: ............: Load the GDI+ lib
-; Gdip_Startup()
-; ; Note: ............: The Base 64 string for the icon image
-; ; .................: This was moved to the end of the script via MyIcon_B64()
-; icostr := MyIcon_B64()
-; ; Note: ............: create a pBitmap from the Base 64 string.
-; HznIcon_pBitmap := B64ToPBitmap( icostr )
-; ; Note: ............: create a hBitmap from the icon pBitmap
-; HznIcon_hIcon := Gdip_CreateHICONFromBitmap( HznIcon_pBitmap )
-; ; Note: ............: Dispose of the icon pBitmap to free memory.
-; Gdip_DisposeImage( HznIcon_pBitmap )
-; ; Note: ............: Set the icon
-; //TraySetIcon("C:\Users\bacona\AppData\Local\AutoHotKey\v2\Lib\HznHorizon.ico")
-
-;* |<<<---#####--->>>|<<<---#####--->>>|<<<---#####--->>>|<<<---#####--->>>|<<<---#####--->>>|
 
 Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
 
@@ -84,7 +64,7 @@ Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
 Return
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ; -------------------------------------------------------------------------------------------------
-#HotIf WinActive(A_ScriptName) && WinActive("Code.exe")
+#HotIf WinActive(A_ScriptName " - Visual Studio Code") ;&& WinActive("Code.exe")
 ~^s::
 {
 	Reload()
@@ -166,10 +146,12 @@ Return
 
 #HotIf WinActive("ahk_exe hznhorizon.exe", )
 ; --------------------------------------------------------------------------------------------------
-; Sub-Section .....: Horizon {Enter} ==> Select Option
-; Description ..: Hotkeys (shortcuts) sending {Enter} in leu of "Double Click"
-; Author .......: OvercastBTC
+/**
+@SubSection .....: Horizon {Enter} ==> Select Option
+@description Hotkeys (shortcuts) sending {Enter} in leu of "Double Click"
+@author OvercastBTC
 ; [ ] fix: .........: Still doesn't work. Might have to not use the WinActive() function
+*/
 ; --------------------------------------------------------------------------------------------------
 #HotIf WinActive("ahk_exe hznhorizonmgr.exe") or WinActive("ahk_exe hznhorizon.exe")
 {
@@ -182,28 +164,29 @@ return
 #HotIf
 
 ; --------------------------------------------------------------------------------------------------
-; Section .....: Horizon Buttons/Hotkeys
-; Description ..: Hotkeys (shortcuts) for normal Windows hotkeys: 
-; Author .......: Overcast (Adam Bacon)
-; Notes:
-; ..............: CTRL+I (italics)
-; ..............: CTRL+B (bold)
-; ..............: CTRL+U (underline) - Where Applicable - else same as CTRL+B (I dunno why).
-; ..............: CTRL+A (select all)
-; ..............: In ideal land, this will be a single function call. Right now this works.
-; ..............: Reduced to a single HznButton function call
-; Note: The below indexes, or n from the HznButton(hWndToolbar, n) function, depend on what screen you are on
-; . Continued ..: 1=Bold, 2=Italics, (everything after this changes depending on what screen you are on)
-; . Continued ..: where underline is an option is index 9 or 10, else it reverts to CTRL+B or CTRL+I
-; ..................................................................................................
-; . Continued ..: >>>>>>>>> THIS NEEDS TO BE FULLY VALIDATED FOR EACH SCREEN <<<<<<<<<<
+/**
+;Description: Horizon Hotkeys
+;Description: Hotkeys (shortcuts) for normal Windows hotkeys that should exist
+@author OvercastBTC
+@notes
+@function Italics - (CTRL+I)
+@function Bold - (CTRL+B)
+@function Underline - (CTRL+U) (where applicable)
+@function SelectAll - (CTRL+A)
+@function Save - (CTRL+S)
+*/
+; Notes: The below indexes, or n from the HznButton(hWndToolbar, n) function, depend on what screen you are on
+; Notes Continued ..: 1=Bold, 2=Italics, (everything after this changes depending on what screen you are on)
+; Notes Continued ..: where underline is an option is index 9 or 10, else it reverts to CTRL+B or CTRL+I
+; --------------------------------------------------------------------------------
+; Notes Continued ..: >>>>>>>>> THIS NEEDS TO BE FULLY VALIDATED FOR EACH SCREEN <<<<<<<<<<
 ; Notes: (AJB - 06/2023) as of this timestamp, none of this below is fully validated and changes
-; . Continued ..: 10=Cut, 11=Copy, 12=Paste, 14=Undo, 15=Redo, 17=Bulleted List, 18=Spell Check
-; . Continued ..: ===== Human Element Section =====
-; . Continued ..: 20=Super/Sub Script, 21=Find/Replace
-; . Continued ..: Mystery or Spacers: 3-9, 13, 16, 19=?Bold?
-; . Continued ..: ===== Equipment Section =====
-; . Continued ..: Nothing?=1,2; Same: 21,20,18,17,
+; Notes Continued ..: 10=Cut, 11=Copy, 12=Paste, 14=Undo, 15=Redo, 17=Bulleted List, 18=Spell Check
+; Notes Continued ..: ===== Human Element Section =====
+; Notes Continued ..: 20=Super/Sub Script, 21=Find/Replace
+; Notes Continued ..: Mystery or Spacers: 3-9, 13, 16, 19=?Bold?
+; Notes Continued ..: ===== Equipment Section =====
+; Notes Continued ..: Nothing?=21,20,18,17,
 ; -------------------------------------------------------------------------------------------------
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Horizon Button Function <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -243,8 +226,14 @@ HznButton(hToolbar,hIDx)
 return
 */
 ; -------------------------------------------------------------------------------------------------
-; Section ......: Horizon Hotkey - Select-All (Ctrl-A)
-; Function .....: Select-All() (Ctrl-A)
+/**
+ * Desc ......: Horizon Hotkey - Select-All (Ctrl-A)
+ * @author ...: Descolada, OvercastBTC
+ * Function ..: Select-All() (Ctrl-A
+ * @param Msg - EM_SETSEL := 177 - the Windows API message for "Set Selection"
+ * @param wParam - := 0
+ * @param lParam := -1
+ */
 ; -------------------------------------------------------------------------------------------------
 HznSelectAll()
 {
@@ -279,11 +268,12 @@ HznSelectAll()
 ;</s DllCall("SendMessage","Ptr",Ctl,"UInt",0xB1, "Ptr", 0, "Ptr", -1)
 ;</s return
 ; -------------------------------------------------------------------------------------------------
-; Sub-Section .....: Button Function
-; Description ..: Call the Horizon msvb_lib_toolbar buttons
-; Variable ...: A_ThisHotkey => AHK's built in variable
-; Author .......: Overcast (Adam Bacon)
-; Function .....: button()
+/**
+ * Desc ......:  Call the Horizon msvb_lib_toolbar buttons using the button() function
+ * @author ....: Descolada, OvercastBTC
+ * @function button()
+ * @param A_ThisHotkey - AHK's built in variabl.
+ */
 ; -------------------------------------------------------------------------------------------------
 button() {
 	SendLevel(5)
@@ -313,15 +303,11 @@ button() {
 }    
 return
 ; -------------------------------------------------------------------------------------------------
-; Sub-Section...: Horizon Click the ToolbarButton Function 
-; Description ..: Find and Control-Click the Horizon msvb_lib_toolbar buttons
-; Variable ...: hWndToolbar = the toolbar window's handle
-; Variable ...: n = the index for the specified button
-; Author .......: Descolada, OvercastBTC
-; Function .....: HznButton()
 ; -------------------------------------------------------------------------------------------------
 /**
- * Clicks the nth item in a Win32 application toolbar.
+ * Desc:  Clicks the nth item in a Win32 application toolbar.
+ * @author ......: Descolada, OvercastBTC
+ * Function .....: HznButton()
  * @param hToolbar - The handle of the toolbar control.
  * @param hTb - The handle of the toolbar control.
  * @param fCtl* - [OPTIONAL] The ClassNN of the "focused" control.
@@ -338,6 +324,7 @@ return
  * hTx := ControlGethWnd(fCtl, "A")
  * HznButton(hToolbar, 3) ; Clicks the third item
  */
+; --------------------------------------------------------------------------------
 
 HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 	; --------------------------------------------------------------------------------
@@ -441,6 +428,160 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		H 		:= Bottom-Top
 		; --------------------------------------------------------------------------------
 		ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hToolbar,,,, "NA")
+		; --------------------------------------------------------------------------------
+        prevDelay := SetControlDelay(-1)
+		; --------------------------------------------------------------------------------
+		; Step: Restore previous and set delay
+		; --------------------------------------------------------------------------------
+        SetControlDelay(prevDelay)
+		SetMouseDelay(prevMDelay)
+		; --------------------------------------------------------------------------------
+		OutputDebug("ButtonCount: " buttonCount "`n")
+		OutputDebug("pID: " targetProcessID "`n")
+		OutputDebug("remoteMemory: " remoteMemory "`n")   
+		OutputDebug("hProcess: " hProcess "`nbytesRead: " bytesRead "`n")
+		OutputDebug("X: " X " Y: " Y " W: " W " H: " H "`n")
+		OutputDebug("x" ((X+W)//2) " y" ((Y+H)//2) "`n")
+		; --------------------------------------------------------------------------------
+		BlockInput(0) ; 1 = On, 0 = Off
+		; --------------------------------------------------------------------------------
+    } else
+        ; throw ValueError("The specified index " n " is out of range. Please specify a valid index between 1 and " buttonCount ".", -1)
+        throw ValueError("The specified toolbar " nCtl " was not found. Please ensure the edit field has been selected and try again.", -1)
+    return
+}
+HznButtonWStateCheck(hTb, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
+	; --------------------------------------------------------------------------------
+	; Step: [OPTIONAL] Block all input while the function running
+	; --------------------------------------------------------------------------------
+	BlockInput(1) ; 1 = On, 0 = Off
+	; --------------------------------------------------------------------------------
+	static TB_BUTTONCOUNT 		:= 1048
+	Static TB_GETBUTTON 		:= 1047
+	Static WM_COMMAND			:= 273 ; 0x111
+	Static TB_PRESSBUTTON		:= 1027 ; 0x403
+	Static TB_BUTTONCOUNT  		:= 1048 ; 0x0418
+	Static TB_GETBUTTON    		:= 1047 ; 0x417,
+	Static TB_GETITEMRECT  		:= 1053 ; 0x41D,
+	Static MEM_COMMIT      		:= 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
+	Static MEM_RESERVE     		:= 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
+	Static MEM_PHYSICAL    		:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+	Static MEM_PROTECT     		:= 64 ; 0x40 ;  
+	Static MEM_RELEASE     		:= 32768 ; 0x8000 ; 
+	Static WM_USER				:= 1024 ; 0x400
+	Static TB_Something			:= WM_USER+3 ; (1042)
+	Static TB_GETSTATE			:= WM_USER+18 ; (1042)
+	Static TB_GETBITMAP			:= WM_USER+44 ; (1068)
+	Static TB_GETBUTTONSIZE		:= WM_USER+58 ; 1082
+	Static TB_GETBUTTON			:= WM_USER+23 ; 1047
+	Static TB_GETBUTTONTEXTA	:= WM_USER+45 ; (1069)
+	Static TB_GETBUTTONTEXTW	:= WM_USER+75 ; (1099)
+	Static TB_GETITEMRECT		:= WM_USER+29 ; (1053)
+	Static TB_BUTTONCOUNT		:= WM_USER+24 ; (1048)
+	Static WM_GETDLGCODE		:= 135
+	Static WM_NEXTDLGCTL		:= 40
+	Static TB_COMMANDTOINDEX	:= 1049
+	Static TB_GETBUTTONINFOW	:= 1087
+	Static TB_SETSTATE 			:= 1041 ; 0x0411
+	Static TBSTATE_PRESSED		:= 2 ; 0x02 
+	Static WM_LBUTTONDOWN 		:= 513 ; 0x201
+	Static WM_LBUTTONUP 		:= 515 ; 0x202
+	Static BM_CLICK				:= 245 ; 0x000000F5
+	; --------------------------------------------------------------------------------
+	arbtn := Array([])
+	try ControlGetPos(&ctrlx:=0, &ctrly:=0,&ctrlw,&ctrlh, hTb, hTb)
+	; OutputDebug("&ctrlx: " . ctrlx " &ctrly: " . ctrly " &ctrlw: " . ctrlw " &ctrlh: " . ctrlh . "`n")
+	; --------------------------------------------------------------------------------
+	; Step: count and load all the msvb_lib_toolbar buttons into memory
+	; --------------------------------------------------------------------------------
+	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0, , Integer(hTb))
+	; --------------------------------------------------------------------------------
+	; Step: Use the @params to press the button
+	; --------------------------------------------------------------------------------
+	if (n >= 1 && n <= buttonCount)
+	{
+		; --------------------------------------------------------------------------------
+		; Step: Get the toolbar "thread" process ID (PID) 
+		DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &targetProcessID:=0)
+		; --------------------------------------------------------------------------------
+		; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
+        hProcess := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", targetProcessID, "Ptr")
+		; --------------------------------------------------------------------------------
+		; Step: [OPTIONAL] Identify if the process is 32 or 64 bit (efficiency step)
+		; --------------------------------------------------------------------------------
+		A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := true) : Is32bit := True
+		If (A_Is64bitOS) {
+			Try DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := true)
+		} Else {
+			Is32bit := True
+		}
+		; --------------------------------------------------------------------------------
+		; Step: Allocate memory for the TBBUTTON structure in the target process's address space
+		; --------------------------------------------------------------------------------
+		RPtrSize := Is32bit ? 4 : 8
+		TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
+		remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
+		; --------------------------------------------------------------------------------
+		; Step: Get the bounds of each button (Get Item Rectangle)
+		; --------------------------------------------------------------------------------
+		SendMessage(TB_GETITEMRECT, n-1, remoteMemory,, hTb)
+		RECT := Buffer(TBBUTTON_SIZE, 0)	
+		; Note: Winapi TBBUTTON struct(32 bytes on x64, 20 bytes on x86)
+		BtnStructSize := Is32bit ? 20 : 32
+		BtnStruct := Buffer(BtnStructSize, 0)
+		Static ctrlhwnd := hTb
+		Static gbCtl := ctrlhwnd
+		Static tbHwnd := ctrlhwnd
+		Static gbCtl := Integer(ctrlhwnd)
+		Static remote_buffer := remoteMemory
+		Static hpRemote := hProcess
+
+		GETBUTTON := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer,gbCtl, ctrlhwnd) ; Integer(ctrlhwnd))
+		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
+		OutputDebug("GETBUTTON: " GETBUTTON "`n")
+		idButton := NumGet(BtnStruct, 4, "IntP")
+		OutputDebug("idButton: " . idButton . "`n")
+		
+		COMMANDTOINDEX := SendMessage(TB_COMMANDTOINDEX, idButton, 0,gbCtl ,ctrlhwnd) ; hope that 4KB is enough ; just a test
+		btnvar1 := COMMANDTOINDEX
+		OutputDebug("Cmd2Indx: " . btnvar1 . "`n")
+		
+		; CtrlID := DllCall("GetDlgCtrlID", "Ptr", CtrlHwnd, "Int")
+		CtrlID := idButton
+		hWndCtrl := DllCall("GetDlgItem", "Ptr", ctrlhwnd , "Int", CtrlID, "UPtr")
+		OutputDebug('CtrlID: ' CtrlID "`nhWndCtrl: " hWndCtrl "`n")
+
+		GETBUTTONINFOW := SendMessage(TB_GETBUTTONINFOW, btnvar1, remote_buffer,gbCtl , ctrlhwnd) ; hope that 4KB is enough ; just a test
+		btnvar2 := GETBUTTONINFOW
+		OutputDebug("BtnInfoW: " . btnvar2 . "`n")
+
+		GETSTATE := SendMessage(TB_GETSTATE, idButton, 0,gbCtl ,ctrlhwnd) ; hope that 4KB is enough ; just a test
+		btnstate := SubStr(GETSTATE,1,1)
+		OutputDebug("btnstate: " . btnstate . "`n")
+		; --------------------------------------------------------------------------------
+		; Step: Read the button information stored in the RECT (remoteMemory)
+		; --------------------------------------------------------------------------------
+        DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "UPtr", 16, "UInt*", &bytesRead:=0, "Int")
+        DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", 0x8000)
+        DllCall("CloseHandle", "Ptr", hProcess)
+		; --------------------------------------------------------------------------------
+		; Step: Store previous and set min delay
+		; --------------------------------------------------------------------------------
+		prevDelay := A_ControlDelay
+		prevMDelay := A_MouseDelay
+		SetControlDelay(-1)
+		SetMouseDelay(-1)
+		; --------------------------------------------------------------------------------
+		Left 	:= NumGet(RECT, 0, "int")
+		Top 	:= NumGet(RECT, 4, "int")
+		Right 	:= NumGet(RECT, 8, "int")
+		Bottom 	:= NumGet(RECT, 12, "int")
+		X 		:= Left
+		Y 		:= Top
+		W 		:= Right-Left
+		H 		:= Bottom-Top
+		; --------------------------------------------------------------------------------
+		ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hTb,,,, "NA")
 		; --------------------------------------------------------------------------------
         prevDelay := SetControlDelay(-1)
 		; --------------------------------------------------------------------------------
@@ -774,10 +915,42 @@ HznButtonTest(hToolbar, n, nCtl, fCtl*) {
 ^+9::
 { ; V1toV2: Added bracket
 	SendLevel(5)
-	fCtl := ControlGetClassNN(ControlGetFocus(,"Main"))
-	MsgBox(fCtl)
-	; bID := SubStr(fCtl, -1, 1)
-	; nCtl := "msvb_lib_toolbar" bID
+	fCtl := ControlGetClassNN(ControlGetFocus('A'))
+	; --------------------------------------------------------------------------------
+	; ; #5::
+	; ; WinGet, hWnd, ID, A
+	; ; WinGet, vCtlList, ControlList, % "ahk_id " hWnd
+	; ; vOutput := 0
+	; Loop fCtl ;, Parse, vCtlList, `n
+	; {
+	; 	vCtlClassNN := A_LoopField
+	; 	ControlGetHwnd(vCtlClassNN)
+	; 	; ControlGet, hCtl, Hwnd,, % vCtlClassNN, % "ahk_id " hWnd
+	; 	hWndParent := DllCall("user32\GetAncestor","Ptr",hCtl, "UInt",1, "Ptr") ;GA_PARENT := 1
+	; 	hWndRoot := DllCall("user32\GetAncestor","Ptr", hCtl, "UInt",2, "Ptr") ;GA_ROOT := 2
+	; 	hWndOwner := DllCall("user32\GetAncestor","Ptr", hCtl, "UInt",4, "Ptr") ;GA_ROOT := 2
+	; 	;hWndOwner := DllCall("user32\GetWindow", Ptr,hCtl, UInt,4, Ptr) ;GW_OWNER = 4
+	; 	hWndChild := DllCall("RealChildWindowFromPoint","Ptr",hCtl, "UInt",4, "Ptr") ;GW_OWNER = 4
+	; 	CursorHwnd := DllCall("WindowFromPoint", "int64", &CursorX:=0 | (&CursorY:=0 << 32), "Ptr")
+	; 	vWinClass1 := WinGetClass(hWndParent)
+	; 	; WinGetClass, vWinClass1, % "ahk_id " hWndParent
+	; 	vWinClass2 := WinGetClass(hWndRoot)
+	; 	; WinGetClass, vWinClass2, % "ahk_id " hWndRoot
+	; 	vWinClass3 := WinGetClass(hWndOwner)
+	; 	; WinGetClass, vWinClass3, % "ahk_id " hWndOwner
+	; 	vWinClass4 := WinGetClass(hWndChild)
+	; 	; WinGetClass, vWinClass4, % "ahk_id " hWndChild
+	; 	vOutput := "Index: " A_Index " | ClassNN: " vCtlClassNN " | hWndChild: " vWinClass4 " | hWndChild: " hWndChild " | hWndParent: " hWndParent " | hWndRoot: " hWndRoot " | hWndOwner: " hWndOwner " | CursorHwnd: " CursorHwnd "`n" ;"|" vWinClass1 "|" vWinClass2 "|" vWinClass3 "|" vWinClass4 "`r`n" ;"|" vWinClass4 "`r`n"
+	; }
+	; A_Clipboard := vOutput[] 
+	; ;ToolTip, % vCtlClassNN,x+1,0
+	; ; ToolTip, % vOutput, xm,0
+	; MsgBox(vOutput)
+	; return
+	; MsgBox(fCtl)
+	; --------------------------------------------------------------------------------
+	bID := SubStr(fCtl, -1, 1)
+	nCtl := "msvb_lib_toolbar" bID
 	hTb := ControlGethWnd(nCtl, "A")
 	hTx := ControlGethWnd(fCtl, "A")
 	hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
@@ -789,7 +962,7 @@ HznButtonTest(hToolbar, n, nCtl, fCtl*) {
 	:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
 	:  A_ThisHotkey = "^y" ? 20 : 21 ; ...: redo
 	EnumToolbarButtons(hTb,hIDx,nCtl,fCtl)
-	return
+
 } ; Added bracket before function
 ; -------------------------------------------------------------------------------------------------
 /**
@@ -812,7 +985,7 @@ HznButtonTest(hToolbar, n, nCtl, fCtl*) {
  * HznButton(hToolbar, 3) ; Clicks the third item
  */
 
-EnumToolbarButtons(ctrlhwnd, n, nCtl, fCtl:=0, hTx:=0, bID:=0) ;, is_apply_scale:=false) {
+EnumToolbarButtons(ctrlhwnd, n:=0, nCtl:=0, fCtl:=0, hTx:=0, bID:=0) ;, is_apply_scale:=false) {
 {
 	Static 	WM_COMMAND				:= 273 ; 0x111
 	Static 	TB_PRESSBUTTON			:= 1027 ; 0x403
@@ -1070,100 +1243,40 @@ return
 ; . Continued ..: Added FindText() function to bottom of script using the-automator.com script
 ; . Continued ..: Added the "specific text", which is really a picture convereted to base64 (to text) of the Save icon
 ; -------------------------------------------------------------------------------------------------
+;/*
+#HotIf WinActive("ahk_exe Hznhorizon.exe")
 #Include <Lib.v2\UIA>
+#Include <Lib.v2\UIA_Browser>
 ^s::HznSave()
 
 HznSave()
 {
-	; hznHorizonEl := UIA.ElementFromHandle("[Main] ahk_exe hznHorizon.exe")
-	; hznHorizonEl.ElementFromPath("c").Highlight()
-	; hznHorizonEl.ElementFromPath("c").ControlClick()
+	global IUIAutomationActivateScreenReader:=0
+	global IUIAutomationMaxVersion:=0
+	idWin := WinGetID("[Main] ahk_exe hznHorizon.exe")
+	idControl := ControlGetHwnd("msvb_lib_toolbar1")
+	hznWin := UIA.ElementFromHandle(WinGetID('[Main] ahk_exe hznHorizon.exe'))
+	hznMenuBar := HznWin.FindElement({
+		LocalizedType: "menu bar",
+		Name: "System"})
+	hznSave := hznMenuBar.Highlight().ControlClick()
+	; hznClickSave := hznSave.ControlClick()
+	; hznMenuItem :=	hznMenuBar.FindElement({
+	; 		LocalizedType: 'menu item',
+	; 		Value: 'Main'}).FindElement({
+	; 			LocalizedType: 'menu bar',
+	; 			Name: 'Document Window'
+	; 		})
+	; hznSaveHiLgt :=	hznMenuItem.Highlight()
+	; hznHorizonEl.ElementFromPath({Name: "Document Window"}).ControlClick()
+	; hznHorizonEl.ElementFromPath("YXcAB").ControlClick()
 	; Send("!f")
 	; Sleep(300)
 	; Send("s")
-	hznHorizonEl := UIA.ElementFromHandle("ahk_exe hznHorizon.exe")
-	hznHorizonEl.ElementFromPath("c").Highlight()
-	hznHorizonEl.ElementFromPath("YXcAB").ControlClick()
 	return
 }
-/*
-2023.08.12
-Type: 50032 (Window) Name: "Genesis Alkali Holdings LLC - 07554855 01 - 0000490949-153   2456930  Green River, WY US  - [Main]" LocalizedControlType: "window" ClassName: "ThunderRT6MDIForm"
-1 Type: 50033 (Pane) Name: "Workspace" LocalizedControlType: "pane" AutomationId: "3244" ClassName: "MDIClient"
-1.1 Type: 50032 (Window) Name: "Main" LocalizedControlType: "window" AutomationId: "32768" ClassName: "ThunderRT6FormDC"
-1.1.1 Type: 50033 (Pane) Name: "FE Data" LocalizedControlType: "pane" ClassName: "AfxOleControl42"
-1.1.1.1 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "150" ClassName: "AfxWnd42"
-1.1.1.2 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "107" ClassName: "AfxFrameOrView42"
-1.1.1.2.1 Type: 50023 (Tree) LocalizedControlType: "tree" AutomationId: "1" ClassName: "SysTreeView32"
-1.1.1.2.1.1 Type: 50024 (TreeItem) Name: "Admin Detail" LocalizedControlType: "tree item"
-1.1.1.2.1.2 Type: 50024 (TreeItem) Name: "Construction" LocalizedControlType: "tree item"
-1.1.1.2.1.3 Type: 50024 (TreeItem) Name: "Occupancy" LocalizedControlType: "tree item"
-1.1.1.2.1.4 Type: 50024 (TreeItem) Name: "Fire Protection" LocalizedControlType: "tree item"
-1.1.1.2.1.4.1 Type: 50024 (TreeItem) Name: "Fire Pumps" LocalizedControlType: "tree item"
-1.1.1.2.1.4.2 Type: 50024 (TreeItem) Name: "Water Supplies" LocalizedControlType: "tree item"
-1.1.1.2.1.5 Type: 50024 (TreeItem) Name: "Values" LocalizedControlType: "tree item"
-1.1.1.2.1.6 Type: 50024 (TreeItem) Name: "Specialized Processes" LocalizedControlType: "tree item"
-1.1.1.2.1.7 Type: 50024 (TreeItem) Name: "Equipment" LocalizedControlType: "tree item"
-1.1.1.2.1.8 Type: 50024 (TreeItem) Name: "Exposure Summary" LocalizedControlType: "tree item"
-1.1.1.2.1.8.1 Type: 50024 (TreeItem) Name: "Other Clients in Site MFL" LocalizedControlType: "tree item"
-1.1.1.2.1.9 Type: 50024 (TreeItem) Name: "Recommendations" LocalizedControlType: "tree item"
-1.1.1.2.1.10 Type: 50024 (TreeItem) Name: "Human Element Policies" LocalizedControlType: "tree item"
-1.1.1.2.1.11 Type: 50024 (TreeItem) Name: "Uninvestigated Losses" LocalizedControlType: "tree item"
-1.1.1.2.1.12 Type: 50024 (TreeItem) Name: "Risk Conclusions" LocalizedControlType: "tree item"
-1.1.1.2.1.12.1 Type: 50024 (TreeItem) Name: "Underwriting Factors" LocalizedControlType: "tree item"
-1.1.1.2.1.12.2 Type: 50024 (TreeItem) Name: "Change Reason" LocalizedControlType: "tree item"
-1.1.1.2.2 Type: 50018 (Tab) LocalizedControlType: "tab" AutomationId: "288" ClassName: "SysTabControl32"
-1.1.1.2.2.1 Type: 50019 (TabItem) Name: "Site" LocalizedControlType: "tab item"
-1.1.1.2.2.2 Type: 50019 (TabItem) Name: "Building" LocalizedControlType: "tab item"
-1.1.1.3 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "108" ClassName: "AfxFrameOrView42"
-1.1.1.4 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "100" ClassName: "PVSPLITTERWNDCLASS"
-1.1.1.5 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "100" ClassName: "PVSPLITTERWNDCLASS"
-1.1.1.6 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "2" ClassName: "AfxFrameOrView42"
-1.1.1.6.1 Type: 50033 (Pane) Name: "Form1" LocalizedControlType: "pane" ClassName: "ThunderRT6FormDC"
-1.1.1.6.1.1 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
-1.1.1.6.1.1.1 Type: 50000 (Button) Name: "Duplicate" LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
-1.1.1.6.1.2 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "SSUltraGridWndClass"
-1.1.1.6.1.3 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
-1.1.1.6.1.3.1 Type: 50000 (Button) Name: "New" LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
-1.1.1.6.1.4 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
-1.1.1.6.1.5 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
-1.1.1.6.1.5.1 Type: 50000 (Button) Name: "Delete" LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
-1.1.1.6.1.6 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
-1.1.1.6.1.6.1 Type: 50000 (Button) LocalizedControlType: "button" AutomationId: "1" ClassName: "ThunderRT6CommandButton"
-1.1.2 Type: 50033 (Pane) LocalizedControlType: "pane" ClassName: "ThunderRT6UserControlDC"
-1.1.2.1 Type: 50033 (Pane) LocalizedControlType: "pane" AutomationId: "1" ClassName: "ThunderRT6PictureBoxDC"
-1.1.2.1.1 Type: 50000 (Button) Name: "1. Order" LocalizedControlType: "button" AutomationId: "2" ClassName: "ThunderRT6CommandButton"
-1.1.2.1.2 Type: 50000 (Button) Name: "2. Tracking" LocalizedControlType: "button" AutomationId: "3" ClassName: "ThunderRT6CommandButton"
-1.1.2.1.3 Type: 50000 (Button) Name: "3. FE Data" LocalizedControlType: "button" AutomationId: "4" ClassName: "ThunderRT6CommandButton"
-1.1.2.1.4 Type: 50000 (Button) Name: "4. Location CSP" LocalizedControlType: "button" AutomationId: "5" ClassName: "ThunderRT6CommandButton"
-1.1.2.1.5 Type: 50000 (Button) Name: "5. Reporting" LocalizedControlType: "button" AutomationId: "6" ClassName: "ThunderRT6CommandButton"
-1.1.2.1.6 Type: 50000 (Button) Name: "6. Closing" LocalizedControlType: "button" AutomationId: "7" ClassName: "ThunderRT6CommandButton"
-1.1.3 Type: 50037 (TitleBar) Value: "Main" LocalizedControlType: "title bar" AutomationId: "TitleBar"
-1.1.3.1 Type: 50010 (MenuBar) Name: "System" LocalizedControlType: "menu bar" AutomationId: "MenuBar"
-1.1.3.1.1 Type: 50011 (MenuItem) Name: "Document Window" LocalizedControlType: "menu item"
-1.1.3.2 Type: 50000 (Button) Name: "Minimize" LocalizedControlType: "button"
-1.1.3.3 Type: 50000 (Button) Name: "Restore" LocalizedControlType: "button"
-1.1.3.4 Type: 50000 (Button) Name: "Close" LocalizedControlType: "button"
-2 Type: 50037 (TitleBar) Value: "Genesis Alkali Holdings LLC - 07554855 01 - 0000490949-153   2456930  Green River, WY US  - [Main]" LocalizedControlType: "title bar" AutomationId: "TitleBar"
-2.1 Type: 50010 (MenuBar) Name: "System" LocalizedControlType: "menu bar" AutomationId: "MenuBar"
-2.1.1 Type: 50011 (MenuItem) Name: "System" LocalizedControlType: "menu item"
-2.2 Type: 50000 (Button) Name: "Minimize" LocalizedControlType: "button"
-2.3 Type: 50000 (Button) Name: "Restore" LocalizedControlType: "button"
-2.4 Type: 50000 (Button) Name: "Close" LocalizedControlType: "button"
+#HotIf
 
-^s::
-
-{ ; V1toV2: Added bracket
-Text:="|<>*152$47.0000000000000000000000000000000003zzz0000Dzzz0000P00q0000q01w0001g03s0003M06k0006k0BU000BU0P0000P00q0000q01g0001g03M00037zsk0006DzlU000A0030000Mzzq0000lzzg0001XzXM00037z6k0006DyBU000ATwP00007zzy01"
-
-if ok:=FindText(23,92,150000,150000,0,0,Text)
-{
-	CoordMode, Mouse
-	X:=ok.1, Y:=ok.2, W:=ok.3, H:=ok.4, Comment:=ok.5
-	ControlClick, X+W//2, Y+H//2
-}
-return
-*/
 ;===== Copy The Following Functions To Your Own Code Just once =====
 
 

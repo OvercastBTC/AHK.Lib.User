@@ -15,11 +15,11 @@
  * @date 2023.08.15
  * @version 2.0.8
  ***********************************************************************/
-;@Ahk2Exe-SetMainIcon HznPlus256.ico
-;@Ahk2Exe-AddResource HznPlus256.ico, 160  ; Replaces 'H on blue'
-;@Ahk2Exe-AddResource HznPlus256.ico, 206  ; Replaces 'S on green'
-;@Ahk2Exe-AddResource HznPlus256.ico, 207  ; Replaces 'H on red'
-;@Ahk2Exe-AddResource HznPlus256.ico, 208  ; Replaces 'S on red'
+;@Ahk2Exe-SetMainIcon HznPlus.ico
+;@Ahk2Exe-AddResource HznPlus.ico, 160  ; Replaces 'H on blue'
+;@Ahk2Exe-AddResource HznPlus.ico, 206  ; Replaces 'S on green'
+;@Ahk2Exe-AddResource HznPlus.ico, 207  ; Replaces 'H on red'
+;@Ahk2Exe-AddResource HznPlus.ico, 208  ; Replaces 'S on red'
 ;@include-winapi
 ; --------------------------------------------------------------------------------
 #MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
@@ -47,11 +47,11 @@ SetMouseDelay(-1)
 ; //TODO: Library_Load(memoryapi.dll)
 
 ; Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
-; Startup_Shortcut := A_Startup "\" A_ScriptName
-; If !(FileExist(Startup_Shortcut)){
-; 	FileCopy(A_ScriptName,Startup_Shortcut)
-; 	MsgBox("Shortcut added to your Startup folder at " Startup_Shortcut)
-; } 
+Startup_Shortcut := A_Startup "\" A_ScriptName
+If !(FileExist(Startup_Shortcut)){
+	FileCopy(A_ScriptName,Startup_Shortcut)
+	MsgBox("Shortcut added to your Startup folder at " Startup_Shortcut)
+} 
 ; Else {
 ; 	MsgBox("Shortcut Exists")
 ; }
@@ -137,11 +137,9 @@ HznSave()
 	idWin := WinGetID("[Main] ahk_exe hznHorizon.exe")
 	hznWin := UIA.ElementFromHandle(idWin)
 	hznMenuBar := HznWin.FindElement({
-		LocalizedType: "title bar",
-		; Name: "",
-		Value: "Main"})
-		; AutomationID: "title bar"})
-	hznSave := hznMenuBar.Highlight().ControlClick(0,0)
+		LocalizedType: "menu item",
+		Name: "Document Window"})
+	hznSave := hznMenuBar.Highlight().ControlClick()
 	return
 }
 
