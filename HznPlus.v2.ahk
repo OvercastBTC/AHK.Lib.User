@@ -132,16 +132,36 @@ return
 
 HznSave()
 {
+	hWnd := WinGetID('A')
+	hMenu := DllCall("GetMenuItemCount", "Ptr", hwnd, "Int")
+	OutputDebug(hMenu)
 	global IUIAutomationActivateScreenReader:=0
 	global IUIAutomationMaxVersion:=0
+
 	idWin := WinGetID("[Main] ahk_exe hznHorizon.exe")
 	hznWin := UIA.ElementFromHandle(idWin)
-	hznMenuBar := HznWin.FindElement({
-		LocalizedType: "title bar",
-		; Name: "",
-		Value: "Main"})
-		; AutomationID: "title bar"})
-	hznSave := hznMenuBar.Highlight().ControlClick(0,0)
+	OutputDebug('WinGetClass: ' WinGetClass(idWin) '`nidWin: ' idWin '`n')
+	hznHorizonEl := UIA.ElementFromHandle("[Main] ahk_exe hznHorizon.exe")
+	hToolbar := idWin
+	; --------------------------------------------------------------------------------
+	RECT := hznHorizonEl.ElementFromPath({T:33}, {T:32}, {T:37}).BoundingRectangle
+	H := (RECT.b - RECT.t)
+	W := (RECT.r - RECT.l)
+	X := RECT.l
+	Y := RECT.t
+	; OutputDebug("X: " X "`nY: " Y "`nW: " W "`nH: " H '`n')
+	MouseGetPos(&mX, &mY, &Win, &Ctrl)
+	OutputDebug('X:' mX '`n' 'Y: ' mY '`n' WinGetClass(Win) '`n' Ctrl)
+	CoordMode("Mouse", "Screen")
+	BlockInput(1)
+	DllCall("SetCursorPos", "int", X, "int", Y)  ; The first number is the X-coordinate and the second is the Y (relative to the screen)
+	Sleep(300)
+	Click()
+	BlockInput(0)
+	DllCall("SetCursorPos", "int", mX, "int", mY)  ; The first number is the X-coordinate and the second is the Y (relative to the screen)
+	; WinActivate('ahk_class ' Win '1')
+	; Sleep(1000)
+	Send('!f')
 	return
 }
 
@@ -167,7 +187,7 @@ HznSelectAll()
  * Desc ......:  Call the Horizon msvb_lib_toolbar buttons using the button() function
  * @author ....: Descolada, OvercastBTC
  * @function button()
- * @param A_ThisHotkey - AHK's built in variabl.
+ * @param A_ThisHotkey - AHK's built in variable.
 ***********************************************************************/
 ; -------------------------------------------------------------------------------------------------
 button(*) {
@@ -321,7 +341,7 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		H 		:= Bottom-Top
 		; --------------------------------------------------------------------------------
 		ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hToolbar,,,, "NA")
-		Sleep(500)
+		; Sleep(500)
 		; --------------------------------------------------------------------------------
 		; --------------------------------------------------------------------------------
 		; Step: Restore previous and set delay
