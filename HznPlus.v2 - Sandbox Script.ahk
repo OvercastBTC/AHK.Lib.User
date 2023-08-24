@@ -284,7 +284,7 @@ button() {
 	hTx := ControlGethWnd(fCtl, "A")
 	hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
 		:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-		:  A_ThisHotkey = "^u" ? 5 ; .........: u = 3? trying 4 (???9 and 10???) (else i or b)
+		:  A_ThisHotkey = "^u" ? 9 ; .........: u = 3? trying 4 (???9 and 10???) (else i or b)
 		:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
 		:  A_ThisHotkey = "^c" ? 13 ; ........: copy
 		:  A_ThisHotkey = "^v" ? 16 ; ........: paste
@@ -1164,7 +1164,7 @@ typedef struct _TBBUTTON {
 		
 		;FileAppend, % A_Index . ":" . idButton . "(" . btntextchars . ")" . BtnText . "`n", _emeditor_toolbar_buttons.txt ; debug
 		
-		ErrorLevel := SendMessage(TB_GETITEMRECT, A_Index-1, remote_buffer, , "ahk_id " ctrlhwnd)
+		BTNRECT := SendMessage(TB_GETITEMRECT, A_Index-1, remote_buffer, , "ahk_id " ctrlhwnd)
 		
 		ReadRemoteBuffer(hpRemote, remote_buffer, &rect, 32)
 		oldx1:=x1
@@ -1175,13 +1175,13 @@ typedef struct _TBBUTTON {
 		y1 := NumGet(rect, 4, "Int") 
 		y2 := NumGet(rect, 12, "Int")
 		
-		FileAppend(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n", "_emeditor_toolbar_buttons.txt")  ; debug
-		; output := A_Index . ":" . idButton . " " . "(" . "hWndCtrl: " . hWndCtrl . ")" . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n"
-		output := A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n"
-		FileAppend(output, "_emeditor_toolbar_buttons.txt")  ; debug
-		; OutputDebug(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " ErrorLevel: " ErrorLevel . "`n")                                 ; debug
-		OutputDebug(output)                                 ; debug
-		
+		FileAppend(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " BTNRECT: " BTNRECT . "`n", "_emeditor_toolbar_buttons.txt")  ; debug
+		; output := A_Index . ":" . idButton . " " . "(" . "hWndCtrl: " . hWndCtrl . ")" . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " BTNRECT: " BTNRECT . "`n"
+		; output := A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " BTNRECT: " BTNRECT . "`n"
+		; FileAppend(output, "_emeditor_toolbar_buttons.txt")  ; debug
+		; OutputDebug(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " BTNRECT: " BTNRECT . "`n")                                 ; debug
+		OutputDebug(A_Index . ":" . idButton . " " . "(text: " . btntextcharsW . ")" . "(" . "hWndCtrl: " . hWndCtrl . ")" . " BtnTextW: " . BtnTextW . " State: " btnstate . " " . "Cmd2Indx: " . btnvar1 . " " . "BtnInfoW: " . btnvar2 . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . " BTNRECT: " BTNRECT . "`n")                                 ; debug
+		; --------------------------------------------------------------------------------
 		;MouseMove % ctrlx + (x2+x1//2), ctrly + (y2+y1//2)
 		;if(is_apply_scale) {
 		;scale := Get_DPIScale()
@@ -1191,13 +1191,15 @@ typedef struct _TBBUTTON {
 		;y2 /= scale
 		;}
 		
-		If (x1=oldx1 And y1=oldy1 And x2=oldx2)
-			Continue
-		If (x2-x1<10)
-			Continue
-		If (x1>ctrlw Or y1>ctrlh)
-			Continue
+		; If (x1=oldx1 And y1=oldy1 And x2=oldx2)
+		; 	Continue
+		; If (x2-x1<10)
+		; 	Continue
+		; If (x1>ctrlw Or y1>ctrlh)
+		; 	Continue
 		
+
+
 		arbtn.Push(A_Index,{x:x1, y:y1, w:x2-x1, h:y2-y1, cmd:idButton}) ; , text:BtnTextW})
 		;arbtn.Insert( {"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":BtnText} )
 		;line:=100000000+Floor((ctrly+y1)/same)*10000+(ctrlx+x1)

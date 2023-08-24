@@ -113,6 +113,7 @@ return
 ^u::button()
 ^a::HznSelectAll()
 ^s::HznSave()
+^F4::HznClose()
 #HotIf
 
 ; --------------------------------------------------------------------------------
@@ -133,16 +134,20 @@ return
 HznSave()
 {
 	hWnd := WinGetID('A')
-	hMenu := DllCall("GetMenuItemCount", "Ptr", hwnd, "Int")
+	hMenu := DllCall("GetTitleBarInfo", "Ptr", hwnd, "Int")
 	OutputDebug(hMenu)
+	; --------------------------------------------------------------------------------
+	/** @desc This is crazy that I have to set these variables, but it is Horizon though.... */
 	global IUIAutomationActivateScreenReader:=0
 	global IUIAutomationMaxVersion:=0
+	; --------------------------------------------------------------------------------
 
-	idWin := WinGetID("[Main] ahk_exe hznHorizon.exe")
+	idWin := WinGetID("A")
 	hznWin := UIA.ElementFromHandle(idWin)
 	OutputDebug('WinGetClass: ' WinGetClass(idWin) '`nidWin: ' idWin '`n')
-	hznHorizonEl := UIA.ElementFromHandle("[Main] ahk_exe hznHorizon.exe")
+	hznHorizonEl := UIA.ElementFromHandle('A')
 	hToolbar := idWin
+
 	; --------------------------------------------------------------------------------
 	RECT := hznHorizonEl.ElementFromPath({T:33}, {T:32}, {T:37}).BoundingRectangle
 	H := (RECT.b - RECT.t)
@@ -152,16 +157,104 @@ HznSave()
 	; OutputDebug("X: " X "`nY: " Y "`nW: " W "`nH: " H '`n')
 	MouseGetPos(&mX, &mY, &Win, &Ctrl)
 	OutputDebug('X:' mX '`n' 'Y: ' mY '`n' WinGetClass(Win) '`n' Ctrl)
+	; --------------------------------------------------------------------------------
+	/**@desc Still cannot use ControlClick(), dunno what it clicks but it's not that button */
 	CoordMode("Mouse", "Screen")
+	; --------------------------------------------------------------------------------
+	/**@param BlockInput() => prevents the user from doing anything to screw it up */
 	BlockInput(1)
+	; --------------------------------------------------------------------------------
+	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
 	DllCall("SetCursorPos", "int", X, "int", Y)  ; The first number is the X-coordinate and the second is the Y (relative to the screen)
-	Sleep(300)
+	; --------------------------------------------------------------------------------
+	/**@param Sleep(100) as the mouse likes to click before it gets to the coordinates => improve reliability */
+	Sleep(100)
+	; --------------------------------------------------------------------------------
 	Click()
+	; --------------------------------------------------------------------------------
+	/**@param BlockInput() => restore user input */
 	BlockInput(0)
+	; --------------------------------------------------------------------------------
+	/**@param DllCall() move the mouse back to its original position
+	 * @param MouseMove() => DOES NOT WORK!!! MOVES IT TO SOME CRAZY LOCATIONS... dumb
+	 */
 	DllCall("SetCursorPos", "int", mX, "int", mY)  ; The first number is the X-coordinate and the second is the Y (relative to the screen)
-	; WinActivate('ahk_class ' Win '1')
-	; Sleep(1000)
-	Send('!f')
+	; --------------------------------------------------------------------------------
+	/**
+	Send('!f') ; <==== This is an alternate method
+	Sleep(300) ; <==== Need to change this to a WinWaitActive scenario, but still having trouble getting any data
+	Send('S')
+	 */
+	; --------------------------------------------------------------------------------
+	return
+}
+; --------------------------------------------------------------------------------
+/************************************************************************
+* ;desc ......: Horizon Close Button (Ctrl-F4) ==> ≠ Alt-F4
+* @Desc ......: Use UIAutomation (UIA) to find the element where the close button exists
+* @Author OvercastBTC 
+* @Credit Descolada and his UIA library and functions
+* Function HznClose() (Ctrl-F4)
+* @param Msg - EM_SETSEL := 177 - the Windows API message for "Set Selection"
+* @param wParam - := 0
+* @param lParam := -1
+***********************************************************************/
+; --------------------------------------------------------------------------------
+
+HznClose()
+{
+	hWnd := WinGetID('A')
+	hMenu := DllCall("GetTitleBarInfo", "Ptr", hwnd, "Int")
+	OutputDebug(hMenu)
+	; --------------------------------------------------------------------------------
+	/** @desc This is crazy that I have to set these variables, but it is Horizon though.... */
+	global IUIAutomationActivateScreenReader:=0
+	global IUIAutomationMaxVersion:=0
+	; --------------------------------------------------------------------------------
+
+	idWin := WinGetID("A")
+	hznWin := UIA.ElementFromHandle(idWin)
+	OutputDebug('WinGetClass: ' WinGetClass(idWin) '`nidWin: ' idWin '`n')
+	hznHorizonEl := UIA.ElementFromHandle('A')
+	hToolbar := idWin
+	hznHorizonEl.ElementFromPath({T:33}, {T:32}, {T:37}, {T:0, i:-1}).ControlClick()
+	; --------------------------------------------------------------------------------
+	; RECT := hznHorizonEl.ElementFromPath({T:33}, {T:32}, {T:37}).BoundingRectangle
+	; H := (RECT.b - RECT.t)
+	; W := (RECT.r - RECT.l)
+	; X := RECT.l
+	; Y := RECT.t
+	; ; OutputDebug("X: " X "`nY: " Y "`nW: " W "`nH: " H '`n')
+	MouseGetPos(&mX, &mY, &Win, &Ctrl)
+	; OutputDebug('X:' mX '`n' 'Y: ' mY '`n' WinGetClass(Win) '`n' Ctrl)
+	; ; --------------------------------------------------------------------------------
+	; /**@desc Still cannot use ControlClick(), dunno what it clicks but it's not that button */
+	; CoordMode("Mouse", "Screen")
+	; ; --------------------------------------------------------------------------------
+	; /**@param BlockInput() => prevents the user from doing anything to screw it up */
+	; BlockInput(1)
+	; ; --------------------------------------------------------------------------------
+	; DllCall("SetCursorPos", "int", X, "int", Y)  ; The first number is the X-coordinate and the second is the Y (relative to the screen)
+	; ; --------------------------------------------------------------------------------
+	; /**@param Sleep(100) as the mouse likes to click before it gets to the coordinates => improve reliability */
+	; Sleep(100)
+	; ; --------------------------------------------------------------------------------
+	; Click()
+	; --------------------------------------------------------------------------------
+	/**@param BlockInput() => restore user input */
+	BlockInput(0)
+	; --------------------------------------------------------------------------------
+	/**@param DllCall() move the mouse back to its original position
+	 * @param MouseMove() => DOES NOT WORK!!! MOVES IT TO SOME CRAZY LOCATIONS... dumb
+	 */
+	DllCall("SetCursorPos", "int", mX, "int", mY)  ; The first number is the X-coordinate and the second is the Y (relative to the screen)
+	; --------------------------------------------------------------------------------
+	/**
+	Send('!f') ; <==== This is an alternate method
+	Sleep(300) ; <==== Need to change this to a WinWaitActive scenario, but still having trouble getting any data
+	Send('S')
+	 */
+	; --------------------------------------------------------------------------------
 	return
 }
 
@@ -198,9 +291,9 @@ button(*) {
 	nCtl := "msvb_lib_toolbar" bID
 	hTb := ControlGethWnd(nCtl, "A")
 	hTx := ControlGethWnd(fCtl, "A")
-	hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
+	hIDx:= A_ThisHotkey = "^i" ? 10 ;.........: italic = 2
 		:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-		:  A_ThisHotkey = "^u" ? 10 ; ........: (AJB - 08/2023) FE Notepad, Comments, and COPE => u = 10; 3 worked somewhere? (???9 and 10???) (else i or b)
+		:  A_ThisHotkey = "^u" ? 15 ; ........: (AJB - 08/2023) FE Notepad, Comments, and COPE => u = 10; 3 worked somewhere? (???9 and 10???) (else i or b)
 		:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
 		:  A_ThisHotkey = "^c" ? 13 ; ........: copy
 		:  A_ThisHotkey = "^v" ? 16 ; ........: paste
@@ -275,8 +368,12 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 	Static BM_CLICK				:= 245 ; 0x000000F5
 	Static TB_ISBUTTONPRESSED 	:= 1035 ; 0x040B
 	; --------------------------------------------------------------------------------
-	; try ControlGetPos(&ctrlx:=0, &ctrly:=0,&ctrlw,&ctrlh, hToolbar, hToolbar)
+	try ControlGetPos(&ctrlx:=0, &ctrly:=0,&ctrlw,&ctrlh, hToolbar, hToolbar)
 	; OutputDebug("&ctrlx: " . ctrlx " &ctrly: " . ctrly " &ctrlw: " . ctrlw " &ctrlh: " . ctrlh . "`n")
+	; --------------------------------------------------------------------------------
+	; Step: https://www.autohotkey.com/docs/v2/misc/DPIScaling.htm
+	; * To enable per-monitor DPI awareness, call the following function prior to using functions that are normally affected by DPI scaling:
+	DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
 	; --------------------------------------------------------------------------------
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
@@ -340,6 +437,7 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		W 		:= Right-Left
 		H 		:= Bottom-Top
 		; --------------------------------------------------------------------------------
+		; MouseMove(((X+W)//2),((Y+H)//2))
 		ControlClick("x" ((X+W)//2) " y" ((Y+H)//2), hToolbar,,,, "NA")
 		; Sleep(500)
 		; --------------------------------------------------------------------------------

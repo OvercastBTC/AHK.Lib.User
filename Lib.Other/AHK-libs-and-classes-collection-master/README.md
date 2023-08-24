@@ -147,6 +147,8 @@
 
 
 
+
+
 | **Nr** | **Library**                                      | **Directory**                                    |
 | :--- | :--------------------------------- | :------------------------------------------- |
 | **0001** | [A.ahk](libs/a-f/A.ahk) <br>17.34kb - 2023-07-15 | libs/a-f|
@@ -952,7 +954,7 @@
 | **0801** | [GetWindowParent.ahk](libs/g-n/GetWindowParent.ahk) <br>0.50kb - 2023-07-15 | libs/g-n|
 | **0802** | [GetWindowPos.ahk](libs/g-n/GetWindowPos.ahk) <br>0.99kb - 2023-07-15 | libs/g-n|
 | **0803** | [GetWindowProcessPath.ahk](libs/g-n/GetWindowProcessPath.ahk) <br>1.48kb - 2023-07-15 | libs/g-n|
-| **0804** | [GetWindowThreadProcessId.ahk](libs/g-n/GetWindowThreadProcessId.ahk) <br>1.12kb - 2023-07-15 | libs/g-n|
+| **0804** | [GetWindowThreadProcessId.ahk](libs/g-n/GetWindowThreadProcessId.ahk) <br>1.19kb - 2023-07-30 | libs/g-n|
 | **0805** | [GetWindowTitle.ahk](libs/g-n/GetWindowTitle.ahk) <br>0.82kb - 2023-07-15 | libs/g-n|
 | **0806** | [GetWindowtOwner.ahk](libs/g-n/GetWindowtOwner.ahk) <br>0.48kb - 2023-07-15 | libs/g-n|
 | **0807** | [GetWindowTransparency.ahk](libs/g-n/GetWindowTransparency.ahk) <br>0.77kb - 2023-07-15 | libs/g-n|
@@ -1440,7 +1442,7 @@
 | **1289** | [OpenFolderAndSelectItems.ahk](libs/o-z/OpenFolderAndSelectItems.ahk) <br>2.54kb - 2023-07-15 | libs/o-z|
 | **1290** | [OpenFolderAndSelectItems_V1.ahk](libs/o-z/OpenFolderAndSelectItems_V1.ahk) <br>1.57kb - 2023-07-15 | libs/o-z|
 | **1291** | [OpenFolderAndSelectItems_V2.ahk](libs/o-z/OpenFolderAndSelectItems_V2.ahk) <br>1.51kb - 2023-07-15 | libs/o-z|
-| **1292** | [OpenProcess.ahk](libs/o-z/OpenProcess.ahk) <br>1.25kb - 2023-07-15 | libs/o-z|
+| **1292** | [OpenProcess.ahk](libs/o-z/OpenProcess.ahk) <br>2.08kb - 2023-07-30 | libs/o-z|
 | **1293** | [OpenProcessToken.ahk](libs/o-z/OpenProcessToken.ahk) <br>1.31kb - 2023-07-15 | libs/o-z|
 | **1294** | [OpenWith.ahk](libs/o-z/OpenWith.ahk) <br>0.77kb - 2023-07-15 | libs/o-z|
 | **1295** | [Operators_Fct.ahk](libs/o-z/Operators_Fct.ahk) <br>9.37kb - 2023-07-15 | libs/o-z|
