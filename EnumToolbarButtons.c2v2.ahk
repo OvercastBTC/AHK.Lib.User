@@ -1,9 +1,28 @@
-﻿#Requires AutoHotkey v2
-#SingleInstance
+﻿/************************************************************************
+ * @description Enumerate all the Toolbar32 buttons
+ * @file EnumToolbarButtons.c2v2.ahk
+ * @author I don't know who the original author was
+ * @author Updates and conversion to v2 by OvercastBTC
+ * @date 2023/08/25
+ * @version 5.8.10
+ ***********************************************************************/
+#Warn All, OutputDebug
+#SingleInstance Force
+SendMode("Input")
+SetWorkingDir(A_ScriptDir)
+SetTitleMatchMode(2)
+; --------------------------------------------------------------------------------
+DetectHiddenText(true)
+DetectHiddenWindows(true)
+; --------------------------------------------------------------------------------
+#Requires AutoHotkey v2
+; --------------------------------------------------------------------------------
 SetControlDelay(-1)
 SetMouseDelay(-1)
 SetWinDelay(-1)
-; -------------------------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+; --------------------------------------------------------------------------------
 #HotIf WinActive("ahk_exe hznhorizon.exe")
 
 ^i::button()
@@ -49,10 +68,69 @@ HznButton(hTb, idButton, arbtn) {
 	Try ControlClick(ctrlx + x, ctrly + y)
 }
 ; --------------------------------------------------------------------------------
+
+#HotIf WinActive('ahk_exe hznhorizon.exe')
+
 ^+9::
 { ; V1toV2: Added bracket
 	SendLevel(5)
 	fCtl := ControlGetClassNN(ControlGetFocus('A'))
+	; --------------------------------------------------------------------------------
+	; hWnd := ControlGetFocus('A')
+	; flag := MONITOR_DEFAULTTONEAREST := 0x00000002
+	; monWin := DllCall('user32\MonitorFromWindow', 'ptr', hWnd, 'int', flag)
+	; OutputDebug('monWin: ' monWin)
+	; monitorIndex := GetNearestMonitorInfo(hWnd).Number
+	; GetNearestMonitorInfo(winTitle*) {
+	; 	static MONITOR_DEFAULTTONEAREST := 0x00000002
+	; 	hwnd := WinExist(winTitle*)
+	; 	hMonitor := DllCall("MonitorFromWindow", "ptr", hwnd, "uint", MONITOR_DEFAULTTONEAREST, "ptr")
+	; 	NumPut("uint", 104, MONITORINFOEX := Buffer(104))
+	; 	if (DllCall("user32\GetMonitorInfo", "ptr", hMonitor, "ptr", MONITORINFOEX)) {
+	; 		Return  { Handle   : hMonitor
+	; 				, Name     : Name := StrGet(MONITORINFOEX.ptr + 40, 32)
+	; 				, Number   : RegExReplace(Name, ".*(\d+)$", "$1")
+	; 				, Left     : L  := NumGet(MONITORINFOEX,  4, "int")
+	; 				, Top      : T  := NumGet(MONITORINFOEX,  8, "int")
+	; 				, Right    : R  := NumGet(MONITORINFOEX, 12, "int")
+	; 				, Bottom   : B  := NumGet(MONITORINFOEX, 16, "int")
+	; 				, WALeft   : WL := NumGet(MONITORINFOEX, 20, "int")
+	; 				, WATop    : WT := NumGet(MONITORINFOEX, 24, "int")
+	; 				, WARight  : WR := NumGet(MONITORINFOEX, 28, "int")
+	; 				, WABottom : WB := NumGet(MONITORINFOEX, 32, "int")
+	; 				, Width    : Width  := R - L
+	; 				, Height   : Height := B - T
+	; 				, WAWidth  : WR - WL
+	; 				, WAHeight : WB - WT
+	; 				, Primary  : NumGet(MONITORINFOEX, 36, "uint")
+	; 			}
+	; 	}
+	; 	throw Error("GetMonitorInfo: " A_LastError, -1)
+	; }
+	; OutputDebug('monitorIndex: ' monitorIndex)
+	; ; --------------------------------------------------------------------------------
+	; MonitorCount := MonitorGetCount()
+	; MonitorPrimary := MonitorGetPrimary()
+	; OutputDebug("Monitor Count:`t" MonitorCount "`nPrimary Monitor:`t" MonitorPrimary)
+	; Loop MonitorCount
+	; {
+	; 	MonitorGet(A_Index, &L, &T, &R, &B)
+	; 	MonitorGetWorkArea(A_Index, &WL, &WT, &WR, &WB)
+	; 	OutputDebug
+	; 	(
+	; 		"Monitor:`t#" A_Index "
+	; 		Name:`t" MonitorGetName(A_Index) "
+	; 		Left:`t" L " (" WL " work)
+	; 		Top:`t" T " (" WT " work)
+	; 		Right:`t" R " (" WR " work)
+	; 		Bottom:`t" B " (" WB " work)`n"
+	; 		'Height: ' (B - T) '`n'
+	; 		'Width: '  (R - L) '`n'
+	; 		'Other (W/H): ' Format('{:.2f}', ((R - L)/(B - T))) '`n'
+	; 		'Other (H/W): ' Format('{:.2f}', ((B - T)/(R - L)))
+			
+	; 	)
+	; }
 	; --------------------------------------------------------------------------------
 	bID := SubStr(fCtl, -1, 1)
 	nCtl := "msvb_lib_toolbar" bID
@@ -66,12 +144,31 @@ HznButton(hTb, idButton, arbtn) {
 		:  A_ThisHotkey = "^v" ? 16 ; ........: paste
 		:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
 		:  A_ThisHotkey = "^y" ? 20 : 21 ; ...: redo
-	; EnumToolbarButtons(hTb,hIDx,nCtl,fCtl)
-	; arbtn := EnumToolbarButtons(hTb)
-	btnstate := getbuttonstate(101,hTb)
-	OutputDebug(btnstate)
-	CLICKBUTTONRECT(hTb, 101)
+	; EnumToolbarButtons(hTb)
+	arbtn := EnumToolbarButtons(hTb)
+	HznBtns := DisplayObj(arbtn)
+	MsgBox(HznBtns)
+	; btnstate := getbuttonstate(101,hTb)
+	; OutputDebug(btnstate)
+	; CLICKBUTTONRECT(hTb, 101)
+	Reload()
 } 
+#HotIf
+DisplayObj(Obj, Depth:=10, IndentLevel:="")
+{
+	if Type(Obj) = "Object"
+		Obj := Obj.OwnProps()
+	for k,v in Obj
+	{
+		List.= IndentLevel "[" k "]"
+		if (IsObject(v) && Depth>1)
+			List.="`n" DisplayObj(v, Depth-1, IndentLevel . "    ")
+		Else
+			List.=" => " v
+		List.="`n"
+	}
+	return RTrim(List)
+}
 ; --------------------------------------------------------------------------------
 EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	{
@@ -100,11 +197,8 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	Static 	TBSTATE_PRESSED			:= 2 ; 0x02 
 	Static 	WM_LBUTTONDOWN 			:= 513 ; 0x201
 	Static 	WM_LBUTTONUP 			:= 515 ; 0x202
-
-	x1 :=0, x2 :=0, y1 :=0, y2 :=0
-			; Step: Store previous and set min delay
 	; --------------------------------------------------------------------------------
-
+	x1 :=0, x2 :=0, y1 :=0, y2 :=0
 	; --------------------------------------------------------------------------------
 	
 	; Thanks to LabelControl code from 
@@ -234,14 +328,17 @@ typedef struct _TBBUTTON {
 		; --------------------------------------------------------------------------------
 		OutputDebug("Index:" A_Index . "(idButton:" . idButton . ")" . " State: " btnstate . " " . "Cmd2Indx: " . Cmd2Indx . " " . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n")                                 ; debug
 		; --------------------------------------------------------------------------------
-		DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
-		If (btnstate != 4){
-			continue
-		} Else {
+		If (btnstate = 4){
+			hTb := ctrlhwnd 
+			Try MouseMove(ctrlx + (x2+x1//2), ctrly + (y2+y1//2))
+			KeyWait(A_Space)
+			; Try ControlClick(ctrlx + (x2+x1//2), ctrly + (y2+y1//2), hTb,,,, "NA")
+			; Sleep(1000)
+		} Else If (btnstate = 6){
 			hTb := ctrlhwnd 
 			Try MouseMove(ctrlx + (x2+x1//2), ctrly + (y2+y1//2))
 			; Try ControlClick(ctrlx + (x2+x1//2), ctrly + (y2+y1//2), hTb,,,, "NA")
-			; Sleep(1000)
+			; Sleep(1000)			
 		}
 		;if(is_apply_scale) {
 		; scale := A_ScreenDPI
@@ -258,7 +355,16 @@ typedef struct _TBBUTTON {
 		; If (x1>ctrlw Or y1>ctrlh)
 		; 	Continue
 		
-		arbtn.Push(A_Index,{x:x1, y:y1, w:x2-x1, h:y2-y1, cmd:idButton}) ; , text:BtnTextW})
+		arbtn.Push({1_Index:A_Index
+			, 4_x:x1
+			, 5_y:y1
+			, 6_w:x2-x1
+			, 7_h:y2-y1
+			, 2_cmd:idButton
+			, 0_based_Cmd2Indx: '(' COMMANDTOINDEX ')'
+			, 3_state: (btnstate = 4) 	? '(' btnstate ')' "-UP"
+					 : (btnstate = 6) 	? '(' btnstate ')' "-PRESSED"
+										: '(' btnstate ')' "-Not Active"}) ; , text:BtnTextW})
 		;arbtn.Insert( {"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":BtnText} )
 		;line:=100000000+Floor((ctrly+y1)/same)*10000+(ctrlx+x1)
 		;lines=%lines%%line%%A_Tab%%ctrlid%%A_Tab%%class%`n
