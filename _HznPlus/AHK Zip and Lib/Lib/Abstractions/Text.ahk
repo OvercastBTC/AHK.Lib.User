@@ -1,4 +1,3 @@
-#Requires AutoHotkey v2
 CompressSpaces(text) => RegexReplace(text, " {2,}", " ")
 
 /**

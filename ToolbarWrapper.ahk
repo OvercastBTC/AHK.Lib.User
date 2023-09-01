@@ -34,7 +34,7 @@ sizeof_TBBUTTON := 20	; Do NOT modify this variable!
 ; 	Easy2Visit the member of TBBUTTON structure
 ; ##################################################
 
-_TB_iBitmap(ByRef tbb)
+_TB_iBitmap(tbb)
 {
 	return NumGet(tbb, 0, "Int")
 }
