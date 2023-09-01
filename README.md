@@ -1,8 +1,6 @@
-This repo contains the libraries I use
+This repo contains the libraries I use.
 
-Most of them are mine, but some will be libraries of other people
-
-Not because I'm a fiend for stealing, but because it's simply easier for me to manage
+Some of them are mine, but most will be libraries of other people
 
 ## People to check out for cool libraries:
 
