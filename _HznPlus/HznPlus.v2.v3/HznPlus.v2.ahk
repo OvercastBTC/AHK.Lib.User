@@ -4,7 +4,7 @@
  * @file HznPlus.v2.ahk
  * @author OvercastBTC
  * @date 2023.08.15
- * @version 2.0.5
+ * @version 3.0.0
  * @ahkversion v2+
  * @Section .....: Auto-Execution
  ***********************************************************************/
@@ -13,7 +13,7 @@
  * ;Description ..: Resource includes for .exe standalone
  * @author OvercastBTC
  * @date 2023.08.15
- * @version 2.0.8
+ * @version 3.0.0
  ***********************************************************************/
 ;@Ahk2Exe-SetMainIcon HznPlus256.ico
 ;@Ahk2Exe-AddResource HznPlus256.ico, 160  ; Replaces 'H on blue'
@@ -38,15 +38,25 @@ SetControlDelay(-1)
 SetMouseDelay(-1)
 SetWinDelay(-1)
 ; --------------------------------------------------------------------------------
-DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
-; DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3
+DefaultDpiAwarenessContext := MaximumPerMonitorDpiAwarenessContext
+try
+	DllCall("SetThreadDpiAwarenessContext", "ptr", MaximumPerMonitorDpiAwarenessContext, "ptr")
+catch 
+	DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+else
+	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
 ; --------------------------------------------------------------------------------
-#Include <gdi_plus_plus>
-#Include <Gdip_All>
-#Include <Class_Toolbar.c2v2>
-#Include <Tools\Hider>
+; #Include <gdi_plus_plus>
+; #Include <Gdip_All>
+; #Include <Class_Toolbar.c2v2>
+; #Include <Tools\Hider>
 #Include <Lib.v2\UIA>
 #Include <EnumAllMonitorsDPI.v2>
+#Include <DPI>
+#Include <GetNearestMonitorInfo().v2>
+#Include <Abstractions\Script>
+
 
 ; --------------------------------------------------------------------------------
 
@@ -54,16 +64,6 @@ DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
 ; //TODO: Library_Load(winuser.dll)
 ; //TODO: Library_Load(processthreadsapi.dll)
 ; //TODO: Library_Load(memoryapi.dll)
-
-; Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
-; Startup_Shortcut := A_Startup "\" A_ScriptName
-; If !(FileExist(Startup_Shortcut)){
-; 	FileCopy(A_ScriptName,Startup_Shortcut)
-; 	MsgBox("Shortcut added to your Startup folder at " Startup_Shortcut)
-; } 
-; Else {
-; 	MsgBox("Shortcut Exists")
-; }
 ; --------------------------------------------------------------------------------
 /************************************************************************
 * ;Description ...: Create Tray Icon
@@ -74,11 +74,10 @@ DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
  ***********************************************************************/
 TraySetIcon('HICON:' Create_HznHorizon_ico())
 ; --------------------------------------------------------------------------------
-Check_Startup_Status()
+; Check_Startup_Status()
 ; --------------------------------------------------------------------------------
 
 #HotIf WinActive(A_ScriptName " - Visual Studio Code")
-#Include <Abstractions\Script>
 ~^s::Script.Reload()
 #HotIf
 
@@ -116,6 +115,8 @@ return
 ^b::button()
 ^u::button()
 ^a::HznSelectAll()
+^v::HznPaste()
+^+c::HznGetText()
 ^s::HznSave()
 ^F4::HznClose()
 #HotIf
@@ -135,8 +136,59 @@ return
 ***********************************************************************/
 ; --------------------------------------------------------------------------------
 
+; #Include <ComObjDll>
+; #Include <GetProcessThreads>
+VARIANT_LOCALBOOL:=	16
+
+Class hznToolbar {
+	Static hznTb := ComObject('{66833FEA-8583-11D1-B16A-00C0F0283628}')
+	Class tx4ole11 extends hznToolbar {
+		static tx4ole11 := ComObject("tx4ole11.ocx")
+		static tx4ole11.ocx := ComObject("{1B635020-8269-11D8-9E2B-004005A9ABD2}#1.6#0")
+		; static tx4ole11.ocx := ComObject("{1B635020-8269-11D8-9E2B-004005A9ABD2}")
+		/**
+		 * function: either method does not cause an error to be thrown.
+		 */
+	}
+	class MSCOMCTL extends hznToolbar {
+		static MSCOMCTL := ComObject ('MSCOMCTL.OCX')
+		static MSCOMCTL.OCX := ComObject ("{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0")
+		; static MSCOMCTL.OCX := ComObject ("{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}")
+	}
+	
+	class wspell extends hznToolbar {
+		static wspell := ComObject('wspell.ocx')
+		static wspell.ocx := ComObject("{245338C0-BCA3-4A2C-A7B7-53345999A8E8}#1.0#0")
+		; static wspell.ocx := ComObject("{245338C0-BCA3-4A2C-A7B7-53345999A8E8}")
+	}
+	; static ComObjConnect(HznTb,'Hzn_')
+	; HznBuf32 := Buffer(32)
+	; NumPut('uint', HznBuf32.Size, HznBuf32, 0)
+	; fmgRichText := ComValue(VARIANT_LOCALBOOL,hznTb)
+	
+	; hznTb.fmgRichText.AlwaysItalic.ComValue(0xB, true)
+}
+
 HznSave()
 {
+
+	
+	; Try Toolbar := ComObjActive('hznToolbar')
+
+	; Catch
+	; 	Toolbar := ComObjActive("{66833FEA-8583-11D1-B16A-00C0F0283628}")
+	; wMain := WinGetID('A','Main',,'[Main]')
+	; prevTMM := A_TitleMatchMode
+	; SetTitleMatchMode(3)
+	; mCtl := ControlGetClassNN('Main',,'Main',,'[Main]')
+	; iDmCtl := WinGetID(,'Main',,'[Main]')
+	; fmCtl := WinGetClass(iDmCtl)
+	; ; MsgBox('wMain: ' wMain '`n' 'mCtl: ' mCtl '`n' 'fmCtl: ' fmCtl)
+	; A_TitleMatchMode := prevTMM
+
+	
+	; Tb.AlwaysItalic() 
+	return
 	hWnd := WinGetID('A')
 	hMenu := DllCall("GetTitleBarInfo", "Ptr", hwnd, "Int")
 	OutputDebug(hMenu)
@@ -145,7 +197,7 @@ HznSave()
 	global IUIAutomationActivateScreenReader:=0
 	global IUIAutomationMaxVersion:=0
 	; --------------------------------------------------------------------------------
-
+	return
 	idWin := WinGetID("A")
 	hznWin := UIA.ElementFromHandle(idWin)
 	OutputDebug('WinGetClass: ' WinGetClass(idWin) '`nidWin: ' idWin '`n')
@@ -204,7 +256,7 @@ HznSave()
 ***********************************************************************/
 ; --------------------------------------------------------------------------------
 
-HznClose()
+HznClose(*)
 {
 	hWnd := WinGetID('A')
 	hMenu := DllCall("GetTitleBarInfo", "Ptr", hwnd, "Int")
@@ -271,13 +323,49 @@ HznClose()
  * @param lParam := -1
 ***********************************************************************/
 ; -------------------------------------------------------------------------------------------------
-HznSelectAll()
+HznSelectAll(*)
 {
+	; --------------------------------------------------------------------------------
+	fCtl := ControlGetClassNN(ControlGetFocus('A'))
+	hCtl := ControlGethWnd(fCtl, 'A')
+	; --------------------------------------------------------------------------------
 	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
-	fCtl := ControlGetClassNN(ControlGetFocus("A"))
-	hCtl := ControlGethWnd(fCtl, "A")
+	; --------------------------------------------------------------------------------
 	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
+	; --------------------------------------------------------------------------------
+	return
 }
+; --------------------------------------------------------------------------------
+
+HznGetText(*)
+{
+	; --------------------------------------------------------------------------------
+	fCtl := ControlGetClassNN(ControlGetFocus('A'))
+	hCtl := ControlGethWnd(fCtl, 'A')
+	; --------------------------------------------------------------------------------
+	text := ControlGetText(hCtl)
+	A_Clipboard := text
+	; --------------------------------------------------------------------------------
+	OutputDebug(text)
+	MsgBox(text)
+	; ToolTip(text, 0, 0)
+	; --------------------------------------------------------------------------------
+	return
+}
+
+HznPaste(*)
+{
+	; --------------------------------------------------------------------------------
+	fCtl := ControlGetClassNN(ControlGetFocus('A'))
+	hCtl := ControlGethWnd(fCtl, 'A')
+	; --------------------------------------------------------------------------------
+	Static Msg := WM_PASTE := 770, wParam := 0, lParam := 0
+	; --------------------------------------------------------------------------------
+	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
+	; --------------------------------------------------------------------------------
+	return
+}
+
 ; -------------------------------------------------------------------------------------------------
 /************************************************************************
  * Desc ......:  Call the Horizon msvb_lib_toolbar buttons using the button() function
@@ -294,9 +382,9 @@ button(*) {
 	nCtl := "msvb_lib_toolbar" bID
 	hTb := ControlGethWnd(nCtl, "A")
 	hTx := ControlGethWnd(fCtl, "A")
-	idBtn:= A_ThisHotkey = "^b" ? 1 : ;.........: italic = 2
-			A_ThisHotkey = "^i" ? 2 : ;.........: italic = 2
-			A_ThisHotkey = "^u" ? (!getbuttonstate(103,hTB) = 4) or (!getbuttonstate(103,hTB) = 6) MsgBox("There is no underline button available.") 0 : 9 ; 9 = not ASUS monitor, 10 = ASUS monitor........: (AJB - 08/2023) FE Notepad, Comments, and COPE => u = 10; 3 worked somewhere? (???9 and 10???) (else i or b)
+	idBtn:= (A_ThisHotkey = "^b") ? 1 : ;.........: italic = 2
+			(A_ThisHotkey = "^i") ? 2 : ;.........: italic = 2
+			(A_ThisHotkey = "^u") ? 3 : 0 ; 9 = not ASUS monitor, 10 = ASUS monitor........: (AJB - 08/2023) FE Notepad, Comments, and COPE => u = 10; 3 worked somewhere? (???9 and 10???) (else i or b)
 		; :  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
 		; :  A_ThisHotkey = "^c" ? 13 ; ........: copy
 		; :  A_ThisHotkey = "^v" ? 16 ; ........: paste
@@ -334,7 +422,7 @@ button(*) {
  ***********************************************************************/
 ; --------------------------------------------------------------------------------
 
-HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
+HznButton(hToolbar, n, nCtl, fCtl?, hTx:=0, bID:=0) {
 	; --------------------------------------------------------------------------------
 	; Step: [OPTIONAL] Block all input while the function running
 	; --------------------------------------------------------------------------------
@@ -373,9 +461,40 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 	Static BM_CLICK				:= 245 ; 0x000000F5
 	Static TB_ISBUTTONPRESSED 	:= 1035 ; 0x040B
 	; --------------------------------------------------------------------------------
+	/*
+	OutputDebug('DefaultDpiAwarenessContext: ' DPI.DefaultDpiAwarenessContext '`n' 'MaximumPerMonitorDpiAwarenessContext: ' DPI.MaximumPerMonitorDpiAwarenessContext '`n')
 	try ControlGetPos(&ctrlx:=0, &ctrly:=0,&ctrlw,&ctrlh, hToolbar, hToolbar)
-	; OutputDebug("&ctrlx: " . ctrlx " &ctrly: " . ctrly " &ctrlw: " . ctrlw " &ctrlh: " . ctrlh . "`n")
-
+	OutputDebug("&ctrlx: " . ctrlx " &ctrly: " . ctrly " &ctrlw: " . ctrlw " &ctrlh: " . ctrlh . "`n")
+	try DPI.ControlGetPos(&dctrlx:=0, &dctrly:=0,&dctrlw,&dctrlh, hToolbar, hToolbar)
+	OutputDebug("&dctrlx: " . dctrlx " &dctrly: " . dctrly " &dctrlw: " . dctrlw " &dctrlh: " . dctrlh . "`n")
+	*/
+	; --------------------------------------------------------------------------------
+	try nmHwnd 	:= GetNearestMonitorInfo('A').Handle
+	try nmName 	:= GetNearestMonitorInfo('A').Name
+	try nmNum 	:= GetNearestMonitorInfo('A').Number
+	try nmPri 	:= GetNearestMonitorInfo('A').Primary
+	try mDPIx 	:= GetNearestMonitorInfo('A').x
+	try mDPIy 	:= GetNearestMonitorInfo('A').y
+	try mDPIw 	:= GetNearestMonitorInfo('A').WinDPI
+	try DPImw 	:= DPI.GetForWindow('A')
+	try DPIsc 	:= DPI.GetScaleFactor(DPImw)
+	try DPIsc1 	:= DPI.GetScaleFactor(mDPIx)
+	; --------------------------------------------------------------------------------
+	OutputDebug('nmHwnd: '	nmHwnd '`n'
+			.	'nmName: '	nmName '`n'
+			.	'nmNum: '	nmNum '`n'
+			.	'nmPri: '	nmPri '`n'
+			.	'mDPIx: '	mDPIx '`n'
+			.	'mDPIy: '	mDPIy '`n'
+			.	'mDPIw: '	mDPIw '`n'
+			.	'DPImw: '	DPImw '`n'
+			.	'DPIsc: '	DPIsc '`n'
+			.	'DPIsc1: '	DPIsc1 '`n'
+			; .	'Scale1: '	scale1 '`n'
+			; .	'Scale2: '	scale2 '`n'
+			; .	'Scale3: '	scale3 '`n'
+			.	'PriDPI: '	A_ScreenDPI '`n'
+		)
 	; --------------------------------------------------------------------------------
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
@@ -394,12 +513,18 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		; --------------------------------------------------------------------------------
 		; Step: [OPTIONAL] Identify if the process is 32 or 64 bit (efficiency step)
 		; --------------------------------------------------------------------------------
-		A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := true) : Is32bit := True
+		A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := false) : Is32bit := true
 		If (A_Is64bitOS) {
-			Try DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := true)
+			Try DllCall("IsWow64Process", "Ptr", hProcess, "Int*", Is32bit := false)
+			Is64 := "True"
+			Is32 := "False"
 		} Else {
-			Is32bit := True
+			Is32bit := true
+			Is64 := "False"
+			Is32 := "True"
 		}
+		
+		OutputDebug('64: ' Is64 '`n' '32: ' Is32 '`n')
 		; --------------------------------------------------------------------------------
 		; Step: Allocate memory for the TBBUTTON structure in the target process's address space
 		; --------------------------------------------------------------------------------
@@ -434,31 +559,57 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		Top 	:= NumGet(RECT, 4, 	"Int")
 		Right 	:= NumGet(RECT, 8, 	"Int")
 		Bottom 	:= NumGet(RECT, 12, "Int")
-		X 		:= Left
-		Y 		:= Top
-		W 		:= Right-Left
-		H 		:= Bottom-Top
+		; --------------------------------------------------------------------------------
+		; Note: Updated 09.11.23
+		X1 		:= Left
+		Y1 		:= Top
+		W1 		:= Right-Left
+		H1 		:= Bottom-Top
+		W 		:= W1/2
+		H 		:= H1/2
+		X2 		:= X1+W
+		Y2 		:= Y1+H
+		X 		:= X2*=DPIsc
+		Y 		:= Y2*=DPIsc
+		; --------------------------------------------------------------------------------
+		OutputDebug('X1:' X1 . ' ' . 'Y1:' . Y1 .  ' ' . 'W1:' . W1 . ' ' . 'H1:' . H1 . '`n'
+			. 'W:' . W . " " . 'H:' . H . '`n'
+			. 'X2:' X2 . ' ' . 'Y2:' . Y2 . '`n'
+			. 'X:' . X . ' ' . 'Y:' . Y . '`n'
+			)
 		; --------------------------------------------------------------------------------
 		/**@function ControlClick()  */
 		idCommand := n + 99
 		; SendMessage(WM_COMMAND, idCommand,,, hToolbar)
 		btnstate := GETBUTTONSTATE(idCommand,hToolbar)
-		if(btnstate = 8)
+
+		; If (!btnstate = 4) || (!btnstate = 6)
+		If (!btnstate = 4) || (!btnstate = 6)
 			{
 				return
-			} else if(btnstate = 1)
-				{
-					return
-				} else
-					{
-						ControlClick("x" (X+W) " y" (Y+H), hToolbar,,,, "NA")
-					}
+				OutputDebug("Return")
+			}
+		; --------------------------------------------------------------------------------
+		; Note: All of these are equivalent as of 09.11.23
+		; ControlClick("x" ((X+(W/2))*DPIsc) " y" ((Y+(H/2))*DPIsc), hToolbar,,,, "NA")
+		; ControlClick("x" (X2*DPIsc) " y" (Y2*DPIsc), hToolbar,,,, "NA")
+		; ControlClick("x" X " y" Y, hToolbar,,,, "NA")
+		; --------------------------------------------------------------------------------
+		/**
+		 * @param Msg := WM_COMMAND
+		 * @param wParam_hi := control defined notification code = not needed here => := 0
+		 * @param wParam_lo := control identifier => idCommand from above
+		 * @param lParam 	:= handle to the control => hToolbar
+		 */
+		Msg := WM_COMMAND, wParam_hi := 0, wParam_lo := idCommand, lParam := control := hToolbar
+		SendMessage(Msg, wParam_hi | wParam_lo,lParam,, hToolbar)
+		; --------------------------------------------------------------------------------
 		; if(btnstate = 4) ? SendMessage(TB_SETSTATE, idCommand, 6 | 0, hToolbar, hToolbar) : SendMessage(TB_SETSTATE, idCommand, 4 | 0, hToolbar, hToolbar)
 		; WM_NCLBUTTONDOWN := 0x00A1
 		; WM_NCLBUTTONUP := 0x00A2
-		; SendMessage(WM_LBUTTONDOWN,,X+(W//2)|Y+(H//2),hToolbar,hToolbar)
+		; SendMessage(WM_LBUTTONDOWN,,X1|Y1,hToolbar,hToolbar)
 		; Sleep(100)
-		; SendMessage(WM_LBUTTONUP,,X+(W//2)|Y+(H//2),hToolbar,hToolbar)
+		; SendMessage(WM_LBUTTONUP,,X1|Y1,hToolbar,hToolbar)
 		; --------------------------------------------------------------------------------
 		; Step: Restore previous and set delay
 		; --------------------------------------------------------------------------------
@@ -470,8 +621,7 @@ HznButton(hToolbar, n, nCtl, fCtl:=0, hTx:=0, bID:=0) {
 		OutputDebug("pID: " targetProcessID "`n")
 		OutputDebug("remoteMemory: " remoteMemory "`n")   
 		OutputDebug("hProcess: " hProcess "`nbytesRead: " bytesRead "`n")
-		OutputDebug("X: " X " Y: " Y " W: " W " H: " H "`n")
-		OutputDebug("x" (X+W) " y" (Y+H) "`n")
+		OutputDebug('btnstate: ' btnstate '`n')
 		; --------------------------------------------------------------------------------
 		BlockInput(0) ; 1 = On, 0 = Off
 		; --------------------------------------------------------------------------------
@@ -485,8 +635,13 @@ GETBUTTONSTATE(idButton,hTb){
 	TB_GETSTATE := 0x0412
 	GETSTATE := SendMessage(TB_GETSTATE, idButton, 0, hTb, hTb) ; hope that 4KB is enough ; just a test
 	btnstate := SubStr(GETSTATE,1,1)
+	If (btnstate == 4) || (btnstate == 6){
+		return btnstate
+	}
+	MsgBox("That button is not available." '`n' 'idButton: ' idButton '`n' 'btnstate: ' btnstate)
 	OutputDebug("btnstate: " . btnstate . "`n")
-	return btnstate
+	; return btnstate
+	return
 }
 ; --------------------------------------------------------------------------------
 /**

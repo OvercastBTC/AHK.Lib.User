@@ -264,7 +264,7 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	buttons := BUTTONCOUNT
 	OutputDebug("buttons: " . buttons . "`n") 
 	RECT := Buffer(16,0)
-	BtnSTRUCT := Buffer(32,0)
+	BtnStruct := Buffer(32,0)
 	/*
 	typedef struct _TBBUTTON {
 	int       iBitmap; 
@@ -291,7 +291,7 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 
 		GETBUTTON := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer, ctrlhwnd, ctrlhwnd)
 
-		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnSTRUCT, 32)
+		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
 		OutputDebug("GETBUTTON: " GETBUTTON "`n")
 		idButton := NumGet(BtnStruct, 4, "IntP")
 		OutputDebug("idButton: " . idButton . "`n")
@@ -412,127 +412,58 @@ GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer)
 	*/
 	return rectangle
 }
-
-RemoteBuffer(Is32bit, hpRemote)
+; --------------------------------------------------------------------------------
+RemoteBuffer(hpRemote, Is32bit?)
 {
-	Static 	MEM_PHYSICAL    		:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
-	RPtrSize := Is32bit ? 4 : 8
-	TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
+	Static 	MEM_PHYSICAL := 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+	try
+		RPtrSize := Is32bit ? 4 : 8
+	catch
+		A_Is64bitOS ? RPtrSize := 8 : RPtrSize := 4
+	TBBUTTON_SIZE := 8 + (RPtrSize * 3)
 	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
 	return remote_buffer
 }
-
+; --------------------------------------------------------------------------------
 Win32_64_Bit(hpRemote)
 {
-	A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := 0) : Is32bit := 1
-	If (A_Is64bitOS) {
-		Try DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true)
-	} Else {
-		Is32bit := True
+	A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := 0) : DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := 1)
+	If (A_Is64bitOS)
+		{
+			Static Is32bit := 0
+		Try
+			DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit)
+		catch
+			Is32bit := 1
+		Is32bit = 0 ? 'False' : 'True'
 	}
-	return Is32bit
 	OutputDebug("Is32bit: " Is32bit "`n")
+	return Is32bit
 }
-
+; --------------------------------------------------------------------------------
 ReadRemoteBuffer(hpRemote, RemoteBuffer, &LocalVar, bytes) {
 	DllCall("ReadProcessMemory", "Ptr", hpRemote, "Ptr", RemoteBuffer, "Ptr", LocalVar, "UInt", bytes, "UInt", 0)
 
 }
-
+; --------------------------------------------------------------------------------
 /**
  * Function ..: getbuttonstate()
  * @param idButton
  * @param hTB := ctrlhwnd
  */
-GETBUTTONSTATE(idButton,hTb){
+GETBUTTONSTATE(idButton,hTb)
+{
 	TB_GETSTATE := 0x0412
-	GETSTATE := SendMessage(TB_GETSTATE, idButton, 0, hTb, hTb) ; hope that 4KB is enough ; just a test
+	GETSTATE := SendMessage(TB_GETSTATE, idButton, 0, hTb, hTb)
 	btnstate := SubStr(GETSTATE,1,1)
+	If (btnstate == 4) || (btnstate == 6){
+		return btnstate
+	}
+	btnname := idButton = 100 ? 'Bold' : idButton = 101 ? 'Italic' : idButton = 102 ? 'Underline' : ''
+	MsgBox(   'The ' btnname
+			. ' button is not available.' '`n'
+			. 'idButton: ' idButton '`n'
+			. 'btnstate: ' btnstate)
 	OutputDebug("btnstate: " . btnstate . "`n")
 	return btnstate
-}
-
-CLICKBUTTONRECT(hTb, idButton){
-	static ctrlhwnd := hTb
-	Static 	WM_COMMAND				:= 273 ; 0x111
-	Static 	TB_PRESSBUTTON			:= 1027 ; 0x403
-	Static 	TB_BUTTONCOUNT  		:= 1048 ; 0x0418, WM_USER+24
-	Static 	TB_GETBUTTON    		:= 1047 ; 0x417,
-	Static 	TB_GETITEMRECT  		:= 1053 ; 0x41D, WM_USER+29
-	Static 	MEM_COMMIT      		:= 4096 ; 0x1000, ; 0x00001000, ; via MSDN Win32 
-	Static 	MEM_RESERVE     		:= 8192 ; 0x2000, ; 0x00002000, ; via MSDN Win32
-	Static 	MEM_PHYSICAL    		:= 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
-	Static 	MEM_PROTECT     		:= 64 ; 0x40 ;  
-	Static 	MEM_RELEASE     		:= 32768 ; 0x8000 ; 
-	Static 	WM_USER					:= 1024 ; 0x400
-	Static 	TB_GETSTATE				:= 1042 ; WM_USER+18
-	Static 	TB_GETBITMAP			:= 1068 ; WM_USER+44
-	Static 	TB_GETBUTTONSIZE		:= 1082 ; WM_USER+58
-	Static 	TB_GETBUTTON			:= 1047 ; WM_USER+23
-	Static 	TB_GETBUTTONTEXTA		:= 1069 ; WM_USER+45
-	Static 	TB_GETBUTTONTEXTW		:= 1099 ; WM_USER+75
-	Static 	WM_GETDLGCODE			:= 135
-	Static 	WM_NEXTDLGCTL			:= 40
-	Static 	TB_COMMANDTOINDEX		:= 1049
-	Static 	TB_GETBUTTONINFOW		:= 1087
-	Static 	TB_SETSTATE 			:= 1041 ; 0x0411
-	Static 	TBSTATE_PRESSED			:= 2 ; 0x02 
-	Static 	WM_LBUTTONDOWN 			:= 513 ; 0x201
-	Static 	WM_LBUTTONUP 			:= 515 ; 0x202
-
-	x1 :=0, x2 :=0, y1 :=0, y2 :=0
-	ControlGetPos(&ctrlx:=0, &ctrly:=0, &ctrlw:=0, &ctrlh:=0,hTb, hTb)
-	Static gbCtl := ctrlhwnd
-	Static tbHwnd := ctrlhwnd
-	Static gbCtl := Integer(ctrlhwnd)
-	rect := Buffer(16,0)
-	BtnStruct := Buffer(32,0)
-	pid_target := WinGetPID(hTb) ; ==> replaced with above DllCall()
-	hpRemote := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", pid_target, "Ptr")
-	; --------------------------------------------------------------------------------
-	A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := 0) : Is32bit := 1
-	If (A_Is64bitOS) {
-		Try DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := true)
-	} Else {
-		Is32bit := True
-	}
-	OutputDebug("Is32bit: " Is32bit "`n")
-	; --------------------------------------------------------------------------------
-	RPtrSize := Is32bit ? 4 : 8
-	TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
-	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
-	; --------------------------------------------------------------------------------
-	Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0, control := ctrlhwnd
-	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, "ahk_id " ctrlhwnd)
-	buttons := SendMessage(TB_BUTTONCOUNT, wParam, lParam, hTb,hTb)
-	buttons := BUTTONCOUNT
-	OutputDebug("buttons: " . buttons . "`n") 
-
-
-	GETBUTTON := SendMessage(TB_GETBUTTON, 101, remote_buffer,hTb,hTb)
-	ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
-	;idButton := NumGet(BtnStruct, 4, "IntP")
-	SendMessage(TB_GETITEMRECT, 1, remote_buffer, , "ahk_id " ctrlhwnd)
-	
-	ReadRemoteBuffer(hpRemote, remote_buffer, &rect, 32)
-	oldx1:=x1
-	oldx2:=x2
-	oldy1:=y1
-	x1 := NumGet(rect, 0, "Int") 
-	x2 := NumGet(rect, 8, "Int") 
-	y1 := NumGet(rect, 4, "Int") 
-	y2 := NumGet(rect, 12, "Int")
-	
-	; FileAppend("Index:" A_Index . "(idButton:" . idButton . ")" . " State: " btnstate . " " . "Cmd2Indx: " . Cmd2Indx . " " . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n", "_emeditor_toolbar_buttons.txt")  ; debug
-	FileAppend("(idButton:" . idButton . ")" . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n", "_emeditor_toolbar_buttons.txt")  ; debug
-	; --------------------------------------------------------------------------------
-	OutputDebug("Index:" A_Index . "(idButton:" . idButton . ")" . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n")                                 ; debug
-	; --------------------------------------------------------------------------------
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
-	GETBUTTONSTATE(idButton,hTb)
-	; try ControlClick(ctrlx + (x2+x1//2), ctrly + (y2+y1//2), hTb,,,, "NA")
-	try Click(ctrlx + (x2+x1//2) ctrly + (y2+y1//2)) ;, hTb,,,, "NA")
-	GETBUTTONSTATE(idButton,hTb)
-	DllCall("VirtualFreeEx", "UInt", hpRemote, "UInt", remote_buffer, "UInt", 0, "UInt", 0x8000)
-	DllCall("CloseHandle", "UInt", hpRemote)
 }
