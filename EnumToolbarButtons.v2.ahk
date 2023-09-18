@@ -21,7 +21,18 @@ SetControlDelay(-1)
 SetMouseDelay(-1)
 SetWinDelay(-1)
 ; --------------------------------------------------------------------------------
-DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3
+DefaultDpiAwarenessContext := MaximumPerMonitorDpiAwarenessContext
+try
+	DllCall("SetThreadDpiAwarenessContext", "ptr", MaximumPerMonitorDpiAwarenessContext, "ptr")
+catch 
+	DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+else
+	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+; --------------------------------------------------------------------------------
+#HotIf WinActive(A_ScriptName " - Visual Studio Code")
+~^s::Run(A_ScriptName)
+#HotIf
 ; --------------------------------------------------------------------------------
 #HotIf WinActive("ahk_exe hznhorizon.exe")
 
@@ -54,7 +65,7 @@ button(*) {
 			; :  A_ThisHotkey = "^y" ? 112
 			; :  A_ThisHotkey = "^-" ? 113 : 21 ; ...: redo
 	; arbtn := EnumToolbarButtons(hTb)
-	SendMessage(WM_COMMAND, idBtn,,, hTb)
+	SendMessage(WM_COMMAND, idBtn,hTb,, hTb)
 	; HznBtns := DisplayObj(arbtn)
 	; MsgBox(HznBtns)
 	SendLevel(0)
@@ -237,9 +248,9 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 */
 	; --------------------------------------------------------------------------------
 	; Step: Get the toolbar "thread" process ID (PID) 
-	DllCall("GetWindowThreadProcessId", "Ptr", ctrlhwnd, "UInt*", &targetProcessID:=0)
+	; DllCall("GetWindowThreadProcessId", "Ptr", ctrlhwnd, "UInt*", &targetProcessID:=0)
 	pid_target := WinGetPID(ctrlhwnd) ; ==> replaced with above DllCall()
-	OutputDebug("pid_targetW: " . pid_target . "`n" "targetProcessID: " targetProcessID "`n")
+	; OutputDebug("pid_targetW: " . pid_target . "`n" "targetProcessID: " targetProcessID "`n")
 	; Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
 	; --------------------------------------------------------------------------------
 	; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
@@ -249,11 +260,11 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	; --------------------------------------------------------------------------------
 	; Step: [OPTIONAL] Identify if the process is 32 or 64 bit (efficiency step)
 	; --------------------------------------------------------------------------------
-	Is32bit := Win32_64_Bit(hpRemote)
+	; Is32bit := Win32_64_Bit(hpRemote)
 	; --------------------------------------------------------------------------------
 	; Step: Allocate memory for the TBBUTTON structure in the target process's address space
 	; --------------------------------------------------------------------------------
-	remote_buffer := RemoteBuffer(Is32bit, hpRemote)
+	remote_buffer := RemoteBuffer(hpRemote, Is32bit:=0)
 	; --------------------------------------------------------------------------------
 	Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0, control := ctrlhwnd
 	; --------------------------------------------------------------------------------
@@ -376,7 +387,7 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 hp_Remote(pid_target)
 {
 	; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
-	hpRemote := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", pid_target, "Ptr")
+	hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
 	; hpRemote: Remote process handle
 	if(!hpRemote)
 	{
@@ -386,14 +397,14 @@ hp_Remote(pid_target)
 	return hpRemote
 }
 
-GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer)
+GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
 {
 	rectangle := Array()
 	Static 	TB_GETITEMRECT  		:= 1053 ; 0x41D, WM_USER+29
-	Cmd2Indx := COMMANDTOINDEX
+	Cmd2Indx := COMMANDTOINDEX-1
 	C2I_0_base := Cmd2Indx
-	SendMessage(TB_GETITEMRECT, C2I_0_base-1, remote_buffer, , ctrlhwnd)
-	/*
+	SendMessage(TB_GETITEMRECT, Cmd2Indx, remote_buffer, , ctrlhwnd)
+	
 	ReadRemoteBuffer(hpRemote, remote_buffer, &RECT, 32)
 	x1 := NumGet(RECT, 0, "Int") 
 	x2 := NumGet(RECT, 8, "Int") 
@@ -408,8 +419,6 @@ GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer)
 	W 		:= Right-Left
 	H 		:= Bottom-Top
 	rectangle.Push({x1:Left, x2:Right, y1:Top, y2:Bottom, W:W, H:H})
-	return rectangle
-	*/
 	return rectangle
 }
 ; --------------------------------------------------------------------------------
