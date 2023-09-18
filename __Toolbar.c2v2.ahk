@@ -1,4 +1,4 @@
-﻿/************************************************************************
+/************************************************************************
  * function ......: Horizon Button ==> A Horizon function library
  * @description ..: This library is a collection of functions and buttons that deal with missing interfaces with Horizon.
  * @file HznPlus.v2.ahk
@@ -412,7 +412,8 @@ Toolbar_CheckButton(hTb, WhichButton, bCheck:=1) {
 	static TB_CHECKBUTTON := 0x402, TB_GETBUTTON := 0x0417
 
     if (WhichButton >= 1){
-		VarSetStrCapacity(&TBB, 20) ; V1toV2: if 'TBB' is NOT a UTF-16 string, use 'TBB := Buffer(20)'
+		; VarSetStrCapacity(&TBB, 20) ; V1toV2: if 'TBB' is NOT a UTF-16 string, use 'TBB := Buffer(20)'
+		TBB := Buffer(20)
 		if (type(TBB)="Buffer")
 		{ ;V1toV2 If statement may be removed depending on type parameter
 			GETBUTTON := SendMessage(TB_GETBUTTON, --WhichButton, TBB, ,  hTb)
