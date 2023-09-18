@@ -1116,9 +1116,9 @@ Toolbar_compileButtons(hTb, Btns, &cBTN) {
 	bMenu := WinGetStyle( hTb)
 	bMenu := bMenu & WS_CLIPSIBLINGS		
 
-	aBTN := Toolbar(hTb "aBTN")
+	aBTN := Toolbar(hTb " aBTN")
 	if (aBTN = "")
-		aBTN := Toolbar_malloc( 50 * 20 + 4),  Toolbar(hTb "aBTN", aBTN)	 ;if space for array of * buttons isn't reserved and there are definitions of * buttons reserve it for 50 buttons + some more so i can keep some data there...
+		aBTN := Toolbar_malloc( 50 * 20 + 4),  Toolbar(hTb " aBTN", aBTN)	 ;if space for array of * buttons isn't reserved and there are definitions of * buttons reserve it for 50 buttons + some more so i can keep some data there...
 
 	; StrReplace() is not case sensitive
 	; check for StringCaseSense in v1 source script
