@@ -15,23 +15,23 @@ CoordMode("ToolTip", "Screen")
 ; Sub-Section .....: Initiation Section
 ; --------------------------------------------------------------------------------
 #HotIf WinActive("ahk_exe Code.exe")
-~^s::
-{
-	Script.Reload()
-}
+~^s::Run(A_ScriptName)
 #HotIf
+; --------------------------------------------------------------------------------
 #1::
-A_Process(*)
+A_Process(A_Process)
 {
 	Static HSHELL_RUDEAPPACTIVATED := 32772
-	&A_Process	; set a super-global variable that can be accessible within all functions by default.
+	; Global A_Process	; set a super-global variable that can be accessible within all functions by default.
 	apGui := Gui()
-	apGui.Opt("+LastFound")
-	DllCall('RegisterShellHookWindow', 'UInt', WinExist())
-	;OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), WinActiveChange) ; original
+	apGui.Opt('+LastFound')
+	DllCall('RegisterShellHookWindow', 'UInt')
+	; OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), WinActiveChange) ; original
 	;OnMessage(DllCall("RegisterWindowMessage", Str, "SHELLHOOK"), "WinActiveChange1")
 	Msg := DllCall('RegisterWindowMessage', 'Str', 'SHELLHOOK')
-	OnMessage Msg, WinActiveChange2 ;(HSHELL_RUDEAPPACTIVATED,hwnd := DllCall("GetForegroundWindow", "Ptr")))
+	
+	OnMessage( Msg, WinActiveChange2) ;(HSHELL_RUDEAPPACTIVATED,hwnd := DllCall("GetForegroundWindow", "Ptr")))
+	ToolTip(A_Process)
 	Return A_Process
 }
 ; --------------------------------------------------------------------------------
@@ -41,15 +41,16 @@ A_Process(*)
 ; Comment: [x] NOT IN USE
 ; --------------------------------------------------------------------------------
 
-WinActiveChange(wParam, hwnd*)
+WinActiveChange(wParam?, hwnd?)
 {
 	
 	static HSHELL_RUDEAPPACTIVATED := 32772	
 	if (wParam != HSHELL_RUDEAPPACTIVATED) ; only listen for HSHELL_RUDEAPPACTIVATED
 		return
 	
-	A_Process := WinGetProcessName("A")
-	ToolTip(a_process, 0, 0, 1)
+	A_Process := WinGetProcessName('A')
+	; ToolTip(a_process, 0, 0, 1)
+	MsgBox(A_Process)
 	return A_Process
 }
 ; --------------------------------------------------------------------------------
@@ -113,7 +114,8 @@ WinActiveChange2(wParam, hwnd*) ; hwnd)
 ; Sub-Section .....: getActiveProcessName()
 ; Description .....: maybe a better version of WinActiveChange()
 ; --------------------------------------------------------------------------------
-getActiveProcessName() {
+getActiveProcessName()
+{
 	handle := DllCall("GetForegroundWindow", "Ptr")
 	DllCall("GetWindowThreadProcessId", "Int", handle, "int*", &pid)
 	global true_pid := pid
@@ -130,7 +132,8 @@ getActiveProcessName() {
 	return pname
 }
 
-enumChildCallback(hwnd, pid) {
+enumChildCallback(hwnd, pid)
+{
 	DllCall("GetWindowThreadProcessId", "Int", hwnd, "int*", &child_pid)
 	if (child_pid != pid)
 		global true_pid := child_pid
@@ -142,13 +145,13 @@ enumChildCallback(hwnd, pid) {
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Script Name, Startup Path, and icon
 ; --------------------------------------------------------------------------------
-ICON := "C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\ICON\DllCall.ico"
+ICON := 'C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\ICON\DllCall.ico'
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Create Tray Menu
 ; --------------------------------------------------------------------------------
 
 ; Tray:= A_TrayMenu
-TraySetIcon ICON ; this changes the icon into a little dllcall thing.
+TraySetIcon(ICON) ; this changes the icon into a little dllcall thing.
 ; Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
 ; addTrayMenuOption("Made with nerd by Adam Bacon and Terry Keatts", "madeBy")
 ; addTrayMenuOption()
@@ -156,5 +159,3 @@ TraySetIcon ICON ; this changes the icon into a little dllcall thing.
 ; Tray.fileExist(Startup_Shortcut) ? "check" : "unCheck"("Run at startup") ; update the tray menu status on startup
 ; addTrayMenuOption()
 ; Tray.AddStandard()
-
-#Include <Abstractions\Script>

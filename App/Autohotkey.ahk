@@ -1,6 +1,6 @@
 #Include <Utils\Win>
 
-class Autohotkey {
+class AutoHotkey {
 
 	static path := A_ProgramFiles "\AutoHotkey"
 	static currVersion := this.path "\v2"

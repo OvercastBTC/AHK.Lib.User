@@ -22,30 +22,58 @@
 ;@Ahk2Exe-AddResource HznPlus256.ico, 208  ; Replaces 'S on red'
 ;@include-winapi
 ; --------------------------------------------------------------------------------
-#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
+#Include <Directives\AE.v2>
+; AE.__Init() ; ! in test phase to use a class for Auto Execution Section
+; --------------------------------------------------------------------------------
+/**
+ * @example disabled due to above #Include <Directives\AE.v2>
+ * ! EVERYTHING below here appears active, but is only visible due to @example
+ * @example
+; --------------------------------------------------------------------------------
 #Warn All, OutputDebug
 #SingleInstance Force
+#WinActivateForce
+#Requires AutoHotkey v2
+; --------------------------------------------------------------------------------
+#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
+A_MaxHotkeysPerInterval := 1000
+; --------------------------------------------------------------------------------
 SendMode("Input")
 SetWorkingDir(A_ScriptDir)
 SetTitleMatchMode(2)
 ; --------------------------------------------------------------------------------
-DetectHiddenText(true)
-DetectHiddenWindows(true)
+_AE_DetectHidden(true)
+_SetDelays(-1)
+_PerMonitor_DPIAwareness()
 ; --------------------------------------------------------------------------------
-#Requires AutoHotkey v2
+_AE_DetectHidden(bool?)
+{
+    bool := true
+	DetectHiddenText(bool)
+    DetectHiddenWindows(bool)
+}
 ; --------------------------------------------------------------------------------
-SetControlDelay(-1)
-SetMouseDelay(-1)
-SetWinDelay(-1)
+_SetDelays(n?) {
+	n := -1
+	SetControlDelay(n)
+	SetMouseDelay(n)
+	SetWinDelay(n)
+}
 ; --------------------------------------------------------------------------------
-MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3
-DefaultDpiAwarenessContext := MaximumPerMonitorDpiAwarenessContext
-try
-	DllCall("SetThreadDpiAwarenessContext", "ptr", MaximumPerMonitorDpiAwarenessContext, "ptr")
-catch 
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
-else
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+_PerMonitor_DPIAwareness()
+{
+	MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3
+	Global DefaultDpiAwarenessContext := MaximumPerMonitorDpiAwarenessContext, A_DPI := DefaultDpiAwarenessContext
+	try
+		DllCall("SetThreadDpiAwarenessContext", "ptr", MaximumPerMonitorDpiAwarenessContext, "ptr")
+	catch 
+		DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+	else
+		DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+	return A_DPI
+}
+* ! End of @example
+*/
 ; --------------------------------------------------------------------------------
 ; #Include <gdi_plus_plus>
 ; #Include <Gdip_All>
@@ -56,8 +84,7 @@ else
 #Include <DPI>
 #Include <GetNearestMonitorInfo().v2>
 ; #Include <Abstractions\Script>
-
-
+#Include <Directives\__cHznToolbar>
 ; --------------------------------------------------------------------------------
 
 ; //TODO: 2023.07.17 ...: Work on the below but consider if needed due to new FreeLibraryAndExitThread
@@ -80,7 +107,6 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 #HotIf WinActive(A_ScriptName " - Visual Studio Code")
 ~^s::Run(A_ScriptName)
 #HotIf
-
 ; -------------------------------------------------------------------------------------------------
 /************************************************************************
 * @Title .........: Create Tray Menu
@@ -98,23 +124,29 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 return
 ; --------------------------------------------------------------------------------------------------
 /************************************************************************
-;Description: Horizon Hotkeys
-;Description: Hotkeys (shortcuts) for normal Windows hotkeys that should exist
+; function ...: Horizon Hotkeys
+@description: Hotkeys (shortcuts) for normal Windows hotkeys that should exist
 @author OvercastBTC
 @notes
 @function Italics - (CTRL+I)
 @function Bold - (CTRL+B)
 @function Underline - (CTRL+U) (where applicable)
 @function SelectAll - (CTRL+A)
-@function Save - (CTRL+S)
+@function Save - (CTRL+S) (still a work in progress)
  ***********************************************************************/
 
-#HotIf WinActive("ahk_exe hznhorizon.exe")
+#HotIf WinActive('ahk_exe hznhorizon.exe')
 
 ^b::button(100)			; bold
 ^i::button(101)			; italics
 ^u::button(102)			; underline
 ; idCommand 103 thru 108 are disabled (btnstate = 8)
+; button(103) = Separator
+; button(104) = Align Left
+; button(105) = Align Right
+; button(106) = Align Center
+; button(107) = Justitfied
+; button(108) = Separator
 ; ^x::button(109) 		; cut
 ; ^c::button(110) 		; copy
 ; ^v::button(111) 		; paste
@@ -122,7 +154,9 @@ return
 ; ^y::button(114) 		; redo
 ; idCommand (115) unknown but does something?
 ^+b::button(116) 		; Bulleted List
-^F5::
+; ^F5::
+F7::
+^F7::
 F5::button(117) 		; spell check
 ; idCommand (118) unknown (btnstate = 1)
 ^+s::button(119) 		; super|sub script
@@ -130,15 +164,53 @@ F5::button(117) 		; spell check
 ^r::
 ^+f::HznFindReplace()	; find/replace (focused tab) and find
 ^a::HznSelectAll()
-^v::HznPaste()
+^+v::HznPaste()
 ^+c::HznGetText()
-^s::HznSave()
-; ^F4::HznClose() 		; fix [] => need to only be on certain screen(s).
+~^s::HznSave()
+^F4::HznClose() 		; fix [] => need to only be on certain screen(s).
 ^+9::HznEnableButtons() ; works!!!
 ^+8::HznTbCustomize() 	; works!!! enables and shows all buttons on the toolbar
-
+^+7:: 					; ! test hotkey
+{
+	hTb := HznToolbar._hTb()
+	; ControlSetEnabled(1,nCtl)
+	n:=SendMessage(WM_ENABLE := 0x000A, true,,hTb,hTb)
+	n1:=DllCall('EnableWindow', 'Ptr', hTb, 'Int', true)
+	; DllCall ("CreateWindowEx"
+	; 				, "Uint", 0
+	; 				, "str",  'Toolbar32'         		; ClassName
+	; 				, "str",  "msvb_lib_toolbar"  		; WindowName
+	; 				, "Uint", 0x40000000 | 0x10000000 	; WS_CHILD, WS_VISIBLE
+	; 				, "int",  0                       	; Left
+	; 				, "int",  0                       	; Top
+	; 				, "int",  200                     	; Width
+	; 				, "int",  200                     	; Height
+	; 				, "Uint", hCtl	            			; hWndParent
+	; 				, "Uint", 0                       	; hMenu
+	; 				, "Uint", fCtl_I                    ; hInstance
+	; 				, "Uint", 0)
+	WinSetTransparent(255)
+	; Dllcall ("SetLayeredWindowAttributes", "ptr", hTb, "ptr", 0, "char", 255, "uint", 2)
+	SendMessage(0x421,,,,hTb)
+	SendMessage(0x421,,,,hTb)
+	n2:=DllCall('ShowWindow', 'Ptr', hTb, 'Int', 1)
+	; n3:=DllCall('WinMain', 'UInt', hTb,'UInt',0, 'Int', 1, 'Str','ahk_exe hznhorizon.exe')
+	n3:=DllCall('IsWindowVisible', 'Ptr', hTb)
+	MsgBox(hCtl '`n'
+			. fCtl '`n'
+			; . hCtrl '`n'
+			. fCtlI '`n'
+			. nCtl '`n'
+			. hTb '`n'
+			. n '`n'
+			. n1 '`n'
+			. n2 '`n'
+			. n3 '`n'
+			)
+	return		
+}
 #HotIf
-
+; _hCtl() => this.hCtl := ControlGetFocus('A') ; *works
 ; --------------------------------------------------------------------------------
 
 ; --------------------------------------------------------------------------------
@@ -170,17 +242,13 @@ HznFindReplace()
 
 HznSave()
 {
-	
 	idWin := WinGetID('A')
+	Sleep(100)
 	WinActivate(idWin)
 	; --------------------------------------------------------------------------------
 	state_Alt := GetKeyState('Alt')
 	state_Lalt := GetKeyState('LAlt')
 	state_Ralt := GetKeyState('RAlt')
-	; MsgBox(	state_Alt '`n'
-	; 	.	state_Lalt '`n'
-	; 	.	state_Ralt '`n'
-	; 	)
 	If (!state_Alt = 0) || (!state_Lalt = 0) || (!state_Ralt = 0)
 		{
 			SendEvent('f') ; SendEvent required
@@ -201,13 +269,9 @@ HznSave()
  * @author OvercastBTC 
  * @author Descolada and his UIA library and functions
  * @description Horizon Close Button (Ctrl-F4) ==> ≠ Alt-F4
- * @param Msg - EM_SETSEL := 177 - the Windows API message for "Set Selection"
- * @param wParam - := 0
- * @param lParam := -1
 ***********************************************************************/
 ; --------------------------------------------------------------------------------
-WM_MENUSELECT := 0x011F
-WM_INITMENU := 0x0116
+
 HznClose(*)
 {
 	; prevents the user from doing anything to screw it up by blocking all input
@@ -236,6 +300,7 @@ HznClose(*)
 	Sleep(300) ; <==== Need to change this to a WinWaitActive scenario, but still having trouble getting any data
 	Send('c')
 	; --------------------------------------------------------------------------------
+	BlockInput(0)
 	return
 	/**@isthisneeded ;Note ???
 	*/
@@ -258,12 +323,11 @@ HznClose(*)
 HznSelectAll(*)
 {
 	; --------------------------------------------------------------------------------
-	fCtl := ControlGetClassNN(ControlGetFocus('A'))
-	hCtl := ControlGethWnd(fCtl, 'A')
+	hCtl := HznToolbar._hCtl()
 	; --------------------------------------------------------------------------------
 	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
 	; --------------------------------------------------------------------------------
-	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
+	DllCall('SendMessage', 'UInt', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
 	; --------------------------------------------------------------------------------
 	return
 }
@@ -278,7 +342,7 @@ HznSelectAll(*)
 ***********************************************************************/
 HznGetText(*)
 {
-	hCtl := ControlGetFocus('A')
+	hCtl := HznToolbar._hCtl()
 	text := A_Clipboard := ControlGetText(hCtl)
 	; --------------------------------------------------------------------------------
 	OutputDebug(text)
@@ -287,30 +351,6 @@ HznGetText(*)
 	; --------------------------------------------------------------------------------
 	return text
 }
-; --------------------------------------------------------------------------------
-/************************************************************************
- * Function ..: HznGet()
- * @author ...: OvercastBTC
- * @param hCtl ........: Gets the handle (hwnd) to the control in focus
- * @param A_Clipboard .: The AHK builtin clipboard
- * @returns {text in the control (RT6TextBox or TX11)}
-***********************************************************************/
-__HznNew(&hCtl, &fCtl, &fCtlInstance, &nCtl, &hTb, &hTx, &pID, &targetProcessID)
-{
-	SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
-	BlockInput(1) ; 1 = On, 0 = Off
-	try
-		hCtl := ControlGetFocus('A')
-		fCtl := ControlGetClassNN(hCtl)
-		fCtlInstance := SubStr(fCtl, -1, 1)
-		nCtl := "msvb_lib_toolbar" fCtlInstance
-		hTb := ControlGethWnd(nCtl, "A")
-		hTx := ControlGethWnd(fCtl, "A")
-		pID := WinGetPID(hTb)
-		DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &targetProcessID:=0)
-	return
-}
-; --------------------------------------------------------------------------------
 ; --------------------------------------------------------------------------------
 /************************************************************************
  * Function ..: HznPaste() (Ctrl+Shift+v)
@@ -327,7 +367,7 @@ __HznNew(&hCtl, &fCtl, &fCtlInstance, &nCtl, &hTb, &hTx, &pID, &targetProcessID)
 HznPaste(*)
 {
 	; --------------------------------------------------------------------------------
-	hCtl := __HznNew
+	hCtl := HznToolbar._hCtl()
 	; --------------------------------------------------------------------------------
 	Static Msg := WM_PASTE := 770, wParam := 0, lParam := 0
 	; --------------------------------------------------------------------------------
@@ -340,9 +380,7 @@ HznEnableButtons(hTb?)
 {
 	SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
 	BlockInput(1) ; 1 = On, 0 = Off
-	try
-		fCtl := ControlGetClassNN(ControlGetFocus('A')), fCtlInstance := SubStr(fCtl, -1, 1), nCtl := "msvb_lib_toolbar" fCtlInstance, hTb := ControlGethWnd(nCtl, "A")
-		, hTx := ControlGethWnd(fCtl, "A"), pID := WinGetPID(hTb)
+	hTb := HznToolbar().__HznNew().hTb
 	; --------------------------------------------------------------------------------
 	Static   WM_COMMAND := 273, TB_GETBUTTON:= 1047, TB_BUTTONCOUNT:= 1048,TB_COMMANDTOINDEX := 1049
 			,TB_GETITEMRECT := 1053,MEM_PHYSICAL := 4,MEM_RELEASE := 32768,TB_GETSTATE := 1042
@@ -350,14 +388,14 @@ HznEnableButtons(hTb?)
 	; --------------------------------------------------------------------------------
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
-	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0, , Integer(hTb))
+	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0,, hTb)
 	; --------------------------------------------------------------------------------
 	; Step: Use the @params to press the button
 	; --------------------------------------------------------------------------------
 	Loop buttonCount
 		{
 			idCommand := A_Index +99
-			SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED, ,hTb)
+			SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 		}	
 	return
 }
@@ -372,11 +410,11 @@ HznTbCustomize(hTb?)
 {
 	SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
 	BlockInput(1) ; 1 = On, 0 = Off
-	Static TB_CUSTOMIZE := 0x41B, wParam := 0, lParam := 0, control := ''
-	try
-		fCtl := ControlGetClassNN(ControlGetFocus('A')), fCtlInstance := SubStr(fCtl, -1, 1), nCtl := "msvb_lib_toolbar" fCtlInstance, hTb := ControlGethWnd(nCtl, 'A')
-		, hTx := ControlGethWnd(fCtl, 'A'), pID := WinGetPID(hTb)
-	SendMessage(TB_CUSTOMIZE, wParam, lParam,, hTb) ;wow, this works!!!
+	hTb := HznToolbar._hTb()
+	Static TB_CUSTOMIZE := 1051, TB_CUSTOMIZE := 0x41B,wParam := 0, lParam := 0, control := hTb
+	try SendMessage(TB_CUSTOMIZE, wParam, lParam,control, hTb) ;wow, this works!!!
+	BlockInput(0)
+	SendLevel(0)
 	return
 }
 ; -------------------------------------------------------------------------------------------------
@@ -387,18 +425,19 @@ HznTbCustomize(hTb?)
  * @param A_ThisHotkey - AHK's built in variable.
  * @param idCommand .: optional => idCommand := 0 (preset value, else => idCommand?)
 ***********************************************************************/
-; -------------------------------------------------------------------------------------------------
-TBSTATE_ENABLED := 0x04
-TB_SETSTATE := 0x0411
 button(idCommand:=0)
 {
 	SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
 	BlockInput(1) ; 1 = On, 0 = Off
-	try
-		fCtl := ControlGetClassNN(ControlGetFocus('A')), fCtlInstance := SubStr(fCtl, -1, 1), nCtl := "msvb_lib_toolbar" fCtlInstance, hTb := ControlGethWnd(nCtl, "A")
-		, hTx := ControlGethWnd(fCtl, "A"), pID := WinGetPID(hTb)
+	; try
+	; 	fCtl := ControlGetClassNN(ControlGetFocus('A')), fCtlInstance := SubStr(fCtl, -1, 1), nCtl := "msvb_lib_toolbar" fCtlInstance, hTb := ControlGethWnd(nCtl, "A")
+	; 	, hTx := ControlGethWnd(fCtl, "A"), pID := WinGetPID(hTb)
+	hTb := HznToolbar._hTb()
+	nCtl := HznToolbar._nCtl()
+	
+	
 	; --------------------------------------------------------------------------------
-	HznEnableButtons()
+	HznEnableButtons(hTb)
 	; --------------------------------------------------------------------------------
 	; try	(idCommand = 102) ? SendMessage(TB_SETSTATE := 0x0411, 102, 0|TBSTATE_ENABLED := 0x04, ,hTb) : idCommand
 	; try	(idCommand = 102) ? SendMessage(TB_ENABLEBUTTON := 0x0401, 102, true, ,hTb) : idCommand
@@ -431,6 +470,13 @@ button(idCommand:=0)
 	return
 }
 ; --------------------------------------------------------------------------------
+/************************************************************************
+ * @function idButton()
+ * @author ....: Descolada, OvercastBTC
+ * @Desc ......:  Call the Horizon msvb_lib_toolbar buttons using the button() function
+ * @param A_ThisHotkey - AHK's built in variable.
+ * @param idBtn .: optional => idCommand := 0 (preset value, else => idCommand?)
+***********************************************************************/
 idButton(buttonhotkey?)
 {
 	try 
@@ -476,7 +522,9 @@ HznButton(hTb, nCtl, idCommand, n?, pID?, fCtl?, hTx?, fCtlInstance?) {
 	; --------------------------------------------------------------------------------
 	; Step: [OPTIONAL] Block all input while the function running
 	; --------------------------------------------------------------------------------
+	SendLevel(5)
 	BlockInput(1) ; 1 = On, 0 = Off
+	hTb := HznToolbar._hTb()
 	; --------------------------------------------------------------------------------
 	Static   WM_COMMAND := 273, TB_GETBUTTON:= 1047, TB_BUTTONCOUNT:= 1048,TB_COMMANDTOINDEX := 1049
 			,TB_GETITEMRECT := 1053,MEM_PHYSICAL := 4,MEM_RELEASE := 32768,TB_GETSTATE := 1042
@@ -490,10 +538,10 @@ HznButton(hTb, nCtl, idCommand, n?, pID?, fCtl?, hTx?, fCtlInstance?) {
 	; --------------------------------------------------------------------------------
 	try if (n >= 1 && n <= buttonCount)
 	{
-		DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &targetProcessID:=0) ; * Get the toolbar "thread" process ID (PID) 
+		DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &tpID:=0) ; * Get the toolbar "thread" process ID (PID) 
 		; --------------------------------------------------------------------------------
 		; * Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
-		hProcess := DllCall( 'OpenProcess', 'UInt', 8 | 16 | 32, "Int", 0, "UInt", targetProcessID, "Ptr")
+		hProcess := DllCall( 'OpenProcess', 'UInt', 8 | 16 | 32, "Int", 0, "UInt", tpID, "Ptr")
 		; --------------------------------------------------------------------------------
 		; * Identify if the process is 32 or 64 bit (efficiency step)
 		Is32bit := Win32_64_Bit(hProcess) 
@@ -529,7 +577,7 @@ HznButton(hTb, nCtl, idCommand, n?, pID?, fCtl?, hTx?, fCtlInstance?) {
     } catch
         throw ValueError("The specified toolbar " nCtl " was not found. Please ensure the edit field has been selected and try again.", -1)
 		try OutputDebug (  'ButtonCount: ' buttonCount '`n'
-		. 'pID: ' targetProcessID '`n'
+		. 'pID: ' tpID '`n'
 		. 'remoteMemory: ' remoteMemory '`n'
 		. 'hProcess: ' hProcess '`n'
 		. 'btnstate: ' btnstate '`n'
@@ -575,7 +623,6 @@ loadSDK() ;fix => does not work => MAP() or Object?
 	Static BM_CLICK				:= 245 		; 0x000000F5
 	Static TB_ISBUTTONPRESSED 	:= 1035 	; 0x040B
 	Static WM_GETDLGCODE := 135, WM_NEXTDLGCTL := 40, TB_GETBUTTONINFOW	:= 1087 ;, hTb := hTb
-	return
 }
 ; --------------------------------------------------------------------------------
 setDelay(&prevCDelay, &prevMDelay, &prevWDelay)
@@ -595,7 +642,7 @@ remoteTbMemory(hProcess, Is32bit, &TBBUTTON_SIZE)
 ; --------------------------------------------------------------------------------
 /**
  * function: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
- * @param targetProcessID
+ * @param tpID
  * @param PROCESS_VM_READ
  * 		@param Int32
  * 		@Dec_Value 8
@@ -608,32 +655,36 @@ remoteTbMemory(hProcess, Is32bit, &TBBUTTON_SIZE)
  * 		@param Int32
  * 		@Dec_Value 32
  * 		@Hex_Value 0x00000020 ??? or 0x0020
- * @example hProcess := DllCall('OpenProcess', 'UInt', 0x0018 | 0x0010 | 0x0020, 'Int', 0, 'UInt', targetProcessID, 'Ptr')
+ * @example hProcess := DllCall('OpenProcess', 'UInt', 0x0018 | 0x0010 | 0x0020, 'Int', 0, 'UInt', tpID, 'Ptr')
  * @returns {hProcess}
  */
-hTbProcess(targetProcessID)
+hTbProcess(tpID)
 {
 	Static PROCESS_VM_OPERATION := 8, PROCESS_VM_READ := 16, PROCESS_VM_WRITE := 32
 	hProcess := DllCall( 'OpenProcess', 'UInt'
 						, PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE
 						, "Int", 0
-						, "UInt", targetProcessID
+						, "UInt", tpID
 						, "Ptr")
 	return hProcess 					
 }
 ; --------------------------------------------------------------------------------
-; fix 
-; GETBUTTON(n, hTb, pID?, hpRemote?)
-; {
-; 	Static 	TB_GETBUTTON := 1047 ; hex = 0x417
-; 	Static ctrlhwnd := hTb
-; 	OutputDebug('n: ' n '`n')
-; 	pID := WinGetPID(hTb)
-; 	hpRemote = 0 ? hpRemote := hp_Remote(pID) : hpRemote := hpRemote
-; 	remote_buffer := RemoteBuffer(hpRemote)
-; 	GETBUTTON := SendMessage(TB_GETBUTTON, n-1, remote_buffer, ctrlhwnd, ctrlhwnd)
-; 	return GETBUTTON
-; }
+; fix
+; ^+7::GETBUTTON(101)
+GETBUTTON(n:=1, hTb?, pID?, hProcess?)
+{
+	Static 	TB_GETBUTTON := 1047 ; hex = 0x417
+	OutputDebug('n: ' n '`n')
+	; pID := WinGetPID(hTb)
+	tpID := HznToolbar().__HznNew().tpID
+	hTb := HznToolbar().__HznNew().hTb
+	hProcess := hTbProcess(tpID)
+	; hProcess = 0 ? hProcess := hp_Remote(pID) : hpRemote := hpRemote
+	remote_buffer := remoteTbMemory(hProcess,0,&TBBUTTON_SIZE)
+	GETBUTTON := SendMessage(TB_GETBUTTON, n-1, remote_buffer, hTb, hTb)
+	; MsgBox(GETBUTTON) ; ===> displays a zero (0)
+	return GETBUTTON
+}
 GETBUTTONSTATE(idButton,hTb)
 {
 	Static TB_GETSTATE := 0x0412
@@ -733,6 +784,8 @@ HznDPI()
 	; --------------------------------------------------------------------------------
 	return DPIsc
 }
+; --------------------------------------------------------------------------------
+; TODO need to validate that this works, but not high priority
 /**
  * function .: for use in a button call that requires ControlCLick() and DPI adjustments
  * @description Get the bounds of each button (Get Item Rectangle)
@@ -784,7 +837,15 @@ GETITEMRECT(hProcess, n,remoteMemory,hTb, TBBUTTON_SIZE, Is32bit, &RECT, &BtnStr
  */
 ; --------------------------------------------------------------------------------
 Check_Startup_Status(){
-Startup_Shortcut := A_Startup "\" A_ScriptName ".lnk"
+arrStartup := Array(
+	startup := A_Startup '\'
+	script := StrSplit(A_Startup, '.')
+	scriptnoext := script[1]
+	scriptlnk := script[1] . '.lnk'
+	scriptSC := script[1] . script[2] . ' - Shortcut'
+	)
+
+Startup_Shortcut := arrStartup() 
 ; Startup_Shortcut := A_Startup "\" A_ScriptName
 If !(FileExist(Startup_Shortcut))
     {
