@@ -1,1 +1,0 @@
-﻿This folder contains documents and links used in the development of the library.

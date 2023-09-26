@@ -1,6 +1,6 @@
 #Include <Paths>
 #Include <Utils\Win>
-#Requires AutoHotkey v2+
+
 class Explorer {
 
 	static process       := "explorer.exe"

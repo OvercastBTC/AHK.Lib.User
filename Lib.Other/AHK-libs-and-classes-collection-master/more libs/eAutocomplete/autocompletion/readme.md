@@ -1,1 +1,0 @@
-﻿© Christophe Pallier 2017 License CC BY-SA - http://www.pallier.org/liste-de-mots-francais.html

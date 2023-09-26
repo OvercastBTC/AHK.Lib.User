@@ -431,32 +431,32 @@ viewKeyboardShortcuts(){
 }
 ;#[WINDOWS]
 updateTrayMenu() {
-	Tray := A_TrayMenu
-    Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
-	; Tray.Add("Modified with Nerd by Adam Bacon and Terry Keatts.`nCredit:Made with ❤️ by Bibek Aryal", madeByW)
-	Tray.Add()
-	Tray.Add("Run at startup", runAtStartup())
-	Tray.fileExist(startup_shortcut) ? Tray.Check("Run at Startup") : Tray.UnCheck("Run at startup") ; update the tray menu status on startup
-	Tray.Add("Presentation mode {Win+Shift+P}", togglePresentationMode)
-	Tray.Add("Keyboard shortcuts {Ctrl+Shift+Alt+\}", viewKeyboardShortcuts)
-	Tray.Add("Open file location", openFileLocation)
-	Tray.Add()
-	Tray.Add("View in GitHub", viewInGitHub)
-	Tray.Add("See AutoHotKey documentation", viewAHKDoc)
-	Tray.Add("See AHK GUI documentation", "viewGuiDoc")
-	Tray.Add("AHK Built in Functions (e.g., A_Function)", viewAHKVariables)
-	Tray.Add()
-	Tray.Add("Run GetTextUnderMouse.ahk", runtxtundrmouse)
-	Tray.Add("Run WinspectorU.exe", runWinspector)
-	Tray.Add("Run UIAutomation.ahk", runUIAutomation)
-	Tray.Add("Run Messages_ShellHook.ahk", runshellhookmessages)
-	Tray.Add()
-	Tray.Add("Run Scriptlet_Library_v4.ahk", runScriptlet)
-	Tray.Add("Run AHK Script.ahk", runAHKScript)
-	Tray.Add("Run Hznbutton.ahk", runHznbutton)
-	Tray.Add("Run Constantine.ahk", runconstatine)
-	Tray.Add()
-	Tray.AddStandard()
+	WinTray := A_TrayMenu
+    WinTray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
+	; WinTray.Add("Modified with Nerd by Adam Bacon and Terry Keatts.`nCredit:Made with ❤️ by Bibek Aryal", madeByW)
+	WinTray.Add()
+	WinTray.Add("Run at startup", runAtStartup())
+	WinTray.fileExist(startup_shortcut) ? WinTray.Check("Run at Startup") : WinTray.UnCheck("Run at startup") ; update the tray menu status on startup
+	WinTray.Add("Presentation mode {Win+Shift+P}", togglePresentationMode)
+	WinTray.Add("Keyboard shortcuts {Ctrl+Shift+Alt+\}", viewKeyboardShortcuts)
+	WinTray.Add("Open file location", openFileLocation)
+	WinTray.Add()
+	WinTray.Add("View in GitHub", viewInGitHub)
+	WinTray.Add("See AutoHotKey documentation", viewAHKDoc)
+	WinTray.Add("See AHK GUI documentation", "viewGuiDoc")
+	WinTray.Add("AHK Built in Functions (e.g., A_Function)", viewAHKVariables)
+	WinTray.Add()
+	WinTray.Add("Run GetTextUnderMouse.ahk", runtxtundrmouse)
+	WinTray.Add("Run WinspectorU.exe", runWinspector)
+	WinTray.Add("Run UIAutomation.ahk", runUIAutomation)
+	WinTray.Add("Run Messages_ShellHook.ahk", runshellhookmessages)
+	WinTray.Add()
+	WinTray.Add("Run Scriptlet_Library_v4.ahk", runScriptlet)
+	WinTray.Add("Run AHK Script.ahk", runAHKScript)
+	WinTray.Add("Run Hznbutton.ahk", runHznbutton)
+	WinTray.Add("Run Constantine.ahk", runconstatine)
+	WinTray.Add()
+	WinTray.AddStandard()
 }
 
 updateTrayMenu()
@@ -530,7 +530,7 @@ return
 +#s::win_search(A_Clipboard)
 
 ;  center window
-#c::
+^#c::
 { ; V1toV2: Added bracket
     ActiveWindowTitle := WinGetTitle("A")
     WinGetPos(, , &Width, &Height, ActiveWindowTitle)
@@ -582,7 +582,7 @@ $Escape::
         X := WinGetProcessName("A")
         SplashTextGui := Gui("ToolWindow -Sysmenu Disabled", ), SplashTextGui.Add("Text",, "`nRelease button to close " x "`n`nKeep pressing it to NOT close window..."), SplashTextGui.Show("w200 h150")
         ErrorLevel := !KeyWait("Escape", "T3") ; Wait no more than 3 more sec for key to be released
-        SplashTextGui.Destroy
+        SplashTextGui.Destroy()
         If !ErrorLevel ; No timeout, so key was released
         {
             PostMessage(0x112, 0xF060, , , "A") ; ...so close window
@@ -703,6 +703,9 @@ FormatDateTime(format, datetime:="") {
 }
 
 ; Hotstrings
+
+:*X:/commitf::FormatDateTime("yyyy.MM.dd HH:mm")
+
 ::/datetime::
 { ; V1toV2: Added bracket
     FormatDateTime("dddd, MMMM dd, yyyy, HH:mm")
@@ -714,7 +717,6 @@ Return
     FormatDateTime("dddd, MMMM dd, yyyy hh:mm tt")
 Return
 } ; V1toV2: Added Bracket before hotkey or Hotstring
-:*X:/c::FormatDateTime("yyyy.MM.dd HH:mm" "`r`n Reason goes here")
 ::/time::
 { ; V1toV2: Added bracket
     FormatDateTime("HH:mm")

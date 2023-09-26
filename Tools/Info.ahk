@@ -24,7 +24,7 @@ class Infos {
 	}
 
 
-	static fontSize     := 20
+	static fontSize     := 14
 	static distance     := 3
 	static unit         := A_ScreenDPI / 96
 	static guiWidth     := Infos.fontSize * Infos.unit * Infos.distance

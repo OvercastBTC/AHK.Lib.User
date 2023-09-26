@@ -4,7 +4,6 @@
 #Include <Utils\Cmd>
 #Include <Links>
 #Include <System\Web>
-#Requires AutoHotkey v2
 
 class Git {
 
@@ -55,17 +54,11 @@ class Git {
 	/**
 	* Specify a file path and get the github link for it
 	* @param {String} path Path to the file / folder you want the link to. In Main/Folder/file.txt, Main is the name of the repo (so the path is relative to your gh profile, basically)
-	; @param {String} my_github Set to OvercastBTC (OC - 2023.09.18)
 	* @returns {String} the github link
 	*/
 	static Link(path) {
-		; Specify you github link (https://github.com/yourNickname/)
-		; --------------------------------------------------------------------------------
-		static github := Links["my github"] 
-
-		; The part between the name of the repo and the other file path is different depending on whether it's a file or a folder
-		; --------------------------------------------------------------------------------
-		static fileBlob := "/blob/main/" 
+		static github := Links["my github"] ;Specify you github link (https://github.com/yourNickname/)
+		static fileBlob := "/blob/main/" ;The part between the name of the repo and the other file path is different depending on whether it's a file or a folder
 		static folderBlob := "/tree/main/"
 
 		if InStr(path, Paths.Prog "\")
@@ -74,25 +67,17 @@ class Git {
 		if InStr(path, Paths.Lib)
 			path := StrReplace(path, Paths.Lib, "lib-v2")
 
-		; The link uses forward slashes, this replace is made so you can use whatever slashes you feel like
-		; --------------------------------------------------------------------------------
-		path := StrReplace(path, "\", "/") 
+		path := StrReplace(path, "\", "/") ;The link uses forward slashes, this replace is made so you can use whatever slashes you feel like
 
-		; You can just specify the name of the repo to get a link for it
-		; --------------------------------------------------------------------------------
-		if !InStr(path, "/") 
+		if !InStr(path, "/") ;You can just specify the name of the repo to get a link for it
 			return github path
 
-		; If the passed path ends with a /, it will be considered a path to a folder. If the passed path ends with a `.extension`, it will be considered a file
-		; --------------------------------------------------------------------------------
-		if !RegExMatch(path, "\/$") && RegExMatch(path, "\.\w+$") 
+		if !RegExMatch(path, "\/$") && RegExMatch(path, "\.\w+$") ;If the passed path ends with a /, it will be considered a path to a folder. If the passed path ends with a `.extension`, it will be considered a file
 			currentBlob := fileBlob
 		else
 			currentBlob := folderBlob
 
-		; Everything before the first / will be considered the name of the repo. Everything after - the relative path in this repo
-		; --------------------------------------------------------------------------------
-		RegExMatch(path, "([^\/]+)\/(.*)", &match) 
+		RegExMatch(path, "([^\/]+)\/(.*)", &match) ;Everything before the first / will be considered the name of the repo. Everything after - the relative path in this repo
 		repo := match[1]
 		relPath := match[2]
 

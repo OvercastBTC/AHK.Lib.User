@@ -1,9 +1,11 @@
+#Include <Directives\__AE.v2>
+#Requires AutoHotkey v2
+; --------------------------------------------------------------------------------
 #Include <Links>
 #Include <App\Spotify>
 #Include <App\Davinci>
 #Include <Extensions\String>
 #Include <Utils\ClipSend>
-#Include <Extensions\String>
 #Include <Utils\Win>
 #Include <Paths>
 #Include <Utils\Unicode>
@@ -16,6 +18,7 @@
 #Include <App\Shows>
 #Include <Misc\Calculator>
 #Include <App\Explorer>
+#Include <Abstractions\Text>
 
 #j:: {
 	if !input := CleanInputBox().WaitForInput() {
@@ -24,17 +27,17 @@
 
 	static runner_commands := Map(
 
-		"libs?",  () => Infos(CountLibraries()),
-		"drop",   () => Shows.DeleteShow(true),
-		"finish", () => Shows.DeleteShow(false),
-		"show",   () => Shows.Run("episode"),
-		"down",   () => Shows.Run("downloaded"),
+		"libs?",	() => Infos(CountLibraries()),
+		"drop",		() => Shows.DeleteShow(true),
+		"finish",	() => Shows.DeleteShow(false),
+		"show",		() => Shows.Run("episode"),
+		"down",		() => Shows.Run("downloaded"),
 
-		"gimp", () => Gimp.winObj.RunAct(),
-		"davinci", () => Davinci.winObj.RunAct(),
+		"gimp", 	() => Gimp.winObj.RunAct(),
+		"davinci", 	() => Davinci.winObj.RunAct(),
 
-		"ext",   () => Explorer.WinObjs.VsCodeExtensions.RunAct_Folders(),
-		"saved", () => Explorer.WinObjs.SavedScreenshots.RunAct_Folders(),
+		"ext",		() => Explorer.WinObjs.VsCodeExtensions.RunAct_Folders(),
+		"saved",	() => Explorer.WinObjs.SavedScreenshots.RunAct_Folders(),
 
 	)
 

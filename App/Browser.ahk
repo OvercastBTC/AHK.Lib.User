@@ -3,18 +3,18 @@
 
 class Browser {
 
-	; static exeTitle := "ahk_exe msedge.exe"
-	; static winTitle := "Edge " this.exeTitle
-	; static path     := "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-	; static excludeTitle := "live_chat?is_popout"
+	static exeTitle := "ahk_exe msedge.exe"
+	static winTitle := "Edge " this.exeTitle
+	static path     := "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+	static excludeTitle := "live_chat?is_popout"
 
 	; static exeTitle := "ahk_exe firefox.exe"
 	; static winTitle := "Mozilla Firefox " this.exeTitle
 	; static path     := "C:\Program Files\Mozilla Firefox\firefox.exe"
 
-	static exeTitle := "ahk_exe chrome.exe"
-	static winTitle := "Google Chrome " this.exeTitle
-	static path := "C:\Program Files\Google\Chrome\Application\chrome.exe"
+	; static exeTitle := "ahk_exe chrome.exe"
+	; static winTitle := "Google Chrome " this.exeTitle
+	; static path := "C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 	static winObj := Win({
 		winTitle: this.winTitle,
