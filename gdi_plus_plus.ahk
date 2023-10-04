@@ -38,7 +38,7 @@
             (Type(in_obj) = "Gui") ? (obj.gui := in_obj) : (obj.gui := 0) ; if gui, attach to DC obj
             return obj
         } Else
-            Msgbox "ERROR: DC not created.`r`n`r`nA_LastError:  " A_LastError
+            Msgbox("ERROR: DC not created.`r`n`r`nA_LastError:  " A_LastError)
     }
     Static ImageFromFile(sFileName, ICM:=0) { ; from robodesign version
         If !FileExist(sFileName)
@@ -112,7 +112,7 @@
             
             If (r1="")
                 throw Error("Error on obj release, or object not yet supported."
-                          ,,"Obj Type: " this.cType "`r`nObj Ptr: " this.ptr)
+							,,"Obj Type: " this.cType "`r`nObj Ptr: " this.ptr)
         }
         Clean_Up() {
             Loop gdipp.ObjList.Length {
@@ -133,25 +133,26 @@
             oi:=Buffer((A_PtrSize = 8) ? 104 : 84, 0)
             DllCall("GetObject", "UPtr", (in_ptr?in_ptr:this.ptr), "Int", oi.size, "UPtr", oi.ptr)
             
-            msgbox "Return Size: " oi_size "`r`n`r`n"
-                 . "Type: " NumGet(oi,0,"UInt") "`r`n"
-                 . "Width: " NumGet(oi, 4, "UInt") "`r`n"
-                 . "Height: " NumGet(oi, 8, "UInt") "`r`n"
-                 . "Stride: " NumGet(oi, 12, "UInt") "`r`n"
-                 . "Planes: " NumGet(oi, 16, "UShort") "`r`n"
-                 . "bpp: " NumGet(oi, 18, "UShort") "`r`n"
-                 . "bPtr: " NumGet(oi, 24, "UPtr") "`r`n`r`n"
-                 
-                 . "DIBSECTION struct:`r`n"
-                 . "Struct: " NumGet(oi,32,"UInt") "`r`n"
-                 . "Width: " NumGet(oi, 36, "UInt") "`r`n"
-                 . "Height: " NumGet(oi, 40, "UInt") "`r`n"
-                 . "Planes: " NumGet(oi, 44, "UShort") "`r`n"
-                 . "bpp: " NumGet(oi, 46, "UShort") "`r`n"
-                 . "Comp: " NumGet(oi, 48, "UInt") "`r`n"
-                 . "Size: " NumGet(oi, 52, "UInt") "`r`n"
-                 . "ClrUsed: " NumGet(oi, 60, "UInt") "`r`n"
-                 . "ClrImportant: " NumGet(oi, 64, "UInt")
+            msgbox(   "Return Size: " oi_size "`r`n`r`n"
+					. "Type: " NumGet(oi,0,"UInt") "`r`n"
+					. "Width: " NumGet(oi, 4, "UInt") "`r`n"
+					. "Height: " NumGet(oi, 8, "UInt") "`r`n"
+					. "Stride: " NumGet(oi, 12, "UInt") "`r`n"
+					. "Planes: " NumGet(oi, 16, "UShort") "`r`n"
+					. "bpp: " NumGet(oi, 18, "UShort") "`r`n"
+					. "bPtr: " NumGet(oi, 24, "UPtr") "`r`n`r`n"
+					
+					. "DIBSECTION struct:`r`n"
+					. "Struct: " NumGet(oi,32,"UInt") "`r`n"
+					. "Width: " NumGet(oi, 36, "UInt") "`r`n"
+					. "Height: " NumGet(oi, 40, "UInt") "`r`n"
+					. "Planes: " NumGet(oi, 44, "UShort") "`r`n"
+					. "bpp: " NumGet(oi, 46, "UShort") "`r`n"
+					. "Comp: " NumGet(oi, 48, "UInt") "`r`n"
+					. "Size: " NumGet(oi, 52, "UInt") "`r`n"
+					. "ClrUsed: " NumGet(oi, 60, "UInt") "`r`n"
+					. "ClrImportant: " NumGet(oi, 64, "UInt")
+					)
         }
         GetObject(in_ptr:="", show:=false) { ; get/refresh object properties
             iSize := DllCall("GetObject", "UPtr", (in_ptr ? in_ptr : this.ptr), "UInt", 0, "UPtr", 0)
@@ -187,7 +188,7 @@
         }
         GetObjectType(in_ptr:="") {
             Static types := ["Pen","Brush","DC","MetaDC","PAL","Font","Bitmap","Region"
-                           , "MetaFile","MemDC","ExtPen","EnhMetaDC","EnhMetaFIle","ColorSpace"]
+							, "MetaFile","MemDC","ExtPen","EnhMetaDC","EnhMetaFIle","ColorSpace"]
             
             result := DllCall("gdi32\GetObjectType", "UPtr", in_ptr ? in_ptr : this.ptr)
             return (!result) ? 0 : types[result]

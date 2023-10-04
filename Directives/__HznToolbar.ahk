@@ -1,9 +1,6 @@
 ﻿#Include <Directives\__AE.v2>
 #Requires AutoHotkey v2+
 ; --------------------------------------------------------------------------------
-; AE.__Init() ; ! in test phase to use a class for Auto Execution Section
-
-; --------------------------------------------------------------------------------
 /************************************************************************
 * Function ..: __HznNew()
 * @author ...: OvercastBTC
@@ -25,97 +22,79 @@
 ; ***********************************************************************/
 Class HznToolbar {
     __HznNew(){
-        A_SendLevel := A_SendLevel++
-        ; SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
-        BlockInput(1) ; 1 = On, 0 = Off
-        try {
-            hCtl := ControlGetFocus('A')
-            ; hCtl() => this.hCtl := ControlGetFocus('A')
-            fCtl := ControlGetClassNN(hCtl)
-            ; fCtl() => this.fCtl := ControlGetClassNN(hCtl)
-            fCtlI := SubStr(fCtl, -1, 1)
-            ; fCtlI() => this.fCtlI := SubStr(fCtl, -1, 1)
-            nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-            ; nCtl() => this.nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-            hTb := ControlGethWnd(nCtl, "A")
-            ; hTb() => this.hTb := ControlGethWnd(nCtl, "A")
-            hTx := ControlGethWnd(fCtl, "A")
-            ; hTx() => this.hTx := ControlGethWnd(fCtl, "A")
-            pID := WinGetPID(hTb)
-            ; pID() => this.pID := WinGetPID(hTb)
-            DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &tpID:=0)
-            ; tpID() => this.tpID := (DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*"), tpID)
-        }    
-        ; } catch Error as e {
-        ;     return e
-        ; }
-        
-        return {hCtl:hCtl,
-            fCtl:fCtl,
-            fCtlI:fCtlI,
-            nCtl:nCtl,
-            hTb:hTb,
-            hTx:hTx,
-            pID:pID,
-            tpID:tpID}
-    }
-    static _hCtl(){
-        hCtl := ControlGetFocus('A')
-        return hCtl 
-    }      
-    static _fCtl(*){
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        return fCtl
-    }
-    static _fCtlI(*){
+    SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
+    BlockInput(1) ; 1 = On, 0 = Off
+    try {
         hCtl := ControlGetFocus('A')
         fCtl := ControlGetClassNN(hCtl)
         fCtlI := SubStr(fCtl, -1, 1)
-        return fCtlI
+        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+        hTb := ControlGethWnd(nCtl, "A")
+        hTx := ControlGethWnd(fCtl, "A")
+        pID := WinGetPID(hTb)
+        DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &tpID:=0)
+    } catch Error as e {
+        return e
+    }
+    
+    return {hCtl:hCtl,fCtl:fCtl,fCtlI:fCtlI,nCtl:nCtl,hTb:hTb,hTx:hTx,pID:pID,tpID:tpID}
+    }
+    static _hCtl(){
+        this.hCtl := ControlGetFocus('A')
+        return this.hCtl 
+    }      
+    static _fCtl(*){
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        return this.fCtl
+    }
+    static _fCtlI(*){
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        this.fCtlI := SubStr(this.fCtl, -1, 1)
+        return this.fCtlI
     }
     
     static _nCtl(*){
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        fCtlI := SubStr(fCtl, -1, 1)
-        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-        return nCtl
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        this.fCtlI := SubStr(this.fCtl, -1, 1)
+        this.nCtl := "msvb_lib_toolbar" this.fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+        return this.nCtl
     }
     static _hTb(*){
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        fCtlI := SubStr(fCtl, -1, 1)
-        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-        hTb := ControlGethWnd(nCtl, "A")
-        return hTb
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        this.fCtlI := SubStr(this.fCtl, -1, 1)
+        this.nCtl := "msvb_lib_toolbar" this.fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+        this.hTb := ControlGethWnd(this.nCtl, "A")
+        return this.hTb
     }
     static _hTx(*){
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        hTx := ControlGethWnd(fCtl, "A")
-        return hTx
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        this.hTx := ControlGethWnd(this.fCtl, "A")
+        return this.hTx
     }    
     static _pID(*){
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        fCtlI := SubStr(fCtl, -1, 1)
-        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-        hTb := ControlGethWnd(nCtl, "A")
-        pID := WinGetPID(hTb)
-        return pID
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        this.fCtlI := SubStr(this.fCtl, -1, 1)
+        this.nCtl := "msvb_lib_toolbar" this.fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+        this.hTb := ControlGethWnd(this.nCtl, "A")
+        this.pID := WinGetPID(this.hTb)
+        return this.pID
     }
     static _tpID(*){
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        fCtlI := SubStr(fCtl, -1, 1)
-        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-        hTb := ControlGethWnd(nCtl, "A")
-        tpID := DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &targetProcessID:=0)
-        return tpID
+        this.hCtl := ControlGetFocus('A')
+        this.fCtl := ControlGetClassNN(this.hCtl)
+        this.fCtlI := SubStr(this.fCtl, -1, 1)
+        this.nCtl := "msvb_lib_toolbar" this.fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+        this.hTb := ControlGethWnd(this.nCtl, "A")
+        this.tpID := DllCall("GetWindowThreadProcessId", "Ptr", this.hTb, "UInt*", &targetProcessID:=0)
+        return this.tpID
     }
 }
-
 
 /**
 * @title basic class example for AHKv2 - methods and properties
@@ -370,12 +349,51 @@ Toolbar_Exist(&hCtl?, &fCtl?, &fCtlInstance?, &nCtl?, &hTb?, &hTx?, &pID?, &tpID
             toolbar_info := DisplayObj(arrTb)
             OutputDebug(toolbar_info)
             
-            return {hCtl:hCtl,fCtl:fCtl,fCtlI:fCtlI,nCtl:nCtl,hTb:hTb,hTx:hTx,pID:pID,tpID:tpID}
-        }
-        ; --------------------------------------------------------------------------------
+    return {hCtl:hCtl,fCtl:fCtl,fCtlI:fCtlI,nCtl:nCtl,hTb:hTb,hTx:hTx,pID:pID,tpID:tpID}
+}
+; --------------------------------------------------------------------------------
+GetTbInfo()
+{
+    SendLevel(A_SendLevel+1) ; SendLevel higher than anything else (normally highest is 1)
+    BlockInput(1) ; 1 = On, 0 = Off
+    TbInfo := Array()
+    try {
+        hCtl := ControlGetFocus('A')
+        fCtl := ControlGetClassNN(hCtl)
+        fCtlI := SubStr(fCtl, -1, 1)
+        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+        hTb := ControlGethWnd(nCtl, "A")
+        hTx := ControlGethWnd(fCtl, "A")
+        pID := WinGetPID(hTb)
+        DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &tpID := 0)
+    } catch Error as e {
+        return e
+    }
+
+    TbInfo.Push(hCtl, fCtl, fCtlI, nCtl, hTb, hTx, pID, tpID)
+    return { hCtl: hCtl, fCtl: fCtl, fCtlI: fCtlI, nCtl: nCtl, hTb: hTb, hTx: hTx, pID: pID, tpID: tpID }
+}
 DisplayObj(Obj, Depth:=10, IndentLevel:="")
 {
     if Type(Obj) = "Object"
+        Obj := Obj.OwnProps()
+    for k,v in Obj
+        {
+            List.= IndentLevel "[" k "]"
+            List.= IndentLevel
+            if (IsObject(v) && Depth>1)
+                List.="`n" DisplayObj(v, Depth-1, IndentLevel . "    ")
+            Else
+                List.=" => " v
+                List.=v
+            ; List.= v
+            List.="`n"
+        }
+        return RTrim(List)
+}
+DisplayArr(Obj, Depth:=10, IndentLevel:="")
+{
+    if Type(Obj) = "Array"
         Obj := Obj.OwnProps()
     for k,v in Obj
         {
@@ -387,5 +405,5 @@ DisplayObj(Obj, Depth:=10, IndentLevel:="")
             List.="`n"
         }
         return RTrim(List)
-    }
-    ; --------------------------------------------------------------------------------
+}
+; --------------------------------------------------------------------------------

@@ -1,15 +1,17 @@
 ﻿; --------------------------------------------------------------------------------
 ; Section .....: Auto-Execution
 ; --------------------------------------------------------------------------------
-#SingleInstance Force
-Persistent ; Keeps script permanently running
-; #MaxThreads 255 ; Default: 10, Max: 255.
-SendMode("Input")  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir(A_ScriptDir)  ; Ensures a consistent starting directory.
-SetTitleMatchMode(2) ; sets title matching to search for "containing" instead of "exact"
-DetectHiddenText(true)
-DetectHiddenWindows(true)
+; #SingleInstance Force
+; ; #MaxThreads 255 ; Default: 10, Max: 255.
+; SendMode("Input")  ; Recommended for new scripts due to its superior speed and reliability.
+; SetWorkingDir(A_ScriptDir)  ; Ensures a consistent starting directory.
+; SetTitleMatchMode(2) ; sets title matching to search for "containing" instead of "exact"
+; DetectHiddenText(true)
+; DetectHiddenWindows(true)
+#Include <Directives\__AE.v2>
+Persistent(1) ; Keeps script permanently running
 CoordMode("ToolTip", "Screen")
+ProcessSetPriority('High')
 #Requires Autohotkey v2
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Initiation Section
@@ -17,23 +19,117 @@ CoordMode("ToolTip", "Screen")
 #HotIf WinActive("ahk_exe Code.exe")
 ~^s::Run(A_ScriptName)
 #HotIf
+ICON := '.\ICON\DllCall.ico'
+TraySetIcon(ICON) ; this changes the icon into a little dllcall thing.
 ; --------------------------------------------------------------------------------
-#1::
-A_Process(A_Process)
+
+; #Persistent
+; SetBatchLines, -1
+; Process, Priority, , High
+; #1::
+; _A_Process(&A_Process:=0)
+; _A_Process(*)
+; {
+; 	; SCRIPT DIRECTIVES =========================================================================================================================================================
+
+
+; 	; GUI =======================================================================================================================================================================
+
+; 	Main := Gui("+Resize +MinSize854x480")
+; 	Main.MarginX := 0
+; 	Main.MarginY := 0
+
+; 	Main.SetFont("s9", "Segoe UI")
+; 	LV := Main.AddListView("xm+10 ym+10 w830 r10", ["Event", "Time", "ProcessID", "ProcessName", "ParentProcessID", "ExecutablePath", "CommandLine"])
+; 	for k, v in ["80", "80", "80", "120", "80", "150"]
+; 		LV.ModifyCol(k, v)
+
+; 	Main.OnEvent("Size", GuiSize)
+; 	Main.OnEvent("Close", GuiClose)
+; 	Main.Show("AutoSize")
+
+
+; 	; WMI =======================================================================================================================================================================
+
+; 	WMI := ComObjGet("winmgmts:")
+
+; 	ComObjConnect(Sink := ComObject("WbemScripting.SWbemSink"), "SINK_")
+
+; 	Command := "WITHIN 1 WHERE TargetInstance ISA 'Win32_Process'"
+; 	WMI.ExecNotificationQueryAsync(Sink, "SELECT * FROM __InstanceCreationEvent " . Command)
+; 	WMI.ExecNotificationQueryAsync(Sink, "SELECT * FROM __InstanceDeletionEvent " . Command)
+
+
+; 	SINK_OnObjectReady(Obj, *)
+; 	{
+; 		TI := Obj.TargetInstance
+; 		switch Obj.Path_.Class
+; 		{
+; 			case "__InstanceCreationEvent":
+; 				{
+; 					EventType := "Created"
+; 					Time := FormatTime(SubStr(TI.CreationDate, 1, 14), "HH:mm:ss")
+; 				}
+; 			case "__InstanceDeletionEvent":
+; 				{
+; 					EventType := "Terminated"
+; 					Time := FormatTime(A_Now, "HH:mm:ss")
+; 				}
+; 		}
+; 		LV.Insert(1, , EventType, Time, TI.ProcessID, TI.Name, TI.ParentProcessId, TI.ExecutablePath, TI.CommandLine)
+; 	}
+
+
+; 	; WINDOW EVENTS =============================================================================================================================================================
+
+; 	GuiSize(thisGui, MinMax, Width, Height)
+; 	{
+; 		if (MinMax = -1)
+; 			return
+; 		LV.Move(, , Width - 21, Height - 21)
+; 		LV.Redraw()
+; 	}
+
+
+; 	GuiClose(*)
+; 	{
+; 		ComObjConnect(Sink)
+; 		ExitApp()
+; 	}
+
+
+; 	; ===========================================================================================================================================================================
+
+
+
+
+; 	; ===========================================================================================================================================================================
+; }
+	
+	
+
+; return
+
+#2::
+aProcess(*)
 {
 	Static HSHELL_RUDEAPPACTIVATED := 32772
-	; Global A_Process	; set a super-global variable that can be accessible within all functions by default.
-	apGui := Gui()
-	apGui.Opt('+LastFound')
-	DllCall('RegisterShellHookWindow', 'UInt')
-	; OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), WinActiveChange) ; original
-	;OnMessage(DllCall("RegisterWindowMessage", Str, "SHELLHOOK"), "WinActiveChange1")
-	Msg := DllCall('RegisterWindowMessage', 'Str', 'SHELLHOOK')
-	
-	OnMessage( Msg, WinActiveChange2) ;(HSHELL_RUDEAPPACTIVATED,hwnd := DllCall("GetForegroundWindow", "Ptr")))
-	ToolTip(A_Process)
-	Return A_Process
+; 	; Global A_Process	; set a super-global variable that can be accessible within all functions by default.
+	hwnd := WinExist()
+    DllCall("RegisterShellHookWindow", "UInt", Hwnd)
+    MsgNum := DllCall("RegisterWindowMessage", "Str", "SHELLHOOK")
+    OnMessage(MsgNum, WinActiveChange2)
+	; OnMessage(DllCall("RegisterWindowMessage", 'int*' "SHELLHOOK"), "WinActiveChange2")
+	; OnMessage(Msg, "WinActiveChange2")
+	; ToolTip(A_Process)
+	; Return A_Process
 }
+; OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), WinActiveChange) ; original
+; 	Msg := DllCall('RegisterWindowMessage', 'Str', 'SHELLHOOK', HSHELL_RUDEAPPACTIVATED, 'Int')
+	
+	
+	; OnMessage( Msg, WinActiveChange2) ;, HSHELL_RUDEAPPACTIVATED,hwnd := DllCall("GetForegroundWindow", "Ptr")))
+; }
 ; --------------------------------------------------------------------------------
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ; --------------------------------------------------------------------------------
@@ -49,7 +145,7 @@ WinActiveChange(wParam?, hwnd?)
 		return
 	
 	A_Process := WinGetProcessName('A')
-	; ToolTip(a_process, 0, 0, 1)
+	ToolTip(a_process, 0, 0, 1)
 	MsgBox(A_Process)
 	return A_Process
 }
@@ -80,15 +176,15 @@ WinActiveChange(wParam?, hwnd?)
 ; --------------------------------------------------------------------------------
 WinActiveChange2(wParam, hwnd*) ; hwnd)
 {
-	HSHELL_RUDEAPPACTIVATED := 32772, ;pId
+	; static HSHELL_RUDEAPPACTIVATED := 32772, ;pId
 	
-	wParam != HSHELL_RUDEAPPACTIVATED
+	if (wParam != 32772)
 	{
 		Return ; only listen for HSHELL_RUDEAPPACTIVATED
 	}
 	; handle := DllCall("GetForegroundWindow", "Ptr")
 
-	DllCall("GetWindowThreadProcessId", "Int", hwnd, "Int*", &pId)
+	DllCall("GetWindowThreadProcessId", "Int", hwnd, "Int*", &pID:=0)
 	; pId := DllCall('GetWindowThreadProcessId'
 	; 			 , 'Int', hwnd
 	; ; , "Int*", &pId
@@ -114,17 +210,18 @@ WinActiveChange2(wParam, hwnd*) ; hwnd)
 ; Sub-Section .....: getActiveProcessName()
 ; Description .....: maybe a better version of WinActiveChange()
 ; --------------------------------------------------------------------------------
-getActiveProcessName()
+#3::
+getActiveProcessName(&pname*)
 {
 	handle := DllCall("GetForegroundWindow", "Ptr")
-	DllCall("GetWindowThreadProcessId", "Int", handle, "int*", &pid)
-	global true_pid := pid
+	pID := DllCall("GetWindowThreadProcessId", "Int", handle, "int*", &pid:=0)
+	static true_pid := pid
 	callback := CallbackCreate(enumChildCallback, "Fast")
 	DllCall("EnumChildWindows", "int", handle, "ptr", callback, "int", pid)
 	handle := DllCall("OpenProcess", "Int", 0x0400, "Int", 0, "Int", true_pid)
 	length := 259 ;max path length in windows
 	VarSetStrCapacity(&name, length) ; V1toV2: if 'name' is NOT a UTF-16 string, use 'name := Buffer(length)'
-	DllCall("QueryFullProcessImageName", "Int", handle, "Int", 0, "Ptr", name, "int*", &length)
+	; DllCall("QueryFullProcessImageName", "Int", handle, "Int", 0, "Ptr", name, "int*", &length)
 	DllCall("CloseHandle", "Ptr", handle) ; added => not in original script
 	; name = full path
 	; pname = program (.exe)
@@ -132,26 +229,26 @@ getActiveProcessName()
 	return pname
 }
 
-enumChildCallback(hwnd, pid)
+enumChildCallback(hwnd, pid, &child_pid:=0)
 {
-	DllCall("GetWindowThreadProcessId", "Int", hwnd, "int*", &child_pid)
+	child_pid := DllCall("GetWindowThreadProcessId", "Int", hwnd, "int*", &child_pid:=0)
 	if (child_pid != pid)
-		global true_pid := child_pid
+		static true_pid := child_pid
 	DllCall("CloseHandle", "Ptr", hwnd) ; added => not in original script
-	return 1
+	; return 1
 }
 ; --------------------------------------------------------------------------------
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Script Name, Startup Path, and icon
 ; --------------------------------------------------------------------------------
-ICON := 'C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\ICON\DllCall.ico'
+; ICON := 'C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\ICON\DllCall.ico'
 ; --------------------------------------------------------------------------------
 ; Sub-Section .....: Create Tray Menu
 ; --------------------------------------------------------------------------------
 
 ; Tray:= A_TrayMenu
-TraySetIcon(ICON) ; this changes the icon into a little dllcall thing.
+; TraySetIcon(ICON) ; this changes the icon into a little dllcall thing.
 ; Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
 ; addTrayMenuOption("Made with nerd by Adam Bacon and Terry Keatts", "madeBy")
 ; addTrayMenuOption()

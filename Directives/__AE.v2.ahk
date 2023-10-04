@@ -12,13 +12,10 @@
  * function ...........: Resource includes for .exe standalone
  * @author OvercastBTC
  * @date 2023.08.15
- * @version 3.0.0
+ * @version 3.0.2
  ***********************************************************************/
-;@Ahk2Exe-SetMainIcon HznPlus256.ico
-;@Ahk2Exe-AddResource HznPlus256.ico, 160  ; Replaces 'H on blue'
-;@Ahk2Exe-AddResource HznPlus256.ico, 206  ; Replaces 'S on green'
-;@Ahk2Exe-AddResource HznPlus256.ico, 207  ; Replaces 'H on red'
-;@Ahk2Exe-AddResource HznPlus256.ico, 208  ; Replaces 'S on red'
+;@Ahk2Exe-Obey U_V, = "%A_PriorLine~U)^(.+")(.*)".*$~$2%" ? "SetVersion" : "Nop"
+;@Ahk2Exe-%U_V%        %A_AhkVersion%%A_PriorLine~U)^(.+")(.*)".*$~$2%
 ;@include-winapi
 ; --------------------------------------------------------------------------------
 #Warn All, OutputDebug

@@ -12,7 +12,9 @@ ProcessSetPriority("High")
 ; --------------------------------------------------------------------------------
 ; order of messagelist is important, do not change
 winMessageList := "SOUND,ALERT,FOREGROUND,MENUSTART,MENUEND,MENUPOPUPSTART,MENUPOPUPEND,CAPTURESTART,CAPTUREEND,MOVESIZESTART,MOVESIZEEND,CONTEXTHELPSTART,CONTEXTHELPEND,DRAGDROPSTART,DRAGDROPEND,DIALOGSTART,DIALOGEND,SCROLLINGSTART,SCROLLINGEND,SWITCHSTART,SWITCHEND,MINIMIZESTART,MINIMIZEEND"
-shellMessageList := "WINDOWCREATED,WINDOWDESTROYED,ACTIVATESHELLWINDOW,WINDOWACTIVATED,GETMINRECT,REDRAW,TASKMAN,LANGUAGE,SYSMENU,ENDTASK,ACCESSIBILITYSTATE,APPCOMMAND,WINDOWREPLACED,WINDOWREPLACING,HIGHBIT,FLASH,RUDEAPPACTIVATED"
+winMessageList := "CAPTURESTART,CAPTUREEND"
+; shellMessageList := "WINDOWCREATED,WINDOWDESTROYED,ACTIVATESHELLWINDOW,WINDOWACTIVATED,GETMINRECT,REDRAW,TASKMAN,LANGUAGE,SYSMENU,ENDTASK,ACCESSIBILITYSTATE,APPCOMMAND,WINDOWREPLACED,WINDOWREPLACING,HIGHBIT,FLASH,RUDEAPPACTIVATED"
+shellMessageList := "WINDOWCREATED,WINDOWDESTROYED,RUDEAPPACTIVATED"
 
 ExcludeScriptMessages := 1 ; 0 to include
 Title := "WinEventHook Messages", Filters := "", PauseStatus := 0
@@ -334,7 +336,8 @@ CaptureWinEvent(hWinEventHook, Event, hWnd, idObject, idChild, dwEventThread, dw
 HookWinEvent() {
     global
     HookProcAdr := CallbackCreate(CaptureWinEvent, "F")
-    dwFlags := (ExcludeScriptMessages = 1 ? 0x1 : 0x0)
+    ; dwFlags := (ExcludeScriptMessages = 1 ? 0x1 : 0x0)
+    dwFlags := (ExcludeScriptMessages := 0x1)
     hWinEventHook := SetWinEventHook(0x1, 0x17, 0, HookProcAdr, 0, 0, 0)
 }
 
@@ -479,5 +482,5 @@ CreateShellEventCode(Event, Message) {
 
 Tooltip2(Text := "") {
     ToolTip(Text)
-    SetTimer () => ToolTip(), -5000
+    SetTimer() => (ToolTip(), -5000)
 }
