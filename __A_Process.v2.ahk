@@ -137,7 +137,7 @@ SetWinEventHook(callbackFunc, winTitle := 0, eventMin := 0x8000, eventMax := 0x8
 	EVENT_OBJECT_DESTROY 			:= 32769, 	EVENT_OBJECT_DRAGSTART := 0x8021, 
 	EVENT_OBJECT_DRAGCANCEL 		:= 0x8022, 	EVENT_OBJECT_DRAGCOMPLETE := 0x8023, 
 	EVENT_OBJECT_DRAGENTER 			:= 0x8024, 	EVENT_OBJECT_DRAGLEAVE := 0x8025, 
-	EVENT_OBJECT_DRAGDROPPED 		:= 0x8026, 	EVENT_OBJECT_END := 0x80FF, 
+	EVENT_OBJECT_DRAGDROPPED 		:= 0x8026, 	EVENT_OBJECT_END := 32769, 
 	EVENT_OBJECT_FOCUS 				:= 0x8005, 	EVENT_OBJECT_HELPCHANGE := 0x8010, 
 	EVENT_OBJECT_HIDE 				:= 0x8003, 	EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED := 0x8020, 
 	EVENT_OBJECT_IME_HIDE 			:= 0x8028, 	EVENT_OBJECT_IME_SHOW := 0x8027, 
@@ -222,12 +222,14 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 		win_active_title_array.Push(win_active_title)
 	for each, value in win_active_title_array {
 		if (win_active_title_array.Has(value)) {
+			OutputDebug('titlebreak: ' . win_active_title_array.Has(value))
 			break
 		}
 	}
-		win_active_array.Push(win_active)
+	win_active_array.Push(win_active)
 	for each, value in win_active_array {
 		if (win_active_array.Has(value)){
+			OutputDebug('titlebreak: ' . win_active_array.Has(value))
 			break
 		}
 	}
@@ -274,7 +276,21 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 				OutputDebug('InStr: ' hznCtrls . '`n' . 'has? ' hznmsvbTbClassNN.Has(hznCtrls) . '`n' . 'length: ' . hznmsvbTbClassNN.Length . '`n')
 			
 			if (hznCtrls ~= needle) {
-				; a_match_hWnd := ControlGetHwnd(hznCtrls, 'A')
+				if (hznmsvbTbClassNN.Has(hznCtrls)){
+					matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
+					while (hznmsvbTbHwnd.Has(matchTbHwnd)) {
+						OutputDebug('hTb_break: ' . hznmsvbTbHwnd.Has(matchTbHwnd))
+						break
+					}
+				} else {
+					try {
+						hznmsvbTbClassNN.Push(hznCtrls)
+						matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
+						hznmsvbTbHwnd.Push(matchTbHwnd)
+						OutputDebug('New: ' . hznCtrls . ' (' . matchTbHwnd . ')' . '`n')
+					}
+				}
+					; a_match_hWnd := ControlGetHwnd(hznCtrls, 'A')
 				; ahWnd := a_match_hWnd
 				; a_match_Class := hznCtrls
 				; OutputDebug('hznCtrlsneedle: ' . hznCtrls . A_Space . ahWnd . '`n')
@@ -283,23 +299,23 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 				; for a_match_k, a_match_v in u_match_c {
 				; 	OutputDebug('We have a match! ' . a_match_v . '`n')
 				; }
-				if !(hznmsvbTbClassNN.Has(hznCtrls)){
-					try {
-						OutputDebug('!hznmsvbTbClassNN.Has(hznCtrls) ' . hznCtrls . '`n')
-						hznmsvbTbClassNN.Push(hznCtrls)
-						matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
-						hznmsvbTbHwnd.Push(matchTbHwnd)
-					}
-				} else if (hznmsvbTbClassNN.Has(hznCtrls)) && !(hznmsvbTbHwnd.Has(matchTbHwnd)){
-					try {
-						OutputDebug('!(hznmsvbTbClassNN.Has(hznCtrls)) && !(hznmsvbTbHwnd.Has(matchTbHwnd))' . hznCtrls . '`n')
-						matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
-						hznmsvbTbHwnd.Push(matchTbHwnd)
-					}
-					; continue
-				} else {
-					return
-				}
+				; if !(hznmsvbTbClassNN.Has(hznCtrls)){
+				; 	try {
+				; 		OutputDebug('!hznmsvbTbClassNN.Has(hznCtrls) ' . hznCtrls . '`n')
+				; 		hznmsvbTbClassNN.Push(hznCtrls)
+				; 		matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
+				; 		hznmsvbTbHwnd.Push(matchTbHwnd)
+				; 	}
+				; } else if (hznmsvbTbClassNN.Has(hznCtrls)) && !(hznmsvbTbHwnd.Has(matchTbHwnd)){
+				; 	try {
+				; 		OutputDebug('!(hznmsvbTbClassNN.Has(hznCtrls)) && !(hznmsvbTbHwnd.Has(matchTbHwnd))' . hznCtrls . '`n')
+				; 		matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
+				; 		hznmsvbTbHwnd.Push(matchTbHwnd)
+				; 	}
+				; 	; continue
+				; } else {
+				; 	return
+				; }
 			}
 		}
 		; }
@@ -332,7 +348,7 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 		for each, matchTb in hznmsvbTbHwnd {
 			try {
 				OutputDebug('matchTb (destroy): ' . matchTb . '`n')
-				hznmsvbTbClassNN.RemoveAt(A_Index)
+				; hznmsvbTbClassNN.RemoveAt(A_Index)
 			}
 		}
 	}
