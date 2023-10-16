@@ -375,16 +375,17 @@ GetTbInfo()
 }
 DisplayObj(Obj, Depth:=10, IndentLevel:="")
 {
+    list := ''
     if Type(Obj) = "Object"
         Obj := Obj.OwnProps()
     for k,v in Obj
         {
             List.= IndentLevel "[" k "]"
-            List.= IndentLevel
+            ; List.= IndentLevel
             if (IsObject(v) && Depth>1)
                 List.="`n" DisplayObj(v, Depth-1, IndentLevel . "    ")
             Else
-                List.=" => " v
+                ; List.=" => " v
                 List.=v
             ; List.= v
             List.="`n"

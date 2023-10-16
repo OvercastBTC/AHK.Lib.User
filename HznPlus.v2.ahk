@@ -30,7 +30,7 @@
 ; --------------------------------------------------------------------------------
 ; #Include <EnumAllMonitorsDPI.v2>
 ; #Include <GetNearestMonitorInfo().v2>
-; #Include "C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v2\RTE.v2\master\RichEdit.ahk"
+#Include "C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v2\RTE.v2\master\RichEdit.ahk"
 ; --------------------------------------------------------------------------------
 
 ; --------------------------------------------------------------------------------
@@ -70,20 +70,105 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 @function Underline		(CTRL+U)
 @function SelectAll		(CTRL+A)
 @function Save			(CTRL+S)
+@function Save			(CTRL+S)
 @function HznGetText 	(CTRL+SHIFT+C) (like Ctrl+c & displays the text)
+@function Find			(CTRL+SHIFT+F)
+@function Replace			(CTRL+SHIFT+R)
  ***********************************************************************/
 
-#HotIf WinActive('ahk_exe hznhorizon.exe')
+; #HotIf WinActive('ahk_exe hznhorizon.exe')
+; ^+!1::testtest()
+; #Include <__A_Process.v2>
+; testtest()
+; {
+; 	SendLevel((A_SendLevel+1))
+; 	BlockInput(1)
+; 	pvTxt := A_DetectHiddenText, 	DetectHiddenText(0)
+; 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
+; 	idWin := WinGetID('ahk_exe hznHorizon.exe')
+	; Sleep(200)
+	; WinActivate(idWin)
+	; DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
+	; hznhWnd := WinExist('ahk_exe hznHorizon.exe')
+	; list := WinGetControls('A')
+	; list := WinGetControls(idWin)
+	; clist := WinGetControlsHwnd('A')
+	; clist := WinGetControlsHwnd(idWin)
+	; fCtl := ControlGetFocus('A')
+	; hCtl := ControlGetClassNN(fCtl)
+	; static ControlClassNN := ''
+	; static ControlHwnd := ''
+	; static enumlist := ''
+	; static matchlist := ''
+	; static matches:= []
+	; static CtlList := []
+	; static match := ''
+	; static k := 0
+	; needle := 'i).*bar.*'
+	; needle := 'i).*'
+	; needle := 'im)m(((\s|(\w+))_.*)bar\w+)'
+	; needle := 'i)((_|\s|\S|\w| ).*bar\w+)'
+	; ? KEEP FROM HERE
+	; for , ControlClassNN in clist {
+		; enumlist .= '[' . A_Index . ']' . A_Space . ControlClassNN '`n'
+		; hTb := ControlGetHwnd(ControlClassNN, 'A')
+		; OutputDebug('[' . A_Index . '] ' . ControlClassNN . ' hCtl: ' hTb '`n')
+		; hTb := ControlClassNN
+		; matches.Push(hTb)
+		
+		; if (ControlClassNN ~= needle) {
+		; ; if InStr(ControlClassNN , needle) {
+		; 	hTb := ControlGetHwnd(ControlClassNN, 'A')
+		; 	OutputDebug('[' . A_Index . '] ' . ControlClassNN . ' hCtl: ' hTb '`n')
+		; 	; matches.Push(ControlClassNN . A_Space . '(' . hTb . ')')
+		; 	matches.Push(hTb)
+		; 	}
+	; }
+	; FileAppend(enumlist, '_enumlist_before_regex.txt', '`n UTF-8')
+	; ? KEEP TO HERE
+	; pid_target := WinGetPID(idWin)
+	; hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
+	; remote_buffer := RemoteBuffer(hpRemote, Is32bit := 0)
+	; trybtnct(ControlHwnd) {
+		; TB_BUTTONCOUNT := 1048, control := ctrlhwnd := ControlHwnd
+		; pid_target := WinGetPID(ctrlhwnd)
+		; hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
+		; remote_buffer := RemoteBuffer(hpRemote, Is32bit := 0) ; fix -> wrong function -> remoteMemory()
+		; Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0
+		; return BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, ctrlhwnd)
+		; OutputDebug('Ctrl_Name: ' . Ctrl_Name . ' BtnCt: ' BUTTONCOUNT . '`n')
+	; }
 
+; --------------------------------------------------------------------------------
+#HotIf WinActive('ahk_exe hznhorizon.exe')
+tab::
+{
+	try 
+		if (ControlGetClassNN(ControlGetFocus('A')) ~= 'i).*TextBox.*' || ControlGetClassNN(ControlGetFocus('A')) ~= 'i).*TX11.*') {
+		Suspend(1)
+		SendEvent('^i')
+		Suspend(0)
+		}
+		Else {
+			SendEvent('{sc0f}')
+		}
+}
+hznButtonCount(hTb := HznToolbar._hTb()) {
+	Static Msg := TB_BUTTONCOUNT := 1048, wParam := 0, lParam := 0
+	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, hTb, hTb)
+	OutputDebug('Used hznButtonCount()`n # of buttons is ' BUTTONCOUNT)
+	return BUTTONCOUNT
+}
+; #HotIf
+; #HotIf WinActive('ahk_exe hznhorizon.exe')
 ^b::button(100)			; bold
 ^i::button(101)			; italics
 ^u::button(102)			; underline
-; idCommand 103 thru 108 are disabled (btnstate = 8)
 ; button(103) = Separator
-; button(104) = Align Left
-; button(105) = Align Right
-; button(106) = Align Center
-; button(107) = Justitfied
+; ^l::button(104) 		; Align Left
+; ^r::button(105) 		; Align Right ; fix => cut???
+; ^e::button(106) 		; Align Center
+; ^j::button(107) 		; Justitfied
 ; button(108) = Separator
 ; ^x::button(109) 		; cut
 ; ^c::button(110) 		; copy
@@ -94,19 +179,41 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 ^+b::button(116) 		; Bulleted List
 F7::
 ^F7::
-^F5::
-F5::button(117) 		; spell check
+{
+	button(117)
+	return
+}		; spell check
 ; idCommand (118) unknown (btnstate = 1)
-^+s::button(119) 		; super|sub script
-^f::button(120)			; find (focused tab) and find/replace
-^r::
+^=::
+{
+	button(119) 		; [super script]
+	SendEvent('{Space}')
+	SendEvent('!o')
+	return
+}	
+^+=::					; [sub script]
+{
+	button(119) 		
+	SendEvent('{Down}')
+	SendEvent('{Space}')
+	SendEvent('!o')
+	return
+}	
+F5:: 					; find (focused tab) and find/replace
+^f::					; find (focused tab) and find/replace
+^F5::
+{
+	button(120) 		; find (focused tab) and find/replace					; fix =>
+	return
+}
+; ^+r::HznFindReplace() 	; find/replace (focused tab) and find
 ^+f::HznFindReplace()	; find/replace (focused tab) and find
 ^a::HznSelectAll()
 ^+v::HznPaste()
 ^+c::HznGetText()
 ~^s::HznSave()
 ^F4::HznClose() 		; fix [] => need to only be on certain screen(s).
-^+9::HznEnableButtons() ; works!!!
+; ^+9::HznEnableButtons() ; works!!!
 ^+8::HznTbCustomize() 	; works!!! enables and shows all buttons on the toolbar
 ; ^+7:: 					; ! test hotkey
 ; {
@@ -162,11 +269,6 @@ HznFindReplace()
 {
 	button(120)
 	Sleep(100)
-	state := GetKeyState('Alt')
-	If (!state = 0)
-		{
-			return
-		}
 	Send('{LAlt down}')
 	SendEvent('p')
 	Sleep(100)
@@ -181,26 +283,30 @@ HznFindReplace()
 
 HznSave()
 {
+	SendLevel((A_SendLevel+1))
+	BlockInput(1)
 	pvTxt := A_DetectHiddenText, 	DetectHiddenText(0)
 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
-	Sleep(200)
+	; pvKey := A_KeyDelay, 			SetKeyDelay(20)
+	; Sleep(200)
 	idWin := WinGetID('ahk_exe hznHorizon.exe')
-	Sleep(200)
+	; Sleep(200)
 	WinActivate(idWin)
-	CaretGetPos(&cX:=0, &xY:=0)
+	; CaretGetPos(&cX:=0, &xY:=0)
 	; --------------------------------------------------------------------------------
-	; state_Alt := GetKeyState('Alt')
-	; state_LAlt := GetKeyState('LAlt')
-	; state_RAlt := GetKeyState('RAlt')
-
-	If !(GetKeyState('Alt'))
-		Send('{LAlt down}')
+	; ControlSend('{LAlt down}') ;,idWin )
+	; ControlSend('f') ;,idWin )
+	; ControlSend('s') ;,idWin )
+	; ControlSend('{LAlt Up}') ;,idWin )
+	SendEvent('{LAlt down}')
 	SendEvent('f') ; SendEvent required
 	Sleep(100)
-	Send('{LAlt Up}')
-	Send('s')
-	Sleep(100)
-	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
+	SendEvent('{LAlt Up}')
+	SendEvent('s')
+	; Sleep(100)
+	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin) ;, SetKeyDelay(pvKey)
+	BlockInput(0)
+	SendLevel(0)
 	return
 }
 ; --------------------------------------------------------------------------------
@@ -214,26 +320,19 @@ HznSave()
 
 HznClose(*)
 {
+	initialSendLevel := A_SendLevel
+	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	; prevents the user from doing anything to screw it up by blocking all input
 	BlockInput(1)
 	; --------------------------------------------------------------------------------
 	/** @function Alt + - (Hzn Hotkey for hidden menuitems )						*/
 	pvTxt := A_DetectHiddenText, 	DetectHiddenText(0)
 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
-	BlockInput(1)
 	idWin := WinGetID('A')
 	Sleep(100)
 	WinActivate(idWin)
 	; ; --------------------------------------------------------------------------------
-	state_Alt := GetKeyState('Alt'), state_Lalt := GetKeyState('LAlt'),
-	state_Ralt := GetKeyState('RAlt')
-	If (!state_Alt = 0) || (!state_Lalt = 0) || (!state_Ralt = 0)
-		{
-			SendEvent('-') ; SendEvent required
-			Sleep(100)
-			return
-		}
-	SendEvent('{LAlt down}')
+	Send('{LAlt down}')
 	SendEvent('-') ; SendEvent required
 	Sleep(100)
 	Send('{LAlt Up}')
@@ -241,6 +340,7 @@ HznClose(*)
 	Send('c')
 	; --------------------------------------------------------------------------------
 	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
+	SendLevel(0)
 	BlockInput(0)
 	return
 }
@@ -254,17 +354,12 @@ HznClose(*)
  * @param wParam - := 0
  * @param lParam := -1
 ***********************************************************************/
-; -------------------------------------------------------------------------------------------------
+
 HznSelectAll(*)
 {
-	; --------------------------------------------------------------------------------
-	hCtl := ControlGetFocus('A')
-	; hCtl := HznToolbar._hCtl()
-	; --------------------------------------------------------------------------------
 	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
-	; --------------------------------------------------------------------------------
+	hCtl := ControlGetFocus('A')
 	DllCall('SendMessage', 'UInt', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
-	; --------------------------------------------------------------------------------
 	return
 }
 ; --------------------------------------------------------------------------------
@@ -279,13 +374,18 @@ HznSelectAll(*)
 HznGetText(*)
 {
 	hCtl := ControlGetFocus('A')
-	; hCtl := HznToolbar._hCtl()
 	text := A_Clipboard := ControlGetText(hCtl)
 	; RichEdit().SetText()
 	; --------------------------------------------------------------------------------
 	; OutputDebug(text)
+	Run("C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v2\RTE.v2\master\RichEdit_Editor_v2.ahk")
+	WinWaitActive('hznRTE ')
+	Send('^a')
+	Sleep(100)
+	Send('+{Insert}')
 	; --------------------------------------------------------------------------------
-	MsgBox(text '`n`n' '[This text has been copied to the clipboard. Use Ctrl+v to paste, or right-click and select Paste in your window of choice.]','Copy of Horizon Text')
+	; MsgBox(text '`n`n' '[This text has been copied to the clipboard. Use Ctrl+v to paste, or right-click and select Paste in your window of choice.]`n`n[This message will autoclose in 30 seconds]','Copy of Horizon Text', 'T30')
+	MsgBox('[This text has been copied to the clipboard. Use Ctrl+v, or right-click and select paste, to paste in your window of choice.]`n`n[This message will autoclose in 3 seconds]','Copy of Horizon Text', 'T3')
 	; --------------------------------------------------------------------------------
 	return text
 }
@@ -302,45 +402,44 @@ HznGetText(*)
  * @param lParam ......: This parameter is not used and must be zero.
  * @returns {null} ....: This message does not return a value.
 ***********************************************************************/
+
 HznPaste(*)
 {
-	; --------------------------------------------------------------------------------
-	hCtl := ControlGetFocus('A')
-	; hCtl := HznToolbar._hCtl()
-	; --------------------------------------------------------------------------------
 	Static Msg := WM_PASTE := 770, wParam := 0, lParam := 0
-	; --------------------------------------------------------------------------------
+	hCtl := ControlGetFocus('A')
+	
 	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
-	; --------------------------------------------------------------------------------
+	
 	return
 }
 ; --------------------------------------------------------------------------------
 
 ; --------------------------------------------------------------------------------
-HznEnableButtons(*)
+; HznEnableButtons(hTb?, *)
+HznEnableButtons(hTb)
 {
-	SendLevel((A_SendLevel+1)) ; SendLevel higher than anything else (normally highest is 1)
+	initialSendLevel := A_SendLevel
+	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
-	hTb := HznToolbar._hTb()
+	; hTb := HznToolbar._hTb()
 	; --------------------------------------------------------------------------------
-	Static   WM_COMMAND := 273, TB_GETBUTTON:= 1047, TB_BUTTONCOUNT:= 1048,TB_COMMANDTOINDEX := 1049
-			,TB_GETITEMRECT := 1053,MEM_PHYSICAL := 4,MEM_RELEASE := 32768,TB_GETSTATE := 1042
-			,TB_GETBUTTONSIZE := 1082, TB_ENABLEBUTTON := 0x0401, TB_SETSTATE := 0x0411,TBSTATE_ENABLED := 0x04 
+	Static   WM_COMMAND := 273, TB_GETBUTTON:= 1047, TB_BUTTONCOUNT:= 1048,TB_COMMANDTOINDEX := 1049,TB_GETITEMRECT := 1053,MEM_PHYSICAL := 4,MEM_RELEASE := 32768,TB_GETSTATE := 1042,TB_GETBUTTONSIZE := 1082, TB_ENABLEBUTTON := 0x0401, TB_SETSTATE := 0x0411,TBSTATE_ENABLED := 4,TBSTATE_DISABLED := 0, TBSTATE_HIDDEN := 8 
 	; --------------------------------------------------------------------------------
+
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
 	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0,, hTb)
 	; --------------------------------------------------------------------------------
-	; Step: Use the @params to press the button
+	; Step: Use the @params to enable the button
 	; --------------------------------------------------------------------------------
 	Loop buttonCount
 		{
 			idCommand := A_Index +99
 			Msg := TB_SETSTATE, wParam := idCommand, lParam_HI := 0, lParam_LO := TBSTATE_ENABLED, control := hTb
-			; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
+		; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 			SendMessage(Msg, wParam, lParam_HI|lParam_LO,control,hTb)
-		}	
-	; return
+		}
+		; return
 }
 /************************************************************************
  * function: HznTbCustomize()
@@ -349,13 +448,13 @@ HznEnableButtons(*)
  * @param 		hTb 
  * @returns 	{void} 
  ***********************************************************************/
+
 HznTbCustomize(hTb?)
 {
-	SendLevel((A_SendLevel+1)) ; SendLevel higher than anything else (normally highest is 1)
+	initialSendLevel := A_SendLevel
+	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
-	; hTb := HznToolbar().__HznNew().hTb
 	hTb := HznToolbar._hTb()
-	; TB_CUSTOMIZE := 0x41B ; (hex)
 	Static TB_CUSTOMIZE := 1051, wParam := 0, lParam := 0, control := hTb
 	try SendMessage(TB_CUSTOMIZE, wParam, lParam, control, hTb) ;wow, this works!!!
 	BlockInput(0)
@@ -374,12 +473,13 @@ HznTbCustomize(hTb?)
 ***********************************************************************/
 button(idCommand:=0)
 {
-	SendLevel((A_SendLevel+1)) ; SendLevel higher than anything else (normally highest is 1)
+	initialSendLevel := A_SendLevel
+	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
-	hTb := GetTbInfo().hTb
-	nCtl := GetTbInfo().nCtl
+	hTb := HznToolbar._hTb()
+	nCtl := HznToolbar._nCtl()
 	; --------------------------------------------------------------------------------
-	HznEnableButtons()
+	HznEnableButtons(hTb)
 	; --------------------------------------------------------------------------------
 	try	(idCommand >= 100) ? idBtn := idButton(idCommand) : idBtn := idButton(A_ThisHotkey)
 	catch
@@ -387,7 +487,7 @@ button(idCommand:=0)
 	; --------------------------------------------------------------------------------
 	init_bState := GETBUTTONSTATE(idCommand,hTb)
 	try {
-		if (init_bState = 4) || (init_bState = 6) || (init_bState = 1)
+		if (init_bState == 4) || (init_bState == 6) ;|| (init_bState = 1)
 			HznButton(hTb,nCtl, idCommand, idBtn)
 	} 
 	; --------------------------------------------------------------------------------
@@ -419,20 +519,20 @@ idButton(buttonhotkey?)
 	try 
 		(buttonhotkey >= 100) ? idBtn := (buttonhotkey - 99) : buttonhotkey
 	catch
-		idBtn:= (A_ThisHotkey = "^b") ? 1 	: 	;.........: bold
-				(A_ThisHotkey = "^i") ? 2 	: 	;.........: italic
-				(A_ThisHotkey = "^u") ? 3 	: 	; ........: underline
-				(A_ThisHotkey = "^x") ? 8 	:	; ........: cut
-				(A_ThisHotkey = "^c") ? 9 	:	; ........: copy
-				; (A_ThisHotkey = "^v") ? 10	:	; ........: paste
-				(A_ThisHotkey = "^z") ? 12	:	; ........: undo
-				(A_ThisHotkey = "^y") ? 13	:	; ........: redo
+		idBtn:= (A_ThisHotkey = "^b")  ? 1 	: 	;.........: bold
+				(A_ThisHotkey = "^i")  ? 2 	: 	;.........: italic
+				(A_ThisHotkey = "^u")  ? 3 	: 	; ........: underline
+				; (A_ThisHotkey = "^x")  ? 8 	:	; ........: cut
+				; (A_ThisHotkey = "^c")  ? 9 	:	; ........: copy
+				; (A_ThisHotkey = "^v")  ? 10	:	; ........: paste
+				; (A_ThisHotkey = "^z")  ? 12	:	; ........: undo
+				; (A_ThisHotkey = "^y")  ? 13	:	; ........: redo
 				(A_ThisHotkey = '^+b') ? 15	:	; ........: Bulleted List
-				(A_ThisHotkey = 'F5') ? 16	:	; ........: Find/Replace
-				(A_ThisHotkey = '^F5') ? 16	:	; ........: Find/Replace
-				(A_ThisHotkey = 'F7') ? 16	:	; ........: Find/Replace
-				(A_ThisHotkey = '^F7') ? 16	:	; ........: Find/Replace
-				(A_ThisHotkey = '^+s') ? 18	:	; ........: super|sub script
+				(A_ThisHotkey = 'F5')  ? 19	:	; ........: Find/Replace
+				(A_ThisHotkey = '^F5') ? 19	:	; ........: Find/Replace
+				(A_ThisHotkey = 'F7')  ? 16	:	; ........: Spell Check
+				(A_ThisHotkey = '^F7') ? 16	:	; ........: Spell Check
+				; (A_ThisHotkey = '^+s') ? 18	:	; ........: super|sub script
 	OutputDebug('idBtn: ' idBtn '`n')
 	return idBtn
 }
@@ -450,17 +550,14 @@ idButton(buttonhotkey?)
  ***********************************************************************/
 ; --------------------------------------------------------------------------------
 HznButton(hTb, nCtl, idCommand, n?, pID?, fCtl?, hTx?, fCtlInstance?) {
-	; --------------------------------------------------------------------------------
-	; Step: [OPTIONAL] Block all input while the function running
-	; --------------------------------------------------------------------------------
-	SendLevel((A_SendLevel+1))
+	initialSendLevel := A_SendLevel
+	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
-	
 	; --------------------------------------------------------------------------------
-	Static  WM_COMMAND := 273, TB_GETBUTTON := 1047, TB_BUTTONCOUNT := 1048,
-			TB_COMMANDTOINDEX := 1049, TB_GETITEMRECT := 1053, 
-			MEM_PHYSICAL := 4, MEM_RELEASE := 32768, TB_GETSTATE := 1042,
-			TB_GETBUTTONSIZE := 1082, TB_ENABLEBUTTON := 0x0401
+	Static  WM_COMMAND := 273, TB_GETBUTTON := 1047, TB_BUTTONCOUNT := 1048
+	Static	TB_COMMANDTOINDEX := 1049, TB_GETITEMRECT := 1053 
+	Static	MEM_PHYSICAL := 4, MEM_RELEASE := 32768, TB_GETSTATE := 1042
+	Static	TB_GETBUTTONSIZE := 1082, TB_ENABLEBUTTON := 0x0401
 	; --------------------------------------------------------------------------------
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
@@ -551,12 +648,14 @@ HznControlClick(X, Y)
 ; 	return
 ; }	
 ; --------------------------------------------------------------------------------
-remote_mem_buff(hProcess, Is32bit, &TBBUTTON_SIZE)
+remote_mem_buff(hProcess, Is32bit?, &TBBUTTON_SIZE?)
 {
 	Static MEM_PHYSICAL := 4 ; 0x04 ; 0x00400000, ; via MSDN Win32
+	Static MEM_COMMIT := 4096
+	Is32bit := 0
 	RPtrSize := Is32bit ? 4 : 8
 	TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
-	remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
+	remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", MEM_COMMIT, "UInt", MEM_PHYSICAL, "Ptr")
 	return remoteMemory
 }
 ; --------------------------------------------------------------------------------
@@ -606,10 +705,10 @@ _GETBUTTON(n:=1, hTb?, pID?, hProcess?)
 	; MsgBox(GETBUTTON) ; ===> displays a zero (0)
 	return GETBUTTON
 }
-GETBUTTONSTATE(idButton,hTb?)
+GETBUTTONSTATE(idButton,hTb)
 {
 	Static TB_GETSTATE := 1042 ; 0x0412
-	hTb := HznToolbar._hTb()
+	; hTb := HznToolbar._hTb()
 	Msg := TB_GETSTATE, wParam := idButton, lParam := 0, control := hTb
 	GETSTATE := SendMessage(TB_GETSTATE, idButton, 0, hTb, hTb)
 	btnstate := SubStr(GETSTATE,1,1)

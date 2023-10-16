@@ -1,30 +1,38 @@
-﻿#Requires AutoHotkey v2
-;@include-winapi
+﻿#Requires AutoHotkey v2+
 ; --------------------------------------------------------------------------------
 #Include <Directives\__AE.v2>
 #Include <Directives\__HznToolbar>
 #include <Directives\WinHook.v2>
 ; --------------------------------------------------------------------------------
-#HotIf WinActive('ahk_exe hznHorizon.exe') ;&& WinActive('ahk_exe hznHorizon.exe')
+Persistent(1)
+; --------------------------------------------------------------------------------
+; #HotIf WinActive('ahk_exe hznHorizon.exe') ;&& WinActive('ahk_exe hznHorizon.exe')
 ; Callback definition for EVENT_SYSTEM_CAPTURESTART
 ; msvb_lib_toolbar_created := CallbackCreate(CallBack_TB_CREATED)
 ; /*
-; Persistent(1)
 ; DetectHiddenText(1)
 ; DetectHiddenWindows(1)
-WinShowHook(true)
-~*Esc::Exit()
+; WinShowHook(true)
+; ~*Esc::Exit()
 ; Return
 CoordMode('ToolTip', 'Screen')
 HookProcedure() {
 	global A_Process
-	hWnd := WinActive('A')
-	pID := WinGetPID(hWnd)
-	Name := WinGetProcessName(hWnd)
-	DllCall("GetWindowThreadProcessId", "Ptr", hWnd, "UInt*", &tpID := 0)
+	pvTxt := A_DetectHiddenText, DetectHiddenText(0)
+	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
+	; hWnd := WinActive()
+	; pID := WinGetPID()
+	; Name := WinGetProcessName()
+	Sleep(100)
+	Try
+		hWnd := WinActive('A')
+		; pID := WinGetPID(hWnd)
+		Name := WinGetProcessName(hWnd)
+		DllCall("GetWindowThreadProcessId", "Ptr", hWnd, "UInt*", &tpID := 0)
+	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
 	; list := GetHznControls(hWnd)
 	ToolTip(  'tpID: '	. tpID . '`n' 
-			. 'pID: ' 	. pID . '`n' 
+			; . 'pID: ' 	. pID . '`n' 
 			. 'hWnd: '	. hWnd . '`n' 
 			. 'name: '	. name . '`n'
 			; . 'List: '	. list . '`n'
@@ -33,12 +41,12 @@ HookProcedure() {
 	A_Process := name
 		; hwnd := WinActive(hzntitle)
 		; pID := WInGetID()
-	GetHznControls(hwnd:=0)
+	GetHznControls(hwnd:=0, &list_controls:='')
 	{
 		win_get_controls := WinGetControls('A')
 		list_controls := DisplayObj(win_get_controls)
 		OutputDebug(list_controls '`n')
-		return list_controls
+		; return list_controls
 	}
 	; bak_TitleMatchMode := A_TitleMatchMode
 	; OutputDebug('pMatch: ' bak_TitleMatchMode '`n')
@@ -51,16 +59,18 @@ HookProcedure() {
 	; nCtl := m[]
 	; instance := SubStr(nCtl, -1, 1)
 	; hTb := ControlGethWnd(nCtl, "A")
-	; MsgBox(nCtl ' ' hTb . '`n')		
-	SoundBeep(555,1000)
-	return A_Process
+	; MsgBox(nCtl ' ' hTb . '`n')
+	; SoundBeep(555,1000)
+	; return A_Process
+
 }
+WinShowHook(true)
 
 WinShowHook(doHook) {
 	static CBA := CallbackCreate(HookProcedure)
 	static hHook := 0
 	; static EVENT_OBJECT_SHOW := 0x8002
-	static EVENTmin := HSHELL_RUDEAPPACTIVATED := 1
+	static EVENTmin := HSHELL_RUDEAPPACTIVATED := 32772
 	static EVENTmax := HSHELL_RUDEAPPACTIVATED := 32772
 	if (doHook && hHook = 0) {
 		; MsgBox("Installing WinEvent Hook")
@@ -80,8 +90,15 @@ WinShowHook(doHook) {
 		hHook := 0
 	}
 }
+
+WinShellHook(*)
+{
+	DllCall("RegisterShellHookWindow", "UInt", A_ScriptHwnd)
+	MsgNum := DllCall("RegisterWindowMessage", "Str", "SHELLHOOK")
+	OnMessage(MsgNum, ObjBindMethod(WinHook.Shell, "Message"))
+}
 ; }
-return
+; return
 /*
 {
 DetectHiddenText(1)

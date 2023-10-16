@@ -6,46 +6,22 @@
  * @date 2023/08/25
  * @version 5.8.10
  ***********************************************************************/
-#Warn All, OutputDebug
-#SingleInstance Force
-SendMode("Input")
-SetWorkingDir(A_ScriptDir)
-SetTitleMatchMode(2)
-; --------------------------------------------------------------------------------
-DetectHiddenText(true)
-DetectHiddenWindows(true)
-; --------------------------------------------------------------------------------
-#Requires AutoHotkey v2
-; --------------------------------------------------------------------------------
-SetControlDelay(-1)
-SetMouseDelay(-1)
-SetWinDelay(-1)
-; --------------------------------------------------------------------------------
-MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3
-DefaultDpiAwarenessContext := MaximumPerMonitorDpiAwarenessContext
-try
-	DllCall("SetThreadDpiAwarenessContext", "ptr", MaximumPerMonitorDpiAwarenessContext, "ptr")
-catch 
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
-else
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
-; --------------------------------------------------------------------------------
-#HotIf WinActive(A_ScriptName " - Visual Studio Code")
-~^s::Run(A_ScriptName)
-#HotIf
+#Requires AutoHotkey v2+
+#Include <Directives\__AE.v2>
+#Include <HznPlus.v2>
 ; --------------------------------------------------------------------------------
 #HotIf WinActive("ahk_exe hznhorizon.exe")
 
-^i::button()
-^b::button()
-^u::button()
-^-::button()
+^i::enumbutton()
+^b::enumbutton()
+^u::enumbutton()
+^-::enumbutton()
 ; ^a::HznSelectAll()
 ; ^s::HznSave()
 ; ^F4::HznClose()
 #HotIf
 ; --------------------------------------------------------------------------------
-button(*) {
+enumbutton(*) {
 	SendLevel(5)
 	BlockInput(1) ; 1 = On, 0 = Off
 	Static 	WM_COMMAND				:= 273 ; 0x111
@@ -56,7 +32,7 @@ button(*) {
 	hTx := ControlGethWnd(fCtl, "A")
 	idBtn:= A_ThisHotkey = "^b" ? 1 : 1 ;.........: italic = 2
 	idBtn:= A_ThisHotkey = "^i" ? 2 : 2 ;.........: italic = 2
-	idBtn:= A_ThisHotkey = "^u" ? (getbuttonstate(103,hTB) != 4) MsgBox("There is no underline button available.") 0 : 9 ;.........: italic = 2
+	idBtn:= A_ThisHotkey = "^u" ? (enumGETBUTTONSTATE(103,hTB) != 4) MsgBox("There is no underline button available.") 0 : 9 ;.........: italic = 2
 ; ........: (AJB - 08/2023) FE Notepad, Comments, and COPE => u = 10; 3 worked somewhere? (???9 and 10???) (else i or b)
 			; :  A_ThisHotkey = "^x" ? 108 ; ........: cut = 11 and 12
 			; :  A_ThisHotkey = "^c" ? 109 ; ........: copy
@@ -73,7 +49,7 @@ button(*) {
 	return
 }
 ; --------------------------------------------------------------------------------
-HznButton(hTb, idButton, arbtn) {
+Hznenumbutton(hTb, idButton, arbtn) {
 	idButton := arbtn.cmd
 	x := idButton.x
 	y := idButton.y
@@ -87,10 +63,10 @@ HznButton(hTb, idButton, arbtn) {
 
 #HotIf WinActive('ahk_exe hznhorizon.exe')
 
-^+9::
+^+7::
 { ; V1toV2: Added bracket
 	SendLevel(5)
-	fCtl := ControlGetClassNN(ControlGetFocus('A'))
+	; fCtl := ControlGetClassNN(ControlGetFocus('A'))
 	; --------------------------------------------------------------------------------
 	; hWnd := ControlGetFocus('A')
 	; flag := MONITOR_DEFAULTTONEAREST := 0x00000002
@@ -150,45 +126,108 @@ HznButton(hTb, idButton, arbtn) {
 	; --------------------------------------------------------------------------------
 	Static 	WM_COMMAND				:= 273 ; 0x111
 	; --------------------------------------------------------------------------------
-	bID := SubStr(fCtl, -1, 1)
-	nCtl := "msvb_lib_toolbar" bID
-	hTb := ControlGethWnd(nCtl, "A")
-	hTx := ControlGethWnd(fCtl, "A")
-	hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
-		:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
-		:  A_ThisHotkey = "^u" ? 9 ; .........: u = 3 (???9 and 10???) (else i or b)
-		:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
-		:  A_ThisHotkey = "^c" ? 13 ; ........: copy
-		:  A_ThisHotkey = "^v" ? 16 ; ........: paste
-		:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
-		:  A_ThisHotkey = "^y" ? 20 : 21 ; ...: redo
-	; EnumToolbarButtons(hTb)
-	arbtn := EnumToolbarButtons(hTb)
+	; bID := SubStr(fCtl, -1, 1)
+	; nCtl := "msvb_lib_toolbar" bID
+	; hTb := ControlGethWnd(nCtl, "A")
+	; hTx := ControlGethWnd(fCtl, "A")
+	; hIDx:= A_ThisHotkey = "^i" ? 2 ; .........: italic = 2
+	; 	:  A_ThisHotkey = "^b" ? 1 ; .........: bold = 1
+	; 	:  A_ThisHotkey = "^u" ? 9 ; .........: u = 3 (???9 and 10???) (else i or b)
+	; 	:  A_ThisHotkey = "^x" ? 11 ; ........: cut = 11 and 12
+	; 	:  A_ThisHotkey = "^c" ? 13 ; ........: copy
+	; 	:  A_ThisHotkey = "^v" ? 16 ; ........: paste
+	; 	:  A_ThisHotkey = "^z" ? 17 ; ........: undo = 17 and 18
+	; 	:  A_ThisHotkey = "^y" ? 20 : 21 ; ...: redo
+	; ; EnumToolbarButtons(hTb)
+	winList := []
+	WinActivate('ahk_exe hznHorizon.exe')
+	winList := WinGetList('A')
+	winT := '' 
+	winTList := ''
+	for each, winT in winList {
+		winTitle := WinGetTitle(winT)
+		winClass := WinGetClass(winT)
+		winTList .= 'winT: ' . winT . A_Space . 'winTitle: ' . winTitle . A_Space . 'winClass: ' . winClass . '`n'
+	}
+	OutputDebug(winTList)
+	matches := []
+	arbtn := []
+	matches := testtest()
+	v:=0
+	for , v in matches{
+		local hTb := v
+		TB_BUTTONCOUNT := 1048, control := ctrlhwnd := v
+		pid_target := WinGetPID(ctrlhwnd)
+		hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
+		remote_buffer := RemoteBuffer(hpRemote, Is32bit := 0)
+		Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0
+		BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, ctrlhwnd)
+		If (BUTTONCOUNT > 0){
+			
+			Try {
+				; ClassNN := ControlGetClassNN(hTb)
+				ClassNN := WinGetTitle(hTb)
+				if (ClassNN = '') {
+					Try {
+						; ClassNN := WinGetTitle(hTb)
+						ClassNN := ControlGetClassNN(hTb)
+					}
+				}
+			arbtn.Push('ClassNN: ' ClassNN . A_Space . 'bntct: ' . BUTTONCOUNT . '`n')
+			; arbtn.Push(BUTTONCOUNT)
+			}
+		}
+		else If (BUTTONCOUNT == 0){
+			xlist := WinGetControlsHwnd(hTb)
+			otherv := 0
+			otherotherv := 0
+			for each, otherv in xlist
+				ohTb := WinGetControlsHwnd(otherv)
+				for each, otherotherv in ohTb
+					BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, ohTb, ohTb)
+					if !(BUTTONCOUNT == 0)
+						arbtn.Push('[' . otherotherv . '] #' . BUTTONCOUNT)
+		}
+		; arbtn := EnumToolbarButtons(hTb)
+	}
 	; idCommand := arbtn.idButton
-
-	HznBtns := DisplayObj(arbtn)
+	index := 1
+	for each, value in arbtn {
+		HznBtns .= value
+		; If (index < 2) {
+		; 	index++
+		; 	HznBtns .= value . A_Space
+		; }
+		; If (index == 2) {
+		; 	HznBtns .= value . '`n'
+		; 	index := 0
+		; }
+	}
+	; HznBtns := DisplayObj(arbtn)
 	MsgBox(HznBtns)
-	; btnstate := getbuttonstate(101,hTb)
+	; OutputDebug(HznBtns)
+	; btnstate := enumGETBUTTONSTATE(101,hTb)
 	; OutputDebug(btnstate)
 	; CLICKBUTTONRECT(hTb, 101)
-	Reload()
+	; Reload()
+	return
 } 
 #HotIf
-DisplayObj(Obj, Depth:=10, IndentLevel:="")
-{
-	if Type(Obj) = "Object"
-		Obj := Obj.OwnProps()
-	for k,v in Obj
-	{
-		List.= IndentLevel "[" k "]"
-		if (IsObject(v) && Depth>1)
-			List.="`n" DisplayObj(v, Depth-1, IndentLevel . "    ")
-		Else
-			List.=" => " v
-		List.="`n"
-	}
-	return RTrim(List)
-}
+; DisplayObj(Obj, Depth:=10, IndentLevel:="")
+; {
+; 	if Type(Obj) = "Object"
+; 		Obj := Obj.OwnProps()
+; 	for k,v in Obj
+; 	{
+; 		List.= IndentLevel "[" k "]"
+; 		if (IsObject(v) && Depth>1)
+; 			List.="`n" DisplayObj(v, Depth-1, IndentLevel . "    ")
+; 		Else
+; 			List.=" => " v
+; 		List.="`n"
+; 	}
+; 	return RTrim(List)
+; }
 ; --------------------------------------------------------------------------------
 EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 {
@@ -220,7 +259,6 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	; --------------------------------------------------------------------------------
 	x1 :=0, x2 :=0, y1 :=0, y2 :=0
 	; --------------------------------------------------------------------------------
-	
 	; Thanks to LabelControl code from 
 	; https://www.donationcoder.com/Software/Skrommel/
 	;
@@ -254,13 +292,13 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	; Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
 	; --------------------------------------------------------------------------------
 	; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
-	; hpRemote := DllCall("OpenProcess", "UInt", 0x0018 | 0x0010 | 0x0020, "Int", 0, "UInt", pid_target, "Ptr")
-	hpRemote := hp_Remote(pid_target)
+	hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
+	; hpRemote := hp_Remote(pid_target)
 
 	; --------------------------------------------------------------------------------
 	; Step: [OPTIONAL] Identify if the process is 32 or 64 bit (efficiency step)
 	; --------------------------------------------------------------------------------
-	; Is32bit := Win32_64_Bit(hpRemote)
+	; Is32bit := enumWin32_64_Bit(hpRemote)
 	; --------------------------------------------------------------------------------
 	; Step: Allocate memory for the TBBUTTON structure in the target process's address space
 	; --------------------------------------------------------------------------------
@@ -273,7 +311,7 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, ctrlhwnd)
 	; buttons := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, ctrlhwnd)
 	buttons := BUTTONCOUNT
-	OutputDebug("buttons: " . buttons . "`n") 
+	; OutputDebug("buttons: " . buttons . "`n") 
 	RECT := Buffer(16,0)
 	BtnStruct := Buffer(32,0)
 	/*
@@ -297,12 +335,13 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 		; Try to get button text. Two Notes: 
 		; 1. get command-id from button-index,
 		; 2. get button text from command-id
-		; Static gbCtl := 
-		Static tbHwnd := ctrlhwnd
+		tbHwnd := ctrlhwnd
 
 		GETBUTTON := SendMessage(TB_GETBUTTON, A_Index-1, remote_buffer, ctrlhwnd, ctrlhwnd)
 
 		ReadRemoteBuffer(hpRemote, remote_buffer, &BtnStruct, 32)
+		while (GETBUTTON == 1)
+			GETBUTTON := 'Success'
 		OutputDebug("GETBUTTON: " GETBUTTON "`n")
 		idButton := NumGet(BtnStruct, 4, "IntP")
 		OutputDebug("idButton: " . idButton . "`n")
@@ -313,23 +352,26 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 		OutputDebug("Cmd2Indx: " . Cmd2Indx . "`n")
 
 		; --------------------------------------------------------------------------------
-		btnstate := getbuttonstate(idButton, ctrlhwnd)
+		btnstate := enumGETBUTTONSTATE(idButton, ctrlhwnd)
 		; --------------------------------------------------------------------------------
-		rectangle := GETITEMRECT(C2I_0_base, ctrlhwnd, hpRemote, remote_buffer)
+		rectangle := GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
 		ReadRemoteBuffer(hpRemote, remote_buffer, &RECT, 32)
 		; --------------------------------------------------------------------------------
-		; ; oldx1:=x1
-		; ; oldx2:=x2
-		; ; oldy1:=y1
+		; oldx1:=x1
+		; oldx2:=x2
+		; oldy1:=y1
 		; --------------------------------------------------------------------------------
 		x1 := NumGet(RECT, 0, "Int") 
 		x2 := NumGet(RECT, 8, "Int") 
 		y1 := NumGet(RECT, 4, "Int") 
 		y2 := NumGet(RECT, 12, "Int")
 		; --------------------------------------------------------------------------------
-		FileAppend("Index:" A_Index . "(idButton:" . idButton . ")" . " State: " btnstate . " " . "Cmd2Indx: " . Cmd2Indx . " " . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n", "_emeditor_toolbar_buttons.txt") ; debug
+		; FileAppend("Index:" A_Index . "(idButton:" . idButton . ")" . " State: " btnstate . " " . "Cmd2Indx: " . Cmd2Indx . " " . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n", "_emeditor_toolbar_buttons.txt") ; debug
 		; --------------------------------------------------------------------------------
-		OutputDebug("Index:" A_Index . "(idButton:" . idButton . ")" . " State: " btnstate . " " . "Cmd2Indx: " . Cmd2Indx . " " . " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n") ; debug
+		OutputDebug('[' . A_Index . ']' . "(idButton:" . idButton . ")" 
+					. " State: " btnstate . " " 
+					. "Cmd2Indx: " . Cmd2Indx . " " 
+					. " X1: " x1 . " X2: " x2 . " Y1: " y1 . " Y2: " y2 . "`n") ; debug
 		; --------------------------------------------------------------------------------
 		; Try MouseMove(ctrlx + (x2+x1//2), ctrly + (y2+y1//2))
 
@@ -365,21 +407,15 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 				, 7_h:y2-y1
 			}) ; , text:BtnTextW})
 		; --------------------------------------------------------------------------------
-		;arbtn.Insert( {"x":x1, "y":y1, "w":x2-x1, "h":y2-y1, "cmd":idButton, "text":BtnText} )
-		;line:=100000000+Floor((ctrly+y1)/same)*10000+(ctrlx+x1)
-		;lines=%lines%%line%%A_Tab%%ctrlid%%A_Tab%%class%`n
-		; arbtn := ({x:x1, y:y1, w:x2-x1, h:y2-y1, cmd:idButton, text:BtnTextW})
-		; For key, value in arbtn{
-			; 	FileAppend("Key:" . key . " = " . value . "`n", "_arbtn.txt")
-			; }
 		; --------------------------------------------------------------------------------
 		; Step: Restore previous and set delay
 		; --------------------------------------------------------------------------------
 
 		; --------------------------------------------------------------------------------
 	}
-	
-	DllCall("VirtualFreeEx", "UInt", hpRemote, "UInt", remote_buffer, "UInt", 0, "UInt", 0x8000)
+	MEM_RELEASE := 32768
+	; DllCall("VirtualFreeEx", "UInt", hpRemote, "UInt", remote_buffer, "UInt", 0, "UInt", 0x8000)
+	DllCall("VirtualFreeEx", "UInt", hpRemote, "UInt", remote_buffer, "UInt", 0, "UInt", 32768)
 	DllCall("CloseHandle", "UInt", hpRemote)
 	return arbtn
 }
@@ -387,14 +423,14 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 hp_Remote(pid_target)
 {
 	; Step: Open the target process with PROCESS_VM_OPERATION, PROCESS_VM_READ, and PROCESS_VM_WRITE access
-	hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
+	
 	; hpRemote: Remote process handle
-	if(!hpRemote)
+	if !(hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr"))
 	{
 		Throw ("Autohotkey: Cannot OpenProcess(pid=" . pid_target . ")")
-		return
+		; return
 	}
-	return hpRemote
+	return hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
 }
 
 GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
@@ -424,17 +460,19 @@ GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
 ; --------------------------------------------------------------------------------
 RemoteBuffer(hpRemote, Is32bit?)
 {
-	Static 	MEM_PHYSICAL := 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+	Static MEM_PHYSICAL := 4 ; 0x04    ; 0x00400000, ; via MSDN Win32
+	Static MEM_COMMIT := 4096 ; := 0x00001000
 	try
 		RPtrSize := Is32bit ? 4 : 8
 	catch
 		A_Is64bitOS ? RPtrSize := 8 : RPtrSize := 4
 	TBBUTTON_SIZE := 8 + (RPtrSize * 3)
-	remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
-	return remote_buffer
+	; remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", 0x1000, "UInt", MEM_PHYSICAL, "Ptr")
+	return remote_buffer := DllCall("VirtualAllocEx", "Ptr", hpRemote, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", MEM_COMMIT, "UInt", MEM_PHYSICAL, "Ptr")
+	; return remote_buffer
 }
 ; --------------------------------------------------------------------------------
-Win32_64_Bit(hpRemote)
+enumWin32_64_Bit(hpRemote)
 {
 	A_Is64bitOS ? DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := 0) : DllCall("IsWow64Process", "Ptr", hpRemote, "Int*", Is32bit := 1)
 	If (A_Is64bitOS)
@@ -451,28 +489,26 @@ Win32_64_Bit(hpRemote)
 }
 ; --------------------------------------------------------------------------------
 ReadRemoteBuffer(hpRemote, RemoteBuffer, &LocalVar, bytes) {
-	DllCall("ReadProcessMemory", "Ptr", hpRemote, "Ptr", RemoteBuffer, "Ptr", LocalVar, "UInt", bytes, "UInt", 0)
-
+	return DllCall("ReadProcessMemory", "Ptr", hpRemote, "Ptr", RemoteBuffer, "Ptr", LocalVar, "UInt", bytes, "UInt", 0)
 }
 ; --------------------------------------------------------------------------------
 /**
- * Function ..: getbuttonstate()
+ * Function ..: enumGETBUTTONSTATE()
  * @param idButton
  * @param hTB := ctrlhwnd
  */
-GETBUTTONSTATE(idButton,hTb)
-{
-	TB_GETSTATE := 0x0412
+enumGETBUTTONSTATE(idButton,hTb) {
+	TB_GETSTATE := 1042 ; 0x0412 (hex)
 	GETSTATE := SendMessage(TB_GETSTATE, idButton, 0, hTb, hTb)
 	btnstate := SubStr(GETSTATE,1,1)
 	If (btnstate == 4) || (btnstate == 6){
 		return btnstate
 	}
 	btnname := idButton = 100 ? 'Bold' : idButton = 101 ? 'Italic' : idButton = 102 ? 'Underline' : ''
-	MsgBox(   'The ' btnname
-			. ' button is not available.' '`n'
-			. 'idButton: ' idButton '`n'
-			. 'btnstate: ' btnstate)
+	OutputDebug(  'The ' btnname
+				. ' button is not available.' '`n'
+				. 'idButton: ' idButton '`n'
+				. 'btnstate: ' btnstate)
 	OutputDebug("btnstate: " . btnstate . "`n")
 	return btnstate
 }

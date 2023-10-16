@@ -35,8 +35,8 @@ _AE_DetectHidden(true)
 _AE_SetDelays(-1)
 _AE_PerMonitor_DPIAwareness()
 ; --------------------------------------------------------------------------------
-#HotIf WinActive(A_ScriptName " - Visual Studio Code")
-~^s:: Run(A_ScriptName)
+#HotIf WinActive(A_ScriptName ' - Visual Studio Code')
+	$~^s:: Run(A_ScriptName)
 #HotIf
 ; --------------------------------------------------------------------------------
 _AE_DetectHidden(bool?)
@@ -65,7 +65,13 @@ _AE_PerMonitor_DPIAwareness()
 		DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
 	return A_DPI
 }
-
+__AE_CopyLib() {
+	local Lib := A_MyDocuments '\AutoHotkey\Lib'
+	If !(DirExist(Lib)) {
+		DirCreate(Lib)
+	}
+	FileCopy(A_ScriptName, Lib A_ScriptName, 1)
+}
 Class AE {
 
 	; --------------------------------------------------------------------------------
