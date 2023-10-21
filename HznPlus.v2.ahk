@@ -15,8 +15,16 @@
  * @date 2023.09.28
  * @version 3.0.2
  ***********************************************************************/
+/**
+ * 
 ;@Ahk2Exe-Obey U_V, = "%A_PriorLine~U)^(.+")(.*)".*$~$2%" ? "SetVersion" : "Nop"
 ;@Ahk2Exe-%U_V%        %A_AhkVersion%%A_PriorLine~U)^(.+")(.*)".*$~$2%
+;@Ahk2Exe-SetMainIcon HznPlus256.ico
+;@Ahk2Exe-AddResource HznPlus256.ico, 160  ; Replaces 'H on blue'
+;@Ahk2Exe-AddResource HznPlus256.ico, 206  ; Replaces 'S on green'
+;@Ahk2Exe-AddResource HznPlus256.ico, 207  ; Replaces 'H on red'
+;@Ahk2Exe-AddResource HznPlus256.ico, 208  ; Replaces 'S on red'
+*/
 ;@include-winapi
 ; --------------------------------------------------------------------------------
 #Include <Directives\__AE.v2>
@@ -177,12 +185,9 @@ hznButtonCount(hTb := HznToolbar._hTb()) {
 ; ^y::button(114) 		; redo
 ; idCommand (115) unknown but does something?
 ^+b::button(116) 		; Bulleted List
-F7::
-^F7::
-{
-	button(117)
-	return
-}		; spell check
+
+F7::button(117)			; spell check
+^F7::button(117)		; spell check
 ; idCommand (118) unknown (btnstate = 1)
 ^=::
 {
@@ -198,20 +203,17 @@ F7::
 	SendEvent('{Space}')
 	SendEvent('!o')
 	return
-}	
-F5:: 					; find (focused tab) and find/replace
-^f::					; find (focused tab) and find/replace
-^F5::
-{
-	button(120) 		; find (focused tab) and find/replace					; fix =>
-	return
 }
-; ^+r::HznFindReplace() 	; find/replace (focused tab) and find
+; --------------------------------------------------------------------------------
+F5::button(120) 					; find (focused tab) and find/replace
+^f::button(120)						; find (focused tab) and find/replace
+; --------------------------------------------------------------------------------
 ^+f::HznFindReplace()	; find/replace (focused tab) and find
+; --------------------------------------------------------------------------------`
 ^a::HznSelectAll()
 ^+v::HznPaste()
 ^+c::HznGetText()
-~^s::HznSave()
+*^s::HznSave()
 ^F4::HznClose() 		; fix [] => need to only be on certain screen(s).
 ; ^+9::HznEnableButtons() ; works!!!
 ^+8::HznTbCustomize() 	; works!!! enables and shows all buttons on the toolbar
@@ -265,11 +267,11 @@ F5:: 					; find (focused tab) and find/replace
 * @author OvercastBTC 
 ***********************************************************************/
 
-HznFindReplace()
+HznFindReplace(*)
 {
 	button(120)
 	Sleep(100)
-	Send('{LAlt down}')
+	SendEvent('{LAlt down}')
 	SendEvent('p')
 	Sleep(100)
 	Send('{LAlt Up}')
@@ -292,19 +294,25 @@ HznSave()
 	idWin := WinGetID('ahk_exe hznHorizon.exe')
 	; Sleep(200)
 	WinActivate(idWin)
+	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin) ;, SetKeyDelay(pvKey)
 	; CaretGetPos(&cX:=0, &xY:=0)
-	; --------------------------------------------------------------------------------
-	; ControlSend('{LAlt down}') ;,idWin )
-	; ControlSend('f') ;,idWin )
-	; ControlSend('s') ;,idWin )
-	; ControlSend('{LAlt Up}') ;,idWin )
 	SendEvent('{LAlt down}')
 	SendEvent('f') ; SendEvent required
-	Sleep(100)
+	; Sleep(50)
+	; SendEvent('s')
 	SendEvent('{LAlt Up}')
-	SendEvent('s')
+	; Send('{Down}' . '{Up}')
+	; try {
+	; 	hCtl := ControlGetFocus('A')
+	; 	nCtl := ControlGetClassNN(hCtl)
+	; 	hWnd := WinExist('A')
+	; 	win_title := WinGetTitle(hWnd)
+	; }
+	; ControlChooseString('Save',hCtl,hWnd)
+	; ControlChooseIndex(1, hCtl, hWnd)
+	; ToolTip(win_title . ' (' . hWnd . ')' . '`n' . nCtl . ' (' . hCtl . ')')
+	SendEvent('{Enter}')
 	; Sleep(100)
-	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin) ;, SetKeyDelay(pvKey)
 	BlockInput(0)
 	SendLevel(0)
 	return
@@ -328,18 +336,19 @@ HznClose(*)
 	/** @function Alt + - (Hzn Hotkey for hidden menuitems )						*/
 	pvTxt := A_DetectHiddenText, 	DetectHiddenText(0)
 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
-	idWin := WinGetID('A')
-	Sleep(100)
+	idWin := WinGetID('ahk_exe hznHorizon.exe')
 	WinActivate(idWin)
-	; ; --------------------------------------------------------------------------------
-	Send('{LAlt down}')
-	SendEvent('-') ; SendEvent required
 	Sleep(100)
-	Send('{LAlt Up}')
-	Sleep(300)
-	Send('c')
+	; ; --------------------------------------------------------------------------------
+	; Send('{LAlt down}')
+	; SendEvent('-') ; SendEvent required
+	; Sleep(100)
+	; Send('{LAlt Up}')
+	; Sleep(300)
+	; Send('c')
 	; --------------------------------------------------------------------------------
 	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
+	; MenuSelect(idWin,,'2&')
 	SendLevel(0)
 	BlockInput(0)
 	return
@@ -374,21 +383,32 @@ HznSelectAll(*)
 HznGetText(*)
 {
 	hCtl := ControlGetFocus('A')
-	text := A_Clipboard := ControlGetText(hCtl)
+	hCtl_title := WinGetTitle(hCtl)
+	; ControlSend('^a', hCtl)
+	HznSelectAll()
+	hzntxtbox := Gui() 
+	clip_it()
+	; text := A_Clipboard := ControlGetText(hCtl)
 	; RichEdit().SetText()
 	; --------------------------------------------------------------------------------
 	; OutputDebug(text)
-	Run("C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v2\RTE.v2\master\RichEdit_Editor_v2.ahk")
-	WinWaitActive('hznRTE ')
-	Send('^a')
+	Run("C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v2\RTE.v2\Project Files\RichEdit_Editor_v2.ahk")
+	hRTE := WinWaitActive('hznRTE ')
+	pid_RTE := WinGetPID(hRTE)
 	Sleep(100)
 	Send('+{Insert}')
 	; --------------------------------------------------------------------------------
 	; MsgBox(text '`n`n' '[This text has been copied to the clipboard. Use Ctrl+v to paste, or right-click and select Paste in your window of choice.]`n`n[This message will autoclose in 30 seconds]','Copy of Horizon Text', 'T30')
 	MsgBox('[This text has been copied to the clipboard. Use Ctrl+v, or right-click and select paste, to paste in your window of choice.]`n`n[This message will autoclose in 3 seconds]','Copy of Horizon Text', 'T3')
 	; --------------------------------------------------------------------------------
-	return text
+	; return text
+	ProcessWaitClose(pid_RTE)
+	ControlFocus(hCtl, hCtl_title)
+	HznSelectAll(hCtl)
+	Send('+{Insert}')
+	return
 }
+
 ; --------------------------------------------------------------------------------
 /************************************************************************
  * Function ..: HznPaste() (Ctrl+Shift+v)
@@ -479,7 +499,7 @@ button(idCommand:=0)
 	hTb := HznToolbar._hTb()
 	nCtl := HznToolbar._nCtl()
 	; --------------------------------------------------------------------------------
-	HznEnableButtons(hTb)
+	; HznEnableButtons(hTb)
 	; --------------------------------------------------------------------------------
 	try	(idCommand >= 100) ? idBtn := idButton(idCommand) : idBtn := idButton(A_ThisHotkey)
 	catch
@@ -514,25 +534,28 @@ button(idCommand:=0)
  * @param A_ThisHotkey - AHK's built in variable.
  * @param idBtn .: optional => idCommand := 0 (preset value, else => idCommand?)
 ***********************************************************************/
+
 idButton(buttonhotkey?)
 {
-	try 
+	try {
 		(buttonhotkey >= 100) ? idBtn := (buttonhotkey - 99) : buttonhotkey
-	catch
+	}
+	catch{
 		idBtn:= (A_ThisHotkey = "^b")  ? 1 	: 	;.........: bold
 				(A_ThisHotkey = "^i")  ? 2 	: 	;.........: italic
 				(A_ThisHotkey = "^u")  ? 3 	: 	; ........: underline
+				(A_ThisHotkey = '^+b') ? 15	:	; ........: Bulleted List
+				(A_ThisHotkey = 'F5')  ? 19	:	; ........: Find/Replace
+				(A_ThisHotkey = '^F5') ? 19	:	; ........: Find/Replace
+				(A_ThisHotkey = 'F7')  ? 16	:	; ........: Spell Check
+				(A_ThisHotkey = '^F7') ? 16	: OutputDebug('idBtn: ' idBtn '`n')	; ........: Spell Check
 				; (A_ThisHotkey = "^x")  ? 8 	:	; ........: cut
 				; (A_ThisHotkey = "^c")  ? 9 	:	; ........: copy
 				; (A_ThisHotkey = "^v")  ? 10	:	; ........: paste
 				; (A_ThisHotkey = "^z")  ? 12	:	; ........: undo
 				; (A_ThisHotkey = "^y")  ? 13	:	; ........: redo
-				(A_ThisHotkey = '^+b') ? 15	:	; ........: Bulleted List
-				(A_ThisHotkey = 'F5')  ? 19	:	; ........: Find/Replace
-				(A_ThisHotkey = '^F5') ? 19	:	; ........: Find/Replace
-				(A_ThisHotkey = 'F7')  ? 16	:	; ........: Spell Check
-				(A_ThisHotkey = '^F7') ? 16	:	; ........: Spell Check
 				; (A_ThisHotkey = '^+s') ? 18	:	; ........: super|sub script
+			}
 	OutputDebug('idBtn: ' idBtn '`n')
 	return idBtn
 }
@@ -584,12 +607,14 @@ HznButton(hTb, nCtl, idCommand, n?, pID?, fCtl?, hTx?, fCtlInstance?) {
 		; --------------------------------------------------------------------------------
 		; Step: Store previous and set min delay
 		; --------------------------------------------------------------------------------
-		prevCDelay := A_ControlDelay, prevMDelay := A_MouseDelay, prevWDelay := A_WinDelay, SetControlDelay(-1), SetMouseDelay(-1), SetWinDelay(-1)
+		pCD := A_ControlDelay, pMD := A_MouseDelay, pWD := A_WinDelay
+		SetControlDelay(-1), SetMouseDelay(-1), SetWinDelay(-1)
 		; --------------------------------------------------------------------------------
 		try (idCommand < 100) ? idCommand := ((n - 1) + 100) : idCommand
 		btnstate := GETBUTTONSTATE(idCommand, hTb)
 		If (!btnstate = 4) || (!btnstate = 6) ;! note: (AJB - 09/2023) verified
 			return
+		
 		; --------------------------------------------------------------------------------
 		; function: !!! ===> Programatically "Click" the button!!! <=== !!!
 		Msg := WM_COMMAND, wParam_hi := btnstate, wParam_lo := idCommand, lParam := control := hTb
@@ -598,9 +623,7 @@ HznButton(hTb, nCtl, idCommand, n?, pID?, fCtl?, hTx?, fCtlInstance?) {
 		; --------------------------------------------------------------------------------
 		; Step: Restore previous and set delay
 		; --------------------------------------------------------------------------------
-		SetControlDelay(prevCDelay), SetMouseDelay(prevMDelay), SetWinDelay(prevWDelay)
-		; --------------------------------------------------------------------------------
-
+		SetControlDelay(pCD), SetMouseDelay(pMD), SetWinDelay(pWD)
 		; --------------------------------------------------------------------------------
 		BlockInput(0) ; 1 = On, 0 = Off
 		; --------------------------------------------------------------------------------
@@ -704,6 +727,36 @@ _GETBUTTON(n:=1, hTb?, pID?, hProcess?)
 	GETBUTTON := SendMessage(TB_GETBUTTON, n-1, remoteMemory, hTb, hTb)
 	; MsgBox(GETBUTTON) ; ===> displays a zero (0)
 	return GETBUTTON
+}
+GETBUTTONINFO(hTb?){
+	hTb := HznToolbar._hTb()
+	; wParam := idButton, lParam := struct(), 
+	; SendMessage(0x43F, wParam, lParam, , hTb) ; TB_GETBUTTONINFOW
+	;;TBBUTTONINFO=48:32
+
+	; typedef struct {
+	; 	0: 0,
+	; 	"UInt" UINT cbSize ;
+	; 	4: 4,
+	; 	"UInt" DWORD dwMask ;
+	; 	8: 8,
+	; 	"Int" int idCommand ;
+	; 	12: 12,
+	; 	"Int" int iImage ;
+	; 	16: 16,
+	; 	"UChar" BYTE fsState ;
+	; 	17: 17,
+	; 	"UChar" BYTE fsStyle ;
+	; 	18: 18,
+	; 	"UShort" WORD cx ;
+	; 	24: 20,
+	; 	"UPtr" DWORD_PTR lParam ;
+	; 	32: 24,
+	; 	"Ptr" LPTSTR pszText ;
+	; 	40: 28,
+	; 	"Int" int cchText ;
+	; } TBBUTTONINFO, *LPTBBUTTONINFO ;
+	; 48: 32
 }
 GETBUTTONSTATE(idButton,hTb)
 {

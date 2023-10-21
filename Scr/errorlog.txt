@@ -9,3 +9,4 @@ Error on line 16: This value of type "CleanInputBox" has no method named "DarkMo
 Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
 Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
 Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.

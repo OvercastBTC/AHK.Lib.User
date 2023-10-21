@@ -72,6 +72,33 @@ __AE_CopyLib() {
 	}
 	FileCopy(A_ScriptName, Lib A_ScriptName, 1)
 }
+
+; $^c:: clip_it() ; Clip hotkey
+; $^b:: clip_it(1) ; Paste last clip hotkey
+
+clip_it(send_clip := 0) {
+	Static last_clip := "" ; Track last clipboard
+	If send_clip ; If send_clip is true
+	{
+		bak := ClipboardAll() ; Backup current clipboard
+		A_Clipboard := last_clip ; Put last_clip onto clipboard
+		sendInput('^v') ; Paste
+		While DllCall("GetOpenClipboardWindow") ; If clipboard still in use (long paste)
+			Sleep(50) ; Sleep for a bit
+		A_Clipboard := bak ; Restore original clipboard
+	}
+	Else ; Else if send_clip false
+	{
+		last_clip := A_Clipboard ; Update last_clip with current clipboard
+		SendInput('^c') ; And then copy new contents to active clipboard
+	}
+}
+
+
+
+
+
+
 Class AE {
 
 	; --------------------------------------------------------------------------------
@@ -100,5 +127,4 @@ Class AE {
             DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
         return A_DPI
 	}
-
 }

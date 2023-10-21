@@ -43,13 +43,13 @@ hHzn := WinWaitActive(Hzn)
 ; }
 ; p := win_info_process := get_win_details_all(hHzn).process
 ; OutputDebug('newValue: ' p '`n')
-initial_list_ClassNN := []
-i_lCtlN_h := initial_list_ClassNN
-initial_list_ClassNN_hwnd := []
+; initial_list_ClassNN := []
+; i_lCtlN_h := initial_list_ClassNN
+; initial_list_ClassNN_hwnd := []
 
 
-WinGetListList := []
-initial_controls_map := Map()
+; WinGetListList := []
+; initial_controls_map := Map()
 
 process_name := WinGetProcessName(hHzn)
 process_hwnd_dll := DllCall('GetCurrentProcess', 'Ptr')
@@ -198,13 +198,22 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 	pvTxt := A_DetectHiddenText, DetectHiddenText(1)
 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(1)
 	static EVENT_OBJECT_CREATE := 32768, EVENT_OBJECT_DESTROY := 32769, OBJID_WINDOW := 0, INDEXID_CONTAINER := 0
-	global gOpenWindows
-	static hznCtrls_map := Map()
+	; global gOpenWindows
+	; static hznCtrls_map := Map()
 	static hznCtrlsarray_ClassNN := []
 	static hznCtrlsarray_hwnd := []
-	static hznCtrlsList := []
+	; static hznCtrlsList := []
 	static hznmsvbTbClassNN := []
 	static hznmsvbTbHwnd := []
+	; --------------------------------------------------------------------------------
+	mKey := ''
+	mVal := ''
+	instr_array_Tb := []
+	instr_array_hTb := []
+	instr_map := Map()
+	static match_instr_map := Map()
+	static destroyed_instr_map := Map()
+	; --------------------------------------------------------------------------------
 	static needle := 'i)m.*bar\d'
 	static pneedle := 'i).*hznhorizon.*'
 	hznCtrls := ''
@@ -234,129 +243,141 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 		}
 	}
 	}
-	OutputDebug('Should Only Be One:`n' . 'win_active: ' . win_active_title . ' (' . win_active . ')' . '`n')
+	try {
+		OutputDebug('Should Only Be One:`n' . 'win_active: ' . win_active_title . ' (' . win_active . ')' . '`n')
+	}
 	while !(process_name ~= pneedle){
 		break
 	}
 	if (process_name ~= pneedle) && (WinGetProcessName(WinActive('A')) ~= pneedle){
 		try {
 			hznCtrlsarray_ClassNN := WinGetControls('A')
-			static a_ClassNN := hznCtrlsarray_ClassNN
-			for each, a_ClassNN in hznCtrlsarray_ClassNN {
-				static hznCtrlsarray_hwnd := WinGetControlsHwnd(a_ClassNN, 'A')
-				static a_hWnd := hznCtrlsarray_hwnd
-				hznCtrls_map:= Map(
-					'aClassNN',a_ClassNN,
-					'aHwnd', a_hWnd
-				)
-				OutputDebug('hznCtrls_map:`n ' . 
-					hznCtrls_map.a_ClassNN . '`n'
-					hznCtrls_map.a_hWnd . '`n'
-				)
-				; OutputDebug(hznCtrlsarray_ClassNN . A_Space . initial_list_ClassNN_hwnd . '`n')
-				OutputDebug(hznCtrls_map[a_ClassNN].aClassNN . ' ' . hznCtrls_map[a_ClassNN].aHwnd .  '`n')
-				if (hznCtrls_map.Has(initial_list_ClassNN_hwnd)){
-					OutputDebug('already exists`n')
-					hznCtrls_map.RemoveAt(A_Index)
-					return
-				}
-			}
 		}
 		for hznCtrls in hznCtrlsarray_ClassNN {
-			; a_match := []
-			; u_match_c := []
-			; u_match_h := []
-			; a_match_Class := ''
-			; a_match_hWnd := ''
-			; a_match_k := ''
-			; a_match_v := 0
-			; hznCtrlsList.Push(hznCtrls)
-			; OutputDebug('hznCtrls: ' . hznCtrls . '`n')
-			if (InStr(hznCtrls, '_toolbar'))
-				OutputDebug('InStr: ' hznCtrls . '`n' . 'has? ' hznmsvbTbClassNN.Has(hznCtrls) . '`n' . 'length: ' . hznmsvbTbClassNN.Length . '`n')
-			
-			if (hznCtrls ~= needle) {
-				if (hznmsvbTbClassNN.Has(hznCtrls)){
-					matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
-					while (hznmsvbTbHwnd.Has(matchTbHwnd)) {
-						OutputDebug('hTb_break: ' . hznmsvbTbHwnd.Has(matchTbHwnd))
-						break
-					}
-				} else {
-					try {
-						hznmsvbTbClassNN.Push(hznCtrls)
-						matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
-						hznmsvbTbHwnd.Push(matchTbHwnd)
-						OutputDebug('New: ' . hznCtrls . ' (' . matchTbHwnd . ')' . '`n')
-					}
-				}
-					; a_match_hWnd := ControlGetHwnd(hznCtrls, 'A')
-				; ahWnd := a_match_hWnd
-				; a_match_Class := hznCtrls
-				; OutputDebug('hznCtrlsneedle: ' . hznCtrls . A_Space . ahWnd . '`n')
-				; u_match_c.Push(a_match_Class) ; ' ' a_match_hWnd)
-				; u_match_h.Push(a_match_hWnd) ; ' ' a_match_hWnd)
-				; for a_match_k, a_match_v in u_match_c {
-				; 	OutputDebug('We have a match! ' . a_match_v . '`n')
-				; }
-				; if !(hznmsvbTbClassNN.Has(hznCtrls)){
-				; 	try {
-				; 		OutputDebug('!hznmsvbTbClassNN.Has(hznCtrls) ' . hznCtrls . '`n')
-				; 		hznmsvbTbClassNN.Push(hznCtrls)
-				; 		matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
-				; 		hznmsvbTbHwnd.Push(matchTbHwnd)
-				; 	}
-				; } else if (hznmsvbTbClassNN.Has(hznCtrls)) && !(hznmsvbTbHwnd.Has(matchTbHwnd)){
-				; 	try {
-				; 		OutputDebug('!(hznmsvbTbClassNN.Has(hznCtrls)) && !(hznmsvbTbHwnd.Has(matchTbHwnd))' . hznCtrls . '`n')
-				; 		matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
-				; 		hznmsvbTbHwnd.Push(matchTbHwnd)
-				; 	}
-				; 	; continue
-				; } else {
-				; 	return
-				; }
+			; --------------------------------------------------------------------------------
+			if (instr_map.Has(hznCtrls)) {
+				return
 			}
+			; ; --------------------------------------------------------------------------------
+			; else if (InStr(hznCtrls, '_toolbar')) {
+			; 	; ----------------------------------------
+			; 	instr_hTb := ControlGetHwnd(hznCtrls, 'A')
+			; 	; ----------------------------------------
+			; 	instr_Instance := SubStr(hznCtrls, -1, 1)
+			; 	test_split := StrSplit(hznCtrls, instr_Instance)
+			; 	; ----------------------------------------
+			; 	instr_array_Tb.Push(hznCtrls)
+			; 	instr_array_hTb.Push(instr_hTb)
+			; 	; instr_map.Set('Instance',instr_Instance,hznCtrls,instr_hTb)
+			; 	instr_map.Set(hznCtrls,instr_hTb)
+			; 	OutputDebug(  'InStr: ' hznCtrls . '`n' 
+			; 				. 'has? ' hznmsvbTbClassNN.Has(hznCtrls) . '`n' 
+			; 				. 'length: ' . hznmsvbTbClassNN.Length . '`n'
+			; 				. 'TbPush: ' . hznCtrls . ' hTbPush(' . instr_hTb . ')' . '`n'
+			; 				. 'Instance: ' . instr_Instance . '`n'
+			; 			)
+			; }
+			; if (hznCtrls ~= needle) {
+			; 	if (hznmsvbTbClassNN.Has(hznCtrls)){
+			; 		matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
+			; 		while (hznmsvbTbHwnd.Has(matchTbHwnd)) {
+			; 			OutputDebug('hTb_break: ' . hznmsvbTbHwnd.Has(matchTbHwnd))
+			; 			break
+			; 		}
+			; 	} else {
+			; 		try {
+			; 			hznmsvbTbClassNN.Push(hznCtrls)
+			; 			matchTbHwnd := ControlGetHwnd(hznCtrls, 'A')
+			; 			hznmsvbTbHwnd.Push(matchTbHwnd)
+			; 			OutputDebug('New: ' . hznCtrls . ' (' . matchTbHwnd . ')' . '`n')
+			; 		}
+			; 	}
+			; }
 		}
-		; }
 	}
 	if (event == EVENT_OBJECT_CREATE) {
-		try {
-			for each, matchTb in hznmsvbTbHwnd {
-				if !(hznmsvbTbHwnd.Has(matchTb)){
-					try {
-						HznEnableButtons(matchTb)
-					} ;catch {
-					; 	try {
-					; 		Sleep(500)
-					; 		cArray := [1, 2, 3, 4, 5]
-					; 		value_cArray := ''
-					; 		for each, value_cArray in cArray {
-					; 			nTB := 'msvb_lib_toolbar' . value_cArray
-					; 			hTb := ControlGetHwnd(nTB, 'A')
-					; 			HznEnableButtons(hTb)
-					; 			OutputDebug('Catch Enabled: ' . nTB . ' (' . hTb . ')' . '`n')
-					; 		}
-					; 	}
-					; }
-				} else {
-					return
+		; --------------------------------------------------------------------------------
+		for hznCtrls in hznCtrlsarray_ClassNN {
+			; --------------------------------------------------------------------------------
+			try if (InStr(hznCtrls, '_toolbar')) {
+				; ----------------------------------------
+				instr_hTb := ControlGetHwnd(hznCtrls, 'A')
+				; ----------------------------------------
+				instr_Instance := SubStr(hznCtrls, -1, 1)
+				test_split := StrSplit(hznCtrls, instr_Instance)
+				; ----------------------------------------
+				instr_array_Tb.Push(hznCtrls)
+				instr_array_hTb.Push(instr_hTb)
+				; instr_map.Set('Instance',instr_Instance,hznCtrls,instr_hTb)
+				instr_map.Set(hznCtrls,instr_hTb)
+				OutputDebug(  'InStr: ' hznCtrls . '`n' 
+							. 'has? ' hznmsvbTbClassNN.Has(hznCtrls) . '`n' 
+							. 'length: ' . hznmsvbTbClassNN.Length . '`n'
+							. 'TbPush: ' . hznCtrls . ' hTbPush(' . instr_hTb . ')' . '`n'
+							. 'Instance: ' . instr_Instance . '`n'
+						)
+				try {
+					for mKey, mVal in instr_map {
+						OutputDebug(  '----------[instr_map]----------------`n'
+									. 'key: ' 	. mKey 				. '`n'
+									. 'value: ' . mVal 				. '`n'
+									. 'count: ' . instr_map.Count 	. '`n'
+									. 'split: ' . test_split[1]		. '`n'
+									. '-------------------------------------`n'
+								)
+						HznEnableButtons(mVal)
+						match_instr_map.Set(mKey,mVal)
+					}
 				}
-			}	
-		}
-	} else if (event = EVENT_OBJECT_DESTROY) {
-		for each, matchTb in hznmsvbTbHwnd {
-			try {
-				OutputDebug('matchTb (destroy): ' . matchTb . '`n')
-				; hznmsvbTbClassNN.RemoveAt(A_Index)
 			}
+			; --------------------------------------------------------------------------------
+		}
+		; --------------------------------------------------------------------------------
+	} else if (event = EVENT_OBJECT_DESTROY) {
+		; --------------------------------------------------------------------------------
+		for hznCtrls in hznCtrlsarray_ClassNN {
+			; --------------------------------------------------------------------------------
+			if (match_instr_map.Has(hznCtrls)) {
+				dTb := hznCtrls
+				dhTb := ControlGetHwnd(hznCtrls)
+				destroyed_instr_map.Set(dTb,dhTb)
+				OutputDebug(  'dTb: ' . dTb . '`n'
+							. 'dhTb: ' . dhTb . '`n' )
+				match_instr_map.Delete(hznCtrls)
+			}
+			; --------------------------------------------------------------------------------
+			mTb := ''
+			mhTb := ''
+			for mTb, mhTb in match_instr_map {
+				; instr_array_Tb.RemoveAt(A_Index)
+				match_instr_map.Delete(mTb)
+				destroyed_instr_map.Set(mTb,mhTb)
+				OutputDebug(  '---------[match_instr_map]-----------`n'
+							. 'mTb: ' 	. mTb 	. '`n'
+							. 'mhTb: ' 	. mhTb 	. '`n'
+							. '-------------------------------------`n'
+						)
+			}
+			; --------------------------------------------------------------------------------
+		}
+		; --------------------------------------------------------------------------------
+		des_Tb := ''
+		des_hTb := ''
+		for des_Tb, des_hTb in destroyed_instr_map {
+			; instr_array_Tb.RemoveAt(A_Index)
+			OutputDebug(  '---------[EVENT_OBJECT_DESTROY]---------`n'
+						. 'des_Tb: ' 	. des_Tb 	. '`n'
+						. 'des_hTb: ' 	. des_hTb 	. '`n'
+						. '----------------------------------------`n'
+					)
 		}
 	}
+	; --------------------------------------------------------------------------------
 	DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
 	BlockInput(0)
 	SendLevel(0)
-	; SetTimer(ToolTip, -3000) ; Remove created ToolTip in 3 seconds
 }
+
 ; --------------------------------------------------------------------------------
 ShellHook_AProcess()
 {
@@ -534,6 +555,7 @@ class WinEventHook
 		CallbackFree(this.pCallback)
 	}
 }
+
 ; #Requires AutoHotkey v2
 
 ; Map out all open windows so we can keep track of their names when they're closed.
