@@ -21,23 +21,23 @@
 *      - not all are needed, or obtainable every time.
 ; ***********************************************************************/
 Class HznToolbar {
-    __HznNew(){
-    SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
-    BlockInput(1) ; 1 = On, 0 = Off
-    try {
-        hCtl := ControlGetFocus('A')
-        fCtl := ControlGetClassNN(hCtl)
-        fCtlI := SubStr(fCtl, -1, 1)
-        nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
-        hTb := ControlGethWnd(nCtl, "A")
-        hTx := ControlGethWnd(fCtl, "A")
-        pID := WinGetPID(hTb)
-        DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &tpID:=0)
-    } catch Error as e {
-        return e
-    }
+    __New(){
+        SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)
+        BlockInput(1) ; 1 = On, 0 = Off
+        try {
+            hCtl := ControlGetFocus('A')
+            fCtl := ControlGetClassNN(hCtl)
+            fCtlI := SubStr(fCtl, -1, 1)
+            nCtl := "msvb_lib_toolbar" fCtlI ; ! => would love to regex this to anything containing 'bar' || toolbar || ?
+            hTb := ControlGethWnd(nCtl, "A")
+            hTx := ControlGethWnd(fCtl, "A")
+            pID := WinGetPID(hTb)
+            DllCall("GetWindowThreadProcessId", "Ptr", hTb, "UInt*", &tpID:=0)
+        } ; catch Error as e {
+        ;     return e
+        ; }
     
-    return {hCtl:hCtl,fCtl:fCtl,fCtlI:fCtlI,nCtl:nCtl,hTb:hTb,hTx:hTx,pID:pID,tpID:tpID}
+        return {hCtl:hCtl,fCtl:fCtl,fCtlI:fCtlI,nCtl:nCtl,hTb:hTb,hTx:hTx,pID:pID,tpID:tpID}
     }
     static _hCtl(){
         this.hCtl := ControlGetFocus('A')

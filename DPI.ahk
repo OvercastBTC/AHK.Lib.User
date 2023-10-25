@@ -439,8 +439,8 @@ static LogicalToPhysicalPointForPerMonitorDPI(&x, &y, WinTitle?, WinText?, Exclu
 
 static AdjustWindowRectExForDpi(&x1, &y1, &x2, &y2, dpi) {
     rect := Buffer(16), NumPut("int", x1, "int", y1, "int", x2, "int", y2, rect)
-    OutputDebug DllCall("AdjustWindowRectExForDpi", "ptr", rect, "int", 0, "int", 0, "int", 0, "int", dpi) "`n"
-    x1 := NumGet(rect, 0, "int"), y1 := NumGet(rect, 4, "int"), x2 := NumGet(rect, 8, "int"), y2 := NumGet(rect, 12, "int")
+    OutputDebug((DllCall("AdjustWindowRectExForDpi", "ptr", rect, "int", 0, "int", 0, "int", 0, "int", dpi) "`n"
+    x1 := NumGet(rect, 0, "int"), y1 := NumGet(rect, 4, "int"), x2 := NumGet(rect, 8, "int"), y2 := NumGet(rect, 12, "int")))
 }
 
 }

@@ -30,6 +30,7 @@ global gOpenWindows := Map()
 ; title class process
 Hzn := 'ahk_exe hznHorizon.exe'
 hHzn := WinWaitActive(Hzn)
+hzn_map := Map()
 ; get_win_details_all(hwnd?) {
 ; 	win_info := Map()
 ; 	for hwnd in WinGetList()
@@ -246,10 +247,10 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 	try {
 		OutputDebug('Should Only Be One:`n' . 'win_active: ' . win_active_title . ' (' . win_active . ')' . '`n')
 	}
-	while !(process_name ~= pneedle){
-		break
+	while !(process_name ~= pneedle) {
+		return
 	}
-	if (process_name ~= pneedle) && (WinGetProcessName(WinActive('A')) ~= pneedle){
+	; if (process_name ~= pneedle) && (WinGetProcessName(WinActive('A')) ~= pneedle){
 		try {
 			hznCtrlsarray_ClassNN := WinGetControls('A')
 		}
@@ -294,7 +295,7 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 			; 	}
 			; }
 		}
-	}
+	; }
 	if (event == EVENT_OBJECT_CREATE) {
 		; --------------------------------------------------------------------------------
 		for hznCtrls in hznCtrlsarray_ClassNN {
@@ -327,6 +328,11 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 								)
 						HznEnableButtons(mVal)
 						match_instr_map.Set(mKey,mVal)
+						
+						hzn_map.Set('hTb', mVal)
+						Push_TB(){
+							return hzn_map
+						}
 					}
 				}
 			}
