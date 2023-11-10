@@ -1,6 +1,6 @@
 #Include <App\Autohotkey>
 #Include <Abstractions\Base>
 
-#HotIf WinActive(Autohotkey.exeTitle)
+#HotIf WinActive(AutoHotkey_ProgFiles.exeTitle)
 ^BackSpace::DeleteWord()
 #HotIf

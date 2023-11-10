@@ -29,18 +29,21 @@
 ; --------------------------------------------------------------------------------
 #Include <Directives\__AE.v2>
 #Include <Directives\__HznToolbar>
+#Include <App\Autohotkey>
 ; #Include <__A_Process.v2>
-; --------------------------------------------------------------------------------
-; #Include <gdi_plus_plus>
 #Include <DPI>
-; #Include <Gdip_All>
-; #Include <Tools\Hider>
-; #Include <Abstractions\Script>
+; --------------------------------------------------------------------------------
 ; --------------------------------------------------------------------------------
 #Include <EnumAllMonitorsDPI.v2>
 #Include <GetNearestMonitorInfo().v2>
-#Include <RTE.v2\Project Files\Lib\RichEdit>
-#Include <RTE.v2\Project Files\Lib\RichEditDlgs>
+#Include <RichEdit\RichEdit>
+#Include <RichEdit\RichEditDlgs>
+; #Include <RTE.v2\master\RichEditSample>
+; #Include <gdi_plus_plus>
+; #Include <Gdip_All>
+; #Include <Tools\Hider>
+; #Include <Abstractions\Script>
+
 ; --------------------------------------------------------------------------------
 
 ; --------------------------------------------------------------------------------
@@ -86,69 +89,6 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 @function Replace			(CTRL+SHIFT+R)
  ***********************************************************************/
 
-; #HotIf WinActive('ahk_exe hznhorizon.exe')
-; ^+!1::testtest()
-; #Include <__A_Process.v2>
-; testtest()
-; {
-; 	SendLevel((A_SendLevel+1))
-; 	BlockInput(1)
-; 	pvTxt := A_DetectHiddenText, 	DetectHiddenText(0)
-; 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
-; 	idWin := WinGetID('ahk_exe hznHorizon.exe')
-	; Sleep(200)
-	; WinActivate(idWin)
-	; DetectHiddenText(pvTxt), DetectHiddenWindows(pvWin)
-	; hznhWnd := WinExist('ahk_exe hznHorizon.exe')
-	; list := WinGetControls('A')
-	; list := WinGetControls(idWin)
-	; clist := WinGetControlsHwnd('A')
-	; clist := WinGetControlsHwnd(idWin)
-	; fCtl := ControlGetFocus('A')
-	; hCtl := ControlGetClassNN(fCtl)
-	; static ControlClassNN := ''
-	; static ControlHwnd := ''
-	; static enumlist := ''
-	; static matchlist := ''
-	; static matches:= []
-	; static CtlList := []
-	; static match := ''
-	; static k := 0
-	; needle := 'i).*bar.*'
-	; needle := 'i).*'
-	; needle := 'im)m(((\s|(\w+))_.*)bar\w+)'
-	; needle := 'i)((_|\s|\S|\w| ).*bar\w+)'
-	; ? KEEP FROM HERE
-	; for , ControlClassNN in clist {
-		; enumlist .= '[' . A_Index . ']' . A_Space . ControlClassNN '`n'
-		; hTb := ControlGetHwnd(ControlClassNN, 'A')
-		; OutputDebug('[' . A_Index . '] ' . ControlClassNN . ' hCtl: ' hTb '`n')
-		; hTb := ControlClassNN
-		; matches.Push(hTb)
-		
-		; if (ControlClassNN ~= needle) {
-		; ; if InStr(ControlClassNN , needle) {
-		; 	hTb := ControlGetHwnd(ControlClassNN, 'A')
-		; 	OutputDebug('[' . A_Index . '] ' . ControlClassNN . ' hCtl: ' hTb '`n')
-		; 	; matches.Push(ControlClassNN . A_Space . '(' . hTb . ')')
-		; 	matches.Push(hTb)
-		; 	}
-	; }
-	; FileAppend(enumlist, '_enumlist_before_regex.txt', '`n UTF-8')
-	; ? KEEP TO HERE
-	; pid_target := WinGetPID(idWin)
-	; hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
-	; remote_buffer := RemoteBuffer(hpRemote, Is32bit := 0)
-	; trybtnct(ControlHwnd) {
-		; TB_BUTTONCOUNT := 1048, control := ctrlhwnd := ControlHwnd
-		; pid_target := WinGetPID(ctrlhwnd)
-		; hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
-		; remote_buffer := RemoteBuffer(hpRemote, Is32bit := 0) ; fix -> wrong function -> remoteMemory()
-		; Static Msg := TB_BUTTONCOUNT, wParam := 0, lParam := 0
-		; return BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, control, ctrlhwnd)
-		; OutputDebug('Ctrl_Name: ' . Ctrl_Name . ' BtnCt: ' BUTTONCOUNT . '`n')
-	; }
-
 ; --------------------------------------------------------------------------------
 #Hotif WinActive(A_ScriptName) && WinActive('__A_Process.v2.ahk')
 	$^s::
@@ -176,11 +116,24 @@ tab::
 }
 hznButtonCount(hTb := HznToolbar._hTb()) {
 	Static Msg := TB_BUTTONCOUNT := 1048, wParam := 0, lParam := 0
-	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, hTb, hTb)
+	BUTTONCOUNT := SendMessage(TB_BUTTONCOUNT, wParam, lParam, , hTb)
 	OutputDebug('Used hznButtonCount()`n # of buttons is ' BUTTONCOUNT)
 	return BUTTONCOUNT
 }
+; --------------------------------------------------------------------------------
+F5::button(120) 			; find (focused tab) and find/replace
+^f::button(120)				; find (focused tab) and find/replace
+^h::HznFindReplace()	; find/replace (focused tab) and find
+; --------------------------------------------------------------------------------
 ^a::HznSelectAll()
+; ^+a::
+; {
+; 	value := AE_Get_TEXTLIMIT()
+; 	MsgBox(value)
+; }
+^End::AE_Select_End()
+^Home::AE_Select_Beginning()
+
 ^b::button(100)			; bold
 ^i::button(101)			; italics
 ^u::button(102)			; underline
@@ -196,10 +149,10 @@ hznButtonCount(hTb := HznToolbar._hTb()) {
 ; ^z::button(113) 		; undo
 ; ^y::button(114) 		; redo
 ; idCommand (115) unknown but does something?
-^+b::button(116) 		; Bulleted List
++F12::button(116) 		; Bulleted List
 
 F7::button(117)			; spell check
-^F7::button(118)		; Insert Table ; fix (drop down)
+^F12::button(118)		; Insert Table ; fix (drop down)
 ^=::
 {
 	button(119) 		; [super script]
@@ -215,12 +168,8 @@ F7::button(117)			; spell check
 	SendEvent('!o')
 	; return
 }
+
 ; --------------------------------------------------------------------------------
-F5::button(120) 			; find (focused tab) and find/replace
-^f::button(120)				; find (focused tab) and find/replace
-^+f::HznFindReplace()	; find/replace (focused tab) and find
-; --------------------------------------------------------------------------------
-; --------------------------------------------------------------------------------`
 
 ^+v::HznPaste()
 ^+c::HznGetText()
@@ -277,15 +226,16 @@ F5::button(120) 			; find (focused tab) and find/replace
 * @author OvercastBTC 
 ***********************************************************************/
 
-HznFindReplace(*)
+HznFindReplace()
 {
-	button(118)
-	Sleep(100)
+	SendLevel(5)
+	Send('^f')
+	; Sleep(100)
 	SendEvent('{LAlt down}')
 	SendEvent('p')
-	Sleep(100)
+	; Sleep(100)
 	Send('{LAlt Up}')
-	return
+	; return
 }
 ; --------------------------------------------------------------------------------
 /************************************************************************
@@ -390,39 +340,143 @@ HznSelectAll(*)
  * @param A_Clipboard .: The AHK builtin clipboard
  * @returns {text in the control (RT6TextBox or TX11)}
 ***********************************************************************/
-#IncludeAgain <Sender>
-#IncludeAgain <Receiver>
+; #IncludeAgain <Sender>
+#Include <__receiver>
+#Include <Tools\Info>
+#Include <Misc\Out>
+#Include <System\UIA>
 HznGetText(*)
 {
-
+	initialSendLevel := A_SendLevel
+	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
+	BlockInput(1) ; 1 = On, 0 = Off
+	rect := Map()
+	hRect := []
 	hCtl := ControlGetFocus('A')
+	nCtl := ControlGetClassNN(hCtl)
 	hCtl_title := WinGetTitle(hCtl)
-	rect := WindowGetRect(hCtl)
-
-	HznSelectAll()
+	hHzn := WinExist('hznHorizon.exe')
+	hznUIA := UIA.ElementFromHandle(hCtl).BoundingRectangle
+	Infos(
+		hznUIA.l . '`n' .
+		hznUIA.r . '`n' .
+		hznUIA.t . '`n' .
+		hznUIA.b
+	)
+	;// rect := WindowGetRect(hCtl)
+	;// rect := GetClientSize(hCtl)
+	;// rect := GetRect(hCtl)
+	;// mRect := GetClientRect(hCtl, hCtl_title)
+	;// width := mRect['width']
+	;// height := mRect['height']
+	ControlGetPos(&x, &y, &w, &h, nCtl, 'A')
+	mRect := WindowGetRect(hCtl)
+	; width := mRect.width
+	; height := mRect.height
+	width := Round((w - (w/3)))
+	height := h
+	rect.Set('width',width, 'height',height, 'x', x, 'y', y)
+	infos('Title: ' . hCtl_title . '`n' 
+		. 'ClassNN: ' . nCtl . ' (' . hCtl . ')' . '`n' 
+		. 'width: ' . width . '`n' 
+		. ' w: ' . w . '`n'
+		. 'height: ' . height . '`n'
+		. 'h: ' . h . '`n'
+		. 'x: ' . x . ' y: ' . y . '`n' .
+		hznUIA.l . '`n' .
+		hznUIA.r . '`n' .
+		hznUIA.t . '`n' .
+		hznUIA.b
+	)
+	MouseMove(x, y, -1)
+	RTE_Title := RichEdit_Editor_v2.file_name
+	RTE := RichEdit_Editor_v2.run
+	file_name := '__receiver.ahk'
+	file_line := ''
+	aTX11 := []
+	TX11 := ''
+	width_needle := 'i)width'
+	height_needle := 'i)height'
+	x_needle := 'i)x'
+	y_needle := 'i)y'
+	match_array := [width_needle, height_needle, x_needle, y_needle]
+	new_map := []
+	match:=''
+	aLine := ''
+	; --------------------------------------------------------------------------------
+	HznSelectAll(hCtl)
 	clip_it()
 	; --------------------------------------------------------------------------------
-	; OutputDebug(text)
-	RTE_Title := "RichEdit_Editor_v2.ahk"
-	Send_WM_COPYDATA(rect.width, RTE_Title)
-	Send_WM_COPYDATA(rect.height, RTE_Title)
-	OutputDebug('width: ' rect.width . "`n" . 'height: ' rect.height)
-	Run(RTE_Title,'C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v2\RTE.v2\Project Files\','hide')
+	hzntx11 := FileOpen(file_name,'rw','UTF-8')
+	Sleep(300)
+	; --------------------------------------------------------------------------------
+	Update_Receiver_Rect_Map(file_name)
+	; --------------------------------------------------------------------------------
+	Update_Receiver_Rect_Map(file_name){
+		loop read file_name {
+			aTX11.Push(A_LoopReadLine)
+			file_line .= A_LoopReadLine . '`n'
+		}
+		; Sleep(500)
+		; --------------------------------------------------------------------------------
+		for each, aLine in aTX11 {
+			; --------------------------------------------------------------------------------
+			for each, match in match_array {
+				if ((aLine ~= match)) {
+					str_match := StrSplit(match,')','i ) "')
+					rMatch := str_match[2]
+					OutputDebug(rMatch)
+					rect_match := rect[rMatch]
+					; rect_match := dpiRect.%str_match[2]%
+					new_str := RegExReplace(aLine, ':= ([0-9].*)', ':= ' rect_match . ',' )
+					aLine := new_str
+					aTX11.RemoveAt(A_Index)
+					aTX11.InsertAt(A_Index, aLine)
+				}
+			}
+			; --------------------------------------------------------------------------------
+			/**
+			 * function: write each value in the array to @param TX11 (string variable) 
+			 */
+			TX11 .= aLine . '`n'
+			; --------------------------------------------------------------------------------
+		}
+		; Infos(file_line . '`n' . TX11)
+		
+		; --------------------------------------------------------------------------------
+		; hzntx11 := FileOpen(file_name,'rw','UTF-8')
+		hzntx11.Write(TX11)
+		hzntx11 := ''
+		return 0
+	}
+	
+	; --------------------------------------------------------------------------------
+	; Info('Loading Rich Text Editor...', 3000)
+	; Sleep(500)
+	
+	Run(RTE)
 	hRTE := WinWaitActive('hznRTE ')
 	pid_RTE := WinGetPID(hRTE)
 	Sleep(100)
-	; Send('+{Insert}')
+	
+	clip_it()
+	; Clip_it(1)
 	Send('^v')
 	; --------------------------------------------------------------------------------
 	; MsgBox(text '`n`n' '[This text has been copied to the clipboard. Use Ctrl+v to paste, or right-click and select Paste in your window of choice.]`n`n[This message will autoclose in 30 seconds]','Copy of Horizon Text', 'T30')
-	MsgBox('[This text has been copied to the clipboard. Use Ctrl+v, or right-click and select paste, to paste in your window of choice.]`n`n[This message will autoclose in 3 seconds]','Copy of Horizon Text', 'T3')
+	; MsgBox('[This text has been copied to the clipboard. Use Ctrl+v, or right-click and select paste, to paste in your window of choice.]`n`n[This message will autoclose in 3 seconds]','Copy of Horizon Text', 'T3')
+	Info('[This text has been copied to the clipboard. Use Ctrl+v, or right-click and select paste, to paste in your window of choice.]`n`n[This message will autoclose in 3 seconds]', 3000)
 	; --------------------------------------------------------------------------------
 	; return text
 	ProcessWaitClose(pid_RTE)
+	; FileCloseFN()
+	WinActivate(hCtl)
 	ControlFocus(hCtl, hCtl_title)
 	HznSelectAll(hCtl)
-	; Send('+{Insert}')
-	Send('^v')
+	; Send('+{Insert}') ; fix <==== DON'T USE THIS, IT PASTES THE WINDOWS DEFAULT FONT WHICH IS ARIAL 12, HORIZON IS TIMES NEW ROMAN 11.
+	; Send('^v')
+	BlockInput(0)
+	SendLevel(0)
 	return
 }
 
@@ -440,8 +494,7 @@ HznGetText(*)
  * @returns {null} ....: This message does not return a value.
 ***********************************************************************/
 
-HznPaste(*)
-{
+HznPaste(*) {
 	Static Msg := WM_PASTE := 770, wParam := 0, lParam := 0
 	hCtl := ControlGetFocus('A')
 	DllCall('SendMessage', 'Ptr', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
@@ -451,8 +504,7 @@ HznPaste(*)
 
 ; --------------------------------------------------------------------------------
 ; HznEnableButtons(hTb?, *)
-HznEnableButtons(hTb)
-{
+HznEnableButtons(hTb) {
 	initialSendLevel := A_SendLevel
 	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
@@ -474,13 +526,30 @@ HznEnableButtons(hTb)
 			Msg := TB_SETSTATE, wParam := idCommand, lParam_HI := 4, lParam_LO := TBSTATE_ENABLED, control := hTb
 		; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 			SendMessage(Msg, wParam, lParam_HI|lParam_LO,control,hTb)
+			tryGetItemList(idCommand)
 		}
-		If (idCommand > 107) {
+		If (idCommand > 108) {
 			Msg := TB_SETSTATE, wParam := idCommand, lParam_HI := 4, lParam_LO := TBSTATE_ENABLED, control := hTb
 		; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 			SendMessage(Msg, wParam, lParam_HI|lParam_LO,control,hTb)
 		}
+		tryGetItemList(control) {
+			try {
+				button_items_rows := ControlGetItems(control)
+				item := ''
+				item_list := ''
+				; try {
+					for item in button_items_rows {
+						item_list .= item . '`n'
+						FileAppend(item_list, '_button_items_rows.ahk', 'UTF-8')
+					}
+				; }
+			}
+		}
 	}
+	OutputDebug(item_list)
+	BlockInput(0)
+	SendLevel(0)
 	; return
 }
 /************************************************************************
@@ -519,8 +588,9 @@ button(idCommand:=0)
 	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
 	hTb := HznToolbar._hTb()
+	nCtl := HznToolbar._nCtl()
 	; --------------------------------------------------------------------------------
-	HznButton(hTb, idCommand) ;, nCtl)
+	HznButton(hTb, idCommand, nCtl)
 	; --------------------------------------------------------------------------------
 	SendLevel(0) ; restore normal SendLevel
 	BlockInput(0) ; 1 = On, 0 = Off
@@ -618,7 +688,7 @@ HznButton(hTb, idCommand, nCtl?) {
 		
 		; --------------------------------------------------------------------------------
 		; function: !!! ===> Programatically "Click" the button!!! <=== !!!
-		Msg := WM_COMMAND, wParam_hi := btnstate, wParam_lo := idCommand, lParam := control := hTb
+		Msg := WM_COMMAND, wParam_hi := 0, wParam_lo := idCommand, lParam := control := hTb
 		; DllCall('SendMessage', 'UInt', hTb, 'UInt', Msg, 'UInt', wParam_hi | wParam_lo, 'UIntP', lParam)
 		SendMessage(Msg, wParam_hi | wParam_lo, lParam, , hTb)
 		; --------------------------------------------------------------------------------
@@ -672,14 +742,14 @@ HznControlClick(X, Y)
 ; 	return
 ; }	
 ; --------------------------------------------------------------------------------
-remote_mem_buff(hProcess, Is32bit?, &TBBUTTON_SIZE?)
+remote_mem_buff(hProcess, Is32bit?, &CTRL_SIZE?)
 {
 	Static MEM_PHYSICAL := 4 ; 0x04 ; 0x00400000, ; via MSDN Win32
 	Static MEM_COMMIT := 4096
 	Is32bit := 0
 	RPtrSize := Is32bit ? 4 : 8
-	TBBUTTON_SIZE := 8 + (RPtrSize * 3) 
-	remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", TBBUTTON_SIZE, "UInt", MEM_COMMIT, "UInt", MEM_PHYSICAL, "Ptr")
+	CTRL_SIZE := 8 + (RPtrSize * 3) 
+	remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 0, "UPtr", CTRL_SIZE, "UInt", MEM_COMMIT, "UInt", MEM_PHYSICAL, "Ptr")
 	return remoteMemory
 }
 ; --------------------------------------------------------------------------------
@@ -704,38 +774,204 @@ remote_mem_buff(hProcess, Is32bit?, &TBBUTTON_SIZE?)
 _hProcess(tpID)
 {
 	Static PROCESS_VM_OPERATION := 8, PROCESS_VM_READ := 16, PROCESS_VM_WRITE := 32
-	hProcess := DllCall( 'OpenProcess', 'UInt'
-						, PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE
-						, "Int", 0
-						, "UInt", tpID
-						, "Ptr")
-	return hProcess 					
+	; hProcess := DllCall( 'OpenProcess', 'UInt'
+						; , PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE
+						; , "Int", 0
+						; , "UInt", tpID
+						; , "Ptr")
+	; return hProcess
+	return DllCall( 'OpenProcess', 'UInt', PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE, "Int", 0, "UInt", tpID, "Ptr")
 }
 ; --------------------------------------------------------------------------------
 ; rect := WindowGetRect("window title etc.")
 ; MsgBox(rect.width "`n" rect.height)
-
-WindowGetRect(windowTitle*) {
-    if hwnd := WinExist(windowTitle*) {
-        rect := Buffer(16, 0) ; V1toV2: if 'rect' is a UTF-16 string, use 'VarSetStrCapacity(&rect, 16)'
+hIntersectRect(l1, t1, r1, b1, l2, t2, r2, b2) {
+	rect1 := Buffer(16), rect2 := Buffer(16), rectOut := Buffer(16)
+	NumPut("int", l1, "int", t1, "int", r1, "int", b1, rect1)
+	NumPut("int", l2, "int", t2, "int", r2, "int", b2, rect2)
+	if DllCall("user32\IntersectRect", "Ptr", rectOut, "Ptr", rect1, "Ptr", rect2)
+		return {l:NumGet(rectOut, 0, "Int"), t:NumGet(rectOut, 4, "Int"), r:NumGet(rectOut, 8, "Int"), b:NumGet(rectOut, 12, "Int")}
+}
+WindowGetRect(hwnd) {
+    try {
+        rect := Buffer(64, 0) ; V1toV2: if 'rect' is a UTF-16 string, use 'VarSetStrCapacity(&rect, 16)'
         DllCall("GetClientRect", "Ptr", hwnd, "Ptr", rect)
-        return {width: NumGet(rect, 8, "Int"), height: NumGet(rect, 12, "Int")}
+        ; return {width: NumGet(rect, 8, "Int"), height: NumGet(rect, 12, "Int")}
+		return {Left: NumGet(rect, 0, "Int"), Top: NumGet(rect, 4, "Int"), Right: NumGet(rect, 8, "Int"), Bottom: NumGet(rect, 12, "Int"), Height: ((NumGet(rect, 12, "Int")) - (NumGet(rect, 4, "Int"))), Width: ((NumGet(rect, 8, "Int") - (NumGet(rect, 0, "Int")))) }
     }
 }
-GetClientSize(hwnd, &w?, &h?)
+GetRect(hwnd, &RC := "", *) { ; Retrieves the rich edit control's formatting rectangle
+; Returns an object with keys L (eft), T (op), R (ight), and B (ottom).
+; If a variable is passed in the Rect parameter, the complete RECT structure will be stored in it.
+RC := Buffer(32, 0)
+; SendMessage(0x00B2, 0, RC.Ptr, HWND)
+SendMessage(178, 0, RC.Ptr, HWND)
+; Return {L: NumGet(RC, 0, "Int"), T: NumGet(RC, 4, "Int"), R: NumGet(RC, 8, "Int"), B: NumGet(RC, 12, "Int")}
+Return {Left: NumGet(RC, 0, "Int"), Top: NumGet(RC, 4, "Int"), Right: NumGet(RC, 8, "Int"), Bottom: NumGet(RC, 12, "Int"), Height: ((NumGet(RC, 12, "Int")) - (NumGet(RC, 4, "Int"))), Width: ((NumGet(RC, 8, "Int") - (NumGet(RC, 0, "Int")))) }
+}
+GetClientSize(hCtl)
 {
 	BtnStructSize := 32
 	; rc := Buffer(BtnStructSize, 0)
 	rc := Buffer(BtnStructSize, 16)
 	; Buffer(rc:=0,16)
-    DllCall("GetClientRect", "uint", hwnd, "uint", &rc)
-    w := NumGet(rc, 8, "int")
-    h := NumGet(rc, 12, "int")
+    ; DllCall("GetClientRect", "Ptr", hCtl, "Ptr", rc)
+	tbRECT := GETITEMRECT(hCtl)
+	l:=tbRECT.Left
+	b:=tbRECT.Bottom
+	; SendMessage(Msg, wParam, lParam,, hTb)
+	; l := NumGet(rc, 0, "Int")
+	; t := NumGet(rc, 4, "Int")
+    ; r := NumGet(rc, 8, "int")
+    ; b := NumGet(rc, 12, "int")
+	; w := l - r
+	; h := b-t
 
-	OutputDebug('w:' . w . ' ' . 'h: ' . h . '`n')
+	; MsgBox('w:' . w . ' ' . 'h: ' . h . '`n')
+	; return {Left:l,Top:t,Right:r,Bottom:b,Width:w, Height:h}
+	return {Left:l,Bottom:b}
+}
+GetClientRect(hCtl, hCtl_title){
+	
+	mTX11 := Map()
+	dpi_hzn := DPI.MonitorFromWindow('hznHorizon.exe')
+	Info('dpi_hzn: ' . dpi_hzn, 30000)
+	RECT := Buffer(32, 0)
+	DllCall("MapWindowPoints", "Ptr", hCtl, "Ptr", 0, "Ptr", RECT, "UInt", 2)
+	Left:= NumGet(RECT, 0, "Int")
+	Top:= NumGet(RECT, 4, "Int"), 
+	Right:= NumGet(RECT, 8, "Int")
+	Bottom:= NumGet(RECT, 12, "Int")
+	Width := (Left + (Right/2))
+	Height := (Top + (Bottom/2))
+	mTX11.Set('Left', Left, 'Right', Right, 'Top', Top, 'Bottom', Bottom, 'height', height, 'width', width)
+	; Info(
+	; 	'Left: ' . Left . ' ' . 'Right: ' . Right
+	; 	. '`n'
+	; 	'Top: ' . Top . '`n' . 'Bottom: ' . Bottom
+	; 	. '`n'
+	; 	'Height: ' . Height . '`n' . 'Width: ' . Width
+	; 	, 30000)
+	return mTX11
 }
 ; fix
-; ^+7::GETBUTTON(101)
+^+7::somestufffortoolbar()
+
+somestufffortoolbar(idButton?, hTb?){
+	buttons := hznButtonCount()
+    hTb := HznToolbar._hTb()
+    hTx := ControlGetFocus('A')
+    pID := HznToolbar._pID()
+    tpID := HznToolbar._tpID()
+	hTx := ControlGetFocus('A')
+	Text := Buffer(128, 0)
+	RECT := Buffer(32, 0)
+	a_idButton := []
+	aStrings := []
+	a_text := []
+	a_Rect := []
+	vButton := ''
+	idButton := ''
+	vText := ''
+	a_bText := ''
+	b_bText := ''
+	dText := ''
+	vRect := ''
+	text := ''
+    TB_GETBUTTON := 1047
+	Static Msg := TB_GETITEMRECT := 1053
+	; Static Msg := EM_GETRECT := 178
+	static wParam := 1
+	Static PROCESS_VM_OPERATION := 8, PROCESS_VM_READ := 16, PROCESS_VM_WRITE := 32
+	hCtl := hTb
+	DllCall("GetWindowThreadProcessId", "Ptr", hCtl, "UInt*", &tpID := 0)
+	hProcess := DllCall( 'OpenProcess', 'UInt', 8 | 16 | 32, "Int", 0, "UInt", tpID, "Ptr")
+	Static MEM_PHYSICAL := 4 ; 0x04 ; 0x00400000, ; via MSDN Win32
+	Static MEM_COMMIT := 4096
+	Is32bit := 0, RPtrSize := Is32bit ? 4 : 8, CTRL_SIZE := 8 + (RPtrSize * 3) 
+	remoteMemory := DllCall("VirtualAllocEx", "Ptr", hProcess, "Ptr", 1, "UPtr", CTRL_SIZE, "UInt", MEM_COMMIT, "UInt", MEM_PHYSICAL, "Ptr")
+	; remoteMemory := remote_mem_buff(hProcess, , &CTRL_SIZE)
+	lParam := remoteMemory
+	SendMessage(Msg, wParam, lParam, hCtl, hCtl)
+	RECT := Buffer(CTRL_SIZE, 0)
+	; Note : Winapi TBBUTTON struct(32 bytes on x64, 20 bytes on x86)
+	Is32bit := Win32_64_Bit(remoteMemory)
+	BtnStructSize := Is32bit ? 20 : 32
+	; RECT := BtnStruct := Buffer(BtnStructSize, 0)
+	; BtnStruct := Buffer(BtnStructSize, 0)
+	; --------------------------------------------------------------------------------
+	; * Read the button information stored in the RECT (remoteMemory)
+	DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "UPtr", BtnStructSize, "UInt*", &bytesRead:=32, "Int")
+	Loop buttons {
+		button := (A_Index + 99)
+		idButton := String(button)
+		; Get_Button := _GETBUTTON(idButton)
+		hProcess := DllCall('OpenProcess', 'UInt', 8 | 16 | 32, "Int", 0, "UInt", tpID, "Ptr")
+		remoteMemory := remote_buffer := remote_mem_buff(hProcess,0,&TBBUTTON_SIZE)
+		GETBUTTON := SendMessage(TB_GETBUTTON, idButton, remoteMemory, hTb, hTb)
+
+		a_nText 	:= NumGet(Text, 0, 	"UInt")
+		b_nText 	:= NumGet(Text, 4, 	"UInt")
+		c_nText 	:= NumGet(Text, 8, 	"Int")
+		d_nText 	:= NumGet(Text, 12, "Int")
+		fsState 	:= NumGet(Text, 16, "UChar")
+		fsStyle 	:= NumGet(Text, 17, "UChar")
+		cxWORD 		:= NumGet(Text, 18, "UShort")
+
+		Info(
+			'[' button . '] ' 
+			; '1 ' . txt_strcap . ' ' 
+			; '2 ' . txt_buff . ' ' 
+			'3 ' . a_bText   . ' ' 
+			'4 ' . b_bText . ' ' 
+			'5 ' . vText . ' ' 
+			'6 ' . a_nText . ' '
+			'7 ' . b_nText . ' ' 
+			'8 ' . c_nText . ' '
+			'9 ' . d_nText . ' ' 
+			'10 ' . fsState . ' '
+			'11 ' . fsStyle . ' '	
+			'12 ' . cxWORD . ' '
+			, 30000
+		)
+		; dText .= '[' . button . '] ' . 'a_bText: ' . a_bText . ' ' 
+		; . 'b_bText: ' . b_bText . ' ' . 'vText: ' . vText . ' ' . 'a_nText: ' 
+		; . a_nText . '`n' . 'b_nText: ' . b_nText . '`n' 
+		; . 'c_nText: ' . c_nText . ' ' . 'd_nText: ' . d_nText . '`n'
+		; dText := 'idButton: ' . button . '`n' . 'a_bText: ' . a_bText . '`n' . 'b_bText: ' . b_bText . '`n' . 'vText: ' . vText . '`n' . 'a_nText: ' 
+		; ; . a_nText . '`n' . 'b_nText: ' . b_nText . '`n' 
+		; . 'c_nText: ' . c_nText . '`n' . 'd_nText: ' . d_nText . '`n'
+	}
+	; Info(dText, 30000)
+	; for each, idButton in a_idButton {
+	; 	a_text.Push(text)
+		; --------------------------------------------------------------------------------
+	; SendMessage(0x433, idButton, RECT, hTx , hTx)	; TB_GETRECT
+	DllCall("MapWindowPoints", "Ptr", hTx, "Ptr", 0, "Ptr", RECT, "UInt", 2)
+	Left := NumGet(RECT, 0, "Int")
+	Bottom := NumGet(RECT, 12, "Int")
+	Info('Left: ' . Left . '`n' . 'Bottom: ' . Bottom, 30000)
+	; 	a_Rect.Push(Left)
+	; 	a_Rect.Push(Bottom)
+	; }
+	; for each, vButton in a_idButton {
+	; 	idButton .= vButton . '`n'
+	; 	for each, vText in a_text {
+	; 		bText .= vText . '`n'
+	; 	}
+	; }
+	; for each, vRect in a_Rect {
+	; 	bRect := ''
+	; 	bRect .= 'L: ' Left . ' ' . 'B: ' Bottom 
+	; }
+	; info(
+	; 	'Buttond ID: ' 	. idButton 	. '`n'
+	; 	'Text: ' 		. text 		. '`n'
+	; 	'Left: ' 		. Left 		. '`n'
+	; 	'Bottom: ' 		. Bottom 	. '`n'
+	; 	, 30000
+	; )
+}
 _GETBUTTON(n:=1, hTb?, pID?, hProcess?)
 {
 	Static 	TB_GETBUTTON := 1047 ; hex = 0x417
@@ -840,33 +1076,35 @@ Win32_64_Bit(hpRemote)
 }
 ; --------------------------------------------------------------------------------
 ; /*
-HznDPI()
+HznDPI(hCtl?,hCtl_title?, &arHznDPI:='', &DPIsc:=0)
 {
+	hCtl := ControlGetFocus('A')
+	hCtl_title := WinGetTitle(hCtl)
 	arHznDPI := Array()
 	try {
-		nmHwnd 	:= GetNearestMonitorInfo('A').Handle
-		nmName 	:= GetNearestMonitorInfo('A').Name
-		nmNum 	:= GetNearestMonitorInfo('A').Number
-		nmPri 	:= GetNearestMonitorInfo('A').Primary
-		mDPIx 	:= GetNearestMonitorInfo('A').x
-		mDPIy 	:= GetNearestMonitorInfo('A').y
-		mDPIw 	:= GetNearestMonitorInfo('A').WinDPI
-		DPImw 	:= DPI.GetForWindow('A')
+		nmHwnd 	:= GetNearestMonitorInfo(hCtl, hCtl_title).Handle
+		nmName 	:= GetNearestMonitorInfo(hCtl, hCtl_title).Name
+		nmNum 	:= GetNearestMonitorInfo(hCtl, hCtl_title).Number
+		nmPri 	:= GetNearestMonitorInfo(hCtl, hCtl_title).Primary
+		mDPIx 	:= GetNearestMonitorInfo(hCtl, hCtl_title).x
+		mDPIy 	:= GetNearestMonitorInfo(hCtl, hCtl_title).y
+		mDPIw 	:= GetNearestMonitorInfo(hCtl, hCtl_title).WinDPI
+		DPImw 	:= DPI.GetForWindow(hCtl, hCtl_title)
 		DPIsc 	:= DPI.GetScaleFactor(DPImw) ; <====== this one
 		; DPIsc1 	:= DPI.GetScaleFactor(mDPIx)
 	} catch Error as e {
-		OutputDebug('nmHwnd: '	nmHwnd '`n'
-				.	'nmName: '	nmName '`n'
-				.	'nmNum: '	nmNum '`n'
-				.	'nmPri: '	nmPri '`n'
-				.	'mDPIx: '	mDPIx '`n'
-				.	'mDPIy: '	mDPIy '`n'
-				.	'mDPIw: '	mDPIw '`n'
-				.	'DPImw: '	DPImw '`n'
-				.	'DPIsc: '	DPIsc '`n'
-				; .	'DPIsc1: '	DPIsc1 '`n'
-				.	'PriDPI: '	A_ScreenDPI '`n'
-				)		
+		; OutputDebug('nmHwnd: '	nmHwnd '`n'
+		; 		.	'nmName: '	nmName '`n'
+		; 		.	'nmNum: '	nmNum '`n'
+		; 		.	'nmPri: '	nmPri '`n'
+		; 		.	'mDPIx: '	mDPIx '`n'
+		; 		.	'mDPIy: '	mDPIy '`n'
+		; 		.	'mDPIw: '	mDPIw '`n'
+		; 		.	'DPImw: '	DPImw '`n'
+		; 		.	'DPIsc: '	DPIsc '`n'
+		; 		; .	'DPIsc1: '	DPIsc1 '`n'
+		; 		.	'PriDPI: '	A_ScreenDPI '`n'
+		; 		)		
 		throw e		
 	}
 	arHznDPI.Push(
@@ -880,7 +1118,7 @@ HznDPI()
 			, 7_ScreenDPI:DPIsc
 		})
 	; --------------------------------------------------------------------------------
-	return DPIsc
+	return {arHznDPI:arHznDPI,DPIsc:DPIsc}
 }
 ; */
 ; --------------------------------------------------------------------------------
@@ -890,41 +1128,45 @@ HznDPI()
  * @description Get the bounds of each button (Get Item Rectangle)
  * @param GETITEMRECT( hProcess,n,remoteMemory,hTb,TBBUTTON_SIZE,Is32bit,&RECT,&BtnStructSize,&BtnStruct,&bytesRead,&Left,&Top,&Right,&Bottom, &X, &Y)
 */	
-GETITEMRECT(hProcess, n,remoteMemory,hTb, TBBUTTON_SIZE, Is32bit, &RECT, &BtnStructSize, &BtnStruct, &bytesRead, &Left, &Top, &Right, &Bottom, &X, &Y)
+; GETITEMRECT(hProcess, n,remoteMemory,hTb, TBBUTTON_SIZE, Is32bit, &RECT, &BtnStructSize, &BtnStruct, &bytesRead, &Left, &Top, &Right, &Bottom, &X, &Y)
+GETITEMRECT(hCtl)
 {
-	Static Msg := TB_GETITEMRECT := 1053, wParam := n, lParam := remoteMemory, control := ''
-	SendMessage(Msg, wParam, lParam,, hTb)
-	RECT := Buffer(TBBUTTON_SIZE, 0)
-	; Note : Winapi TBBUTTON struct(32 bytes on x64, 20 bytes on x86)
-	BtnStructSize := Is32bit ? 20 : 32
-	BtnStruct := Buffer(BtnStructSize, 0)
-	; --------------------------------------------------------------------------------
-	; * Read the button information stored in the RECT (remoteMemory)
-	DllCall("ReadProcessMemory", "Ptr", hProcess, "Ptr", remoteMemory, "Ptr", RECT, "UPtr", BtnStructSize, "UInt*", &bytesRead:=32, "Int")
-	; --------------------------------------------------------------------------------
-	Left 	:= NumGet(RECT, 0, 	"Int")
-	Top 	:= NumGet(RECT, 4, 	"Int")
-	Right 	:= NumGet(RECT, 8, 	"Int")
-	Bottom 	:= NumGet(RECT, 12, "Int")
+	; wParam := n, lParam := remoteMemory, control := ''
+	Static Msg := TB_GETITEMRECT := 1053
+	RECT := Buffer(32, 0)
+	DllCall("GetClientRect", "Ptr", hCtl, "Ptr", 0, "Ptr", RECT, "UInt", 2)
+	Left := NumGet(RECT, 0, "Int")
+	Bottom := NumGet(RECT, 12, "Int")
+	Info('Left: ' . Left . '`n' . 'Bottom: ' . Bottom, 30000)
+	Return {Left:Left, Bottom:Bottom}
 	; --------------------------------------------------------------------------------
 	; Note: Updated 09.11.23
-	DPIsc := HznDPI()
-	X1 		:= Left
-	Y1 		:= Top
-	W1 		:= Right-Left
-	H1 		:= Bottom-Top
-	W 		:= W1/2
-	H 		:= H1/2
-	X2 		:= X1+W
-	Y2 		:= Y1+H
-	X 		:= X2*=DPIsc
-	Y 		:= Y2*=DPIsc
+	; hCtl_title := WinGetTitle(hCtl)
+	; DPIsc := HznDPI(hCtl,hCtl_title).DPIsc
+	; X1 			:= Left
+	; Y1 			:= Top
+	; Left 		:= X1
+	; Top			:= Y1
+	; W1 			:= Right-Left
+	; H1 			:= Bottom-Top
+	; ; W 			:= W1/2
+	; W 			:= W1
+	; ; H 			:= H1/2
+	; H 			:= H1
+	; X2 			:= X1+W
+	; Y2 			:= Y1+H
+	; dpiX 		:= X2*=DPIsc
+	; dpiY 		:= Y2*=DPIsc
+	; dpiWidth	:= Round((W*=DPIsc),0)
+	; dpiHeight 	:= Round((H*=DPIsc),0)
 	; --------------------------------------------------------------------------------
-	OutputDebug('X1:' X1 . ' ' . 'Y1:' . Y1 .  ' ' . 'W1:' . W1 . ' ' . 'H1:' . H1 . '`n'
-		. 'W:' . W . " " . 'H:' . H . '`n'
-		. 'X2:' X2 . ' ' . 'Y2:' . Y2 . '`n'
-		. 'X:' . X . ' ' . 'Y:' . Y . '`n'
-		)
+	; OutputDebug(
+	; MsgBox(	
+	; 	'X1:' X1 . ' ' . 'Y1:' . Y1 .  ' ' . 'W1:' . W1 . ' ' . 'H1:' . H1 . '`n'
+	; 	. 'W:' . W . " " . 'H:' . H . '`n'
+	; 	. 'X2:' X2 . ' ' . 'Y2:' . Y2 . '`n'
+	; 	. 'X:' . X . ' ' . 'Y:' . Y . '`n'
+	; 	)
 }
 ; --------------------------------------------------------------------------------
 /**

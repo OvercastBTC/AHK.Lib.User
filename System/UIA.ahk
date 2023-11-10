@@ -66,6 +66,7 @@ static __New() {
 		IUIAutomation7:"{29de312e-83c6-4309-8808-e8dfcb46c3c2}"
 	}
 	global IUIAutomationMaxVersion
+	IUIAutomationVersion := IUIAutomationMaxVersion := 7
 	A_PtrSize = 4 ? DllCall("user32.dll\SystemParametersInfo", "uint", 0x0046, "uint", 0, "uint", 0, "ptr*", &screenreader:=0) : DllCall("user32.dll\SystemParametersInfo", "uint", 0x0046, "uint", 0, "ptr*", &screenreader:=0) ; SPI_GETSCREENREADER
 	if !screenreader
 		A_PtrSize = 4 ? DllCall("user32.dll\SystemParametersInfo", "uint", 0x0046, "uint", 0, "uint", 0, "ptr*", &screenreader:=0) : DllCall("user32.dll\SystemParametersInfo", "uint", 0x0047, "uint", 1, "int", 0, "uint", 2) ; SPI_SETSCREENREADER
@@ -2292,7 +2293,7 @@ class IUIAutomationElement extends UIA.IUIAutomationBase {
 	 * @returns {UIA.IUIAutomationElement}
 	 */
 	Highlight(showTime:=unset, color:="Red", d:=2) {
-		local _, r, i, loc, x1, y1, w1, h1
+		local _:='', r, i, loc, x1, y1, w1, h1
 		static Guis := Map()
 		if IsSet(showTime) && showTime = "clearall" {
 			for key, prop in Guis {
@@ -7078,7 +7079,7 @@ class Viewer {
 	}
 	; Populates the TreeView with the UIA tree when capturing and the mouse is held still
 	ConstructTreeView() {
-		local k, v, same
+		local k, v, same:=''
 		this.TVUIA.Delete()
 		this.TVUIA.Add("Constructing Tree, please wait...")
 		Sleep(-1)
@@ -7109,7 +7110,7 @@ class Viewer {
 	}
 	; Stores the UIA tree with corresponding path values for each element
 	RecurseTreeView(Element, parent:=0, path:="", conditionpath := "", numpath:="") {
-		local info, child, type, name, k, v, paths := Map(), childInfo := [], children := Element.CachedChildren
+		local info, child, type, name:='', k, v:='', paths := Map(), childInfo := [], children := Element.CachedChildren
 		Element.DefineProp("Path", {value:"`"" path "`""})
 		Element.DefineProp("ConditionPath", {value:conditionpath})
 		Element.DefineProp("NumericPath", {value:numpath})

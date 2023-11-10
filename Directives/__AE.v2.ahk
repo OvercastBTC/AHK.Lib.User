@@ -35,7 +35,19 @@ _AE_DetectHidden(true)
 _AE_SetDelays(-1)
 _AE_PerMonitor_DPIAwareness()
 ; --------------------------------------------------------------------------------
-#HotIf WinActive(A_ScriptName ' - Visual Studio Code')
+/**
+ * Function: Includes
+ */
+#Include <App\Autohotkey>
+#Include <Extensions\Array>
+#Include <Extensions\Gui>
+#Include <Extensions\Initializable>
+#Include <Extensions\Json>
+#Include <Extensions\Map>
+#Include <Extensions\Sort>
+#Include <Extensions\String>
+
+#HotIf WinActive(A_ScriptName)
 	$~^s:: Run(A_ScriptName)
 #HotIf
 ; --------------------------------------------------------------------------------
@@ -82,19 +94,78 @@ clip_it(send_clip := 0) {
 	{
 		bak := ClipboardAll() ; Backup current clipboard
 		A_Clipboard := last_clip ; Put last_clip onto clipboard
-		sendInput('^v') ; Paste
-		While DllCall("GetOpenClipboardWindow") ; If clipboard still in use (long paste)
+		Send('^v') ; Paste
+		While DllCall("GetOpenClipboardWindow") { ; If clipboard still in use (long paste)
 			Sleep(50) ; Sleep for a bit
+		}
 		A_Clipboard := bak ; Restore original clipboard
 	}
 	Else ; Else if send_clip false
 	{
 		last_clip := A_Clipboard ; Update last_clip with current clipboard
-		SendInput('^c') ; And then copy new contents to active clipboard
+		While DllCall("GetOpenClipboardWindow") { ; If clipboard still in use (long paste)
+			Sleep(50) ; Sleep for a bit
+		}
+		Send('^c') ; And then copy new contents to active clipboard
 	}
 }
 
+AE_SelectAll(*)
+{
+	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := -1
+	hCtl := ControlGetFocus('A')
+	DllCall('SendMessage', 'UInt', hCtl, 'UInt', Msg, 'UInt', wParam, 'UIntP', lParam)
+	return
+}
+AE_Select_End(*)
+{
+	Static Msg := EM_SETSEL := 177, wParam := -1, lParam := -1
+	hCtl := ControlGetFocus('A')
+	DllCall('SendMessage', 'UInt', hCtl, 'UInt', Msg, 'UInt', wParam, 'UInt', lParam)
+	return
+}
+AE_Select_Beginning(*)
+{
+	Static Msg := EM_SETSEL := 177, wParam := 0, lParam := 0
+	hCtl := ControlGetFocus('A')
+	DllCall('SendMessage', 'UInt', hCtl, 'UInt', Msg, 'UInt', wParam, 'UInt', lParam)
+	return
+}
+AE_Get_TEXTLIMIT(*)
+{
+	; Static Msg := EM_GETLIMITTEXT := 1061, wParam := 0, lParam := 0
+	; Static Msg := EM_GETTEXTLENGTH := 0x000E, wParam := 0, lParam := 0
+	; Static Msg := WM_GETFONT := 0x0031, wParam := 0, lParam := 0
+	; text := StrPtr('hznRTE ')
+	; Static Msg := WM_SETTEXT := 0x000C, wParam := 0, lParam := text
 
+	hCtl := ControlGetFocus('A')
+	; Limit := DllCall('SendMessage', 'UInt', hCtl, 'UInt', Msg, 'UInt', wParam, 'UInt', lParam)
+	; Limit := SendMessage(Msg,wParam, lParam, hCtl, hCtl)
+	buff_size := 64000
+	VarSetStrCapacity(&buff, buff_size)
+	Static Msg := WM_GETTEXT := 0x000D, wParam := buff_size, lParam := &buff
+	Text := SendMessage(Msg,wParam, lParam, hCtl, hCtl)
+	afont := []
+	afont := GuiCtrlTextSize(hCtl,text)
+	for each, value in afont {
+		font := ''
+		font .= value . '`n'
+	}
+	MsgBox(font)
+	GuiCtrlTextSize(GuiCtrlObj, Text)
+	{
+		Static WM_GETFONT := 0x0031, DT_CALCRECT := 0x400
+		hDC := DllCall('GetDC', 'Ptr', GuiCtrlObj.Hwnd, 'Ptr')
+		hPrevObj := DllCall('SelectObject', 'Ptr', hDC, 'Ptr', SendMessage(WM_GETFONT, , , GuiCtrlObj), 'Ptr')
+		height := DllCall('DrawText', 'Ptr', hDC, 'Str', Text, 'Int', -1, 'Ptr', buf := Buffer(16), 'UInt', DT_CALCRECT)
+		width := NumGet(buf, 8, 'Int') - NumGet(buf, 'Int')
+		DllCall('SelectObject', 'Ptr', hDC, 'Ptr', hPrevObj, 'Ptr')
+		DllCall('ReleaseDC', 'Ptr', GuiCtrlObj.Hwnd, 'Ptr', hDC)
+		Return { Width: Round(width * 96 / A_ScreenDPI), Height: Round(height * 96 / A_ScreenDPI) }
+	}
+	; Return Limit
+}
 
 
 

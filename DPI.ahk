@@ -59,6 +59,8 @@ class DPI {
 
 static Standard := 96, WM_DPICHANGED := 0x02E0, MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3, DefaultDpiAwarenessContext := this.MaximumPerMonitorDpiAwarenessContext
 
+
+
 static __New() {
     ; Set DPI awareness of our script to maximum available per-monitor by default
     this.SetThreadAwarenessContext(this.DefaultDpiAwarenessContext)
@@ -392,12 +394,14 @@ static CoordsToWindow(&X, &Y, CoordMode, WinTitle?, WinText?, ExcludeTitle?, Exc
 }
 
 static ClientToScreen(&x, &y, hWnd?) {
+    x:= '', y:=''
     pt := Buffer(8), NumPut("int", x, "int", y, pt)
     DllCall("ClientToScreen", "ptr", hWnd, "ptr", pt)
     x := NumGet(pt, 0, "int"), y := NumGet(pt, 4, "int")
 }
 
 static ScreenToClient(&x, &y, hWnd?) {
+    x:= '', y:=''
     pt := Buffer(8), NumPut("int", x, "int", y, pt)
     , DllCall("ScreenToClient", "ptr", hWnd, "ptr", pt)
     , x := NumGet(pt, 0, "int"), y := NumGet(pt, 4, "int")

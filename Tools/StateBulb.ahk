@@ -17,7 +17,8 @@ class StateBulb {
 	}
 
 
-	static Unit := A_ScreenDPI / 96
+	; static Unit := A_ScreenDPI / 96
+	static Unit := A_ScreenDPI / 120
 
 	static Side := StateBulb.Unit * 25
 

@@ -1,0 +1,33 @@
+﻿class receiver {
+	static rect := Map(
+		'width', rwidth := 0,
+		'height', rheight := 0,
+		'x', rx := 0,
+		'y', ry := 0,
+		'top', rtop := 0,
+		'bottom', rbottom := 0,
+	)
+	; end
+}
+
+; OnMessage(0x004A, Receive_WM_COPYDATA)  ; 0x004A is WM_COPYDATA
+; Persistent(1)
+
+; ; Receive_WM_COPYDATA(wParam?, lParam?, msg?, hwnd?)
+; Receive_WM_COPYDATA(wParam)
+; {
+;     ; Global wParam_CopyOfData
+;     ; wParam_String := NumGet(wParam, 2*A_PtrSize, "Ptr")  ; Retrieves the CopyDataStruct's lpData member.
+;     ; lParam_String := NumGet(lParam, 2*A_PtrSize, "Ptr")  ; Retrieves the CopyDataStruct's lpData member.
+;     wParam_String := wParam
+;     wParam_CopyOfData := String(wParam_String)  ; Copy the string out of the structure.
+;     ; lParam_CopyOfData := StrGet(lParam_String)  ; Copy the string out of the structure.
+;     ; wParam_CopyOfData := wParam  ; Copy the string out of the structure.
+;     ; lParam_CopyOfData := lParam  ; Copy the string out of the structure.
+;     ; Show it with ToolTip vs. MsgBox so we can return in a timely fashion:
+;     ToolTip( A_ScriptName "`nReceived the following string:`n" 
+;             . 'wParam_CopyOfData: ' . wParam_CopyOfData . '`n' 
+;             ; . 'lParam_CopyOfData: ' . lParam_CopyOfData . '`n'
+;         )
+;     return true  ; Returning 1 (true) is the traditional way to acknowledge this message.
+; }

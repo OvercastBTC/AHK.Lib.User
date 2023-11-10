@@ -3,29 +3,46 @@
 class Paths {
 
 	static User         := "C:\Users\" A_UserName
-	static LocalAppData := Paths.User "\AppData\Local"
+	static AppData 		:= Paths.User "\AppData"
+	static LocalAppData := Paths.AppData "\Local"
+	static AppDataProgs := Paths.AppData "\Programs"
+	static RoamingAppData := Paths.AppData "\Roaming"
 	static System32     := "C:\Windows\System32"
+	static OneDrive 	:= Paths.User . '\OneDrive - FM Global'
+	static Startup 		:= Paths.RoamingAppData . '\Microsoft\Windows\Start Menu\Programs\Startup'
 
 	static StandardAhkLibLocation := A_MyDocuments "\AutoHotkey\Lib"
+	static Prog  := Paths.AppDataProgs '\AutoHotkey\v2'
+	static v2Prog  := Paths.AppDataProgs '\AutoHotkey\v2'
+	static v1Prog  := Paths.AppDataProgs '\AutoHotkey'
+	static v2Proj  := Paths.v2Prog '\AHK.Projects.v2'
+	static v2Lib := Paths.v2Prog '\Lib'
 
-	static Prog  := "C:\Programming"
-	static Main  := "C:\Programming\main"
-	static Lib   := Paths.StandardAhkLibLocation
-	static Music := "C:\Programming\music"
+	static Main  := Paths.OneDrive . 'AHK.Main'
+	static Music := Paths.OneDrive . '\Music'
 	static Shows := "C:\Programming\shows"
 	static Info  := "C:\Programming\info"
 	static Test  := "C:\Programming\test"
 	static Reg   := "C:\Programming\registers"
+	
+	static Lib   := Paths.StandardAhkLibLocation
+	static folder := Map(
+		'Notes',  (Paths.Lib '\Notes'),
+		'Links' , (Paths.Lib '\Links'),
+		'RecLibs',(Paths.Lib '\RecLibs'),
+		'Common', (Paths.v2Lib 'Common_'),
+	)
 
 	static Files     := Paths.Main "\Files"
 	static Tools     := Paths.Main "\Tools"
 
-	static Pictures     := "C:\Pictures"
+	static Pictures     := Paths.OneDrive "\Pictures"
 	static Content      := Paths.Pictures "\Content"
 	static OnePiece     := Paths.Pictures "\Content\One piece"
 	static VideoTools   := Paths.Pictures "\Tools"
 	static ScreenVideos := Paths.Pictures "\Screenvideos"
-	static Downloaded   := Paths.Pictures "\Downloaded"
+	static Screenshots  := Paths.Pictures '\Screenshots'
+	static Downloads 	:= Paths.OneDrive 'Downloads'
 	static Tree         := Paths.Pictures "\Tree"
 	static Memes        := Paths.Pictures "\Tree\Memes"
 	static Emoji        := Paths.Pictures "\Tree\Emojis"
@@ -33,7 +50,7 @@ class Paths {
 	static Logos        := Paths.Pictures "\Tree\Logos"
 	static Themes       := Paths.Pictures "\Tree\Themes"
 
-	static Audio := "C:\Audio"
+	static Audio := Paths.User . '\Music'
 	static Sounds := Paths.Audio "\Sounds"
 
 	static VsCodeExtensions := "C:\Users\" A_UserName "\.vscode-insiders\extensions"

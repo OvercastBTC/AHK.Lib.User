@@ -8,7 +8,7 @@ class Explorer {
 	static winTitle      := "ahk_class CabinetWClass " this.exeTitle
 	static position      := "ThirtyVert"
 	static isAlwaysOnTop := true
-	static runOpt        := "Min"
+	static runOpt        := "min"
 
 	static winObj := Win({
 		winTitle:      this.winTitle,
@@ -49,7 +49,8 @@ class Explorer {
 		static Themes       := Win({exePath: Paths.Themes})
 		static Prog         := Win({exePath: Paths.Prog})
 		static Emoji        := Win({exePath: Paths.Emoji})
-		static Downloaded   := Win({exePath: Paths.Downloaded})
+		static Downloads    := Win({exePath: Paths.Downloads})
+		static Screenshots  := Win({exePath: Paths.Screenshots})
 
 	}
 }

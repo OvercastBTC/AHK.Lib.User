@@ -56,7 +56,7 @@ class Win extends Initializable {
 
 	SetExplorerWintitle() => this.winTitle := this.exePath " ahk_exe explorer.exe"
 
-	Close() {
+	static Close() {
 		try PostMessage("0x0010",,,, this.winTitle,, this.excludeTitle)
 		catch Any {
 			return false
@@ -64,12 +64,12 @@ class Win extends Initializable {
 		return true
 	}
 
-	CloseAll() {
+	static CloseAll() {
 		while this.Close() {
 		}
 	}
 
-	Activate() {
+	static Activate() {
 		try {
 			WinActivate(this.winTitle,, this.excludeTitle)
 			WinWaitActive(this.winTitle,, this.actTimeout, this.excludeTitle)
@@ -86,7 +86,7 @@ class Win extends Initializable {
 	* If this concerns you, consider having less windows
 	* @returns {Boolean} False if there were less than 2 windows that matched (there could be zero); True if the operation completed successfully
 	*/
-	ActivateAnother() {
+	static fActivateAnother() {
 		windows := WinGetList(this.winTitle,, this.excludeTitle)
 		if (windows.Length < 2) {
 			return false
@@ -107,7 +107,7 @@ class Win extends Initializable {
 		return true
 	}
 
-	MinMax() {
+	static MinMax() {
 		if !WinExist(this.winTitle,, this.excludeTitle)
 			return false
 
@@ -120,7 +120,7 @@ class Win extends Initializable {
 		return true
 	}
 
-	Run() {
+	Static Run() {
 		if WinExist(this.winTitle,, this.excludeTitle)
 			return false
 		if !this.exePath {
@@ -138,7 +138,7 @@ class Win extends Initializable {
 		return true
 	}
 
-	CloseOnceExists() {
+	static CloseOnceExists() {
 		stopWaitingAt := A_TickCount + this.extTimeout * 1000
 		if Type(this.toClose) = "Array"
 			SetTimer(foTryCloseArray, 20)
@@ -171,7 +171,7 @@ class Win extends Initializable {
 		}
 	}
 
-	RunAct() {
+	Static RunAct() {
 		this.Run()
 		if this.startupWintitle {
 			temp := this.winTitle
@@ -190,7 +190,7 @@ class Win extends Initializable {
 		return this
 	}
 
-	RunAct_Folders() {
+	Static RunAct_Folders() {
 		this.SetExplorerWintitle()
 		if !this.runOpt {
 			this.runOpt := Explorer.runOpt
@@ -205,14 +205,14 @@ class Win extends Initializable {
 		return this
 	}
 
-	App() {
+	static App() {
 		if this.MinMax()
 			return this
 		this.RunAct()
 		return this
 	}
 
-	App_Folders() {
+	static App_Folders() {
 		this.SetExplorerWintitle()
 		if !this.runOpt {
 			this.runOpt := Explorer.runOpt
@@ -243,7 +243,7 @@ class Win extends Initializable {
 	* @param winTitles *Array/Map*
 	* @returns {Integer}
 	*/
-	AreActive() {
+	static AreActive() {
 		i := 0
 		for key, value in this.winTitles {
 			if Type(this.winTitles) = "Map" {

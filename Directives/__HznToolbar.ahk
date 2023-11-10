@@ -20,6 +20,7 @@
 *          - "pane" vs "toolbar" | "pane" vs "button" |etc
 *      - not all are needed, or obtainable every time.
 ; ***********************************************************************/
+
 Class HznToolbar {
     __New(){
         SendLevel(5) ; SendLevel higher than anything else (normally highest is 1)

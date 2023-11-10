@@ -11,11 +11,11 @@ KeyCodeGetter() {
 		return
 	}
 
-	g_values := Gui(, "Key code getter").DarkMode().MakeFontNicer(30)
+	g_values := Gui(, "Key code getter").DarkMode().MakeFontNicer(11)
 
 	values_hwnd := g_values.hwnd
 
-	g_values_input := g_values.Add("Edit", "background171717")
+	g_values_input := g_values.Add("Edit", "background 255")
 
 	g_values_name := g_values.Add("Text", "w400", "Key name")
 	g_values_SC   := g_values.Add("Text",, "SC code")
@@ -38,7 +38,8 @@ KeyCodeGetter() {
 		used := false
 	}
 
-	toClip := (what, *) => A_Clipboard := what
+	; toClip := (what, *) => A_Clipboard := what
+	toClip := (what?, var:=0) => A_Clipboard := what
 
 	Submit(*) {
 		used := true
@@ -68,10 +69,11 @@ KeyCodeGetter() {
 	}
 
 	HotIfWinActive("ahk_id " values_hwnd)
-		Hotkey("Enter" , Submit     , "On")
-		Hotkey("Escape", Destruction, "On")
+	Hotkey("Enter" , Submit     , "On")
+	Hotkey("Escape", Destruction, "On")
 	g_values.OnEvent("Close", Destruction)
 
-	g_values.Show("AutoSize y0 x" A_ScreenWidth / 20 * 12.95)
+	; g_values.Show("AutoSize y0 x" A_ScreenWidth / 20 * 12.95)
+	g_values.Show("AutoSize y0 x" A_ScreenWidth / 20)
 
 }

@@ -69,10 +69,11 @@ KeyCodeGetter() {
 	}
 
 	HotIfWinActive("ahk_id " values_hwnd)
-		Hotkey("Enter" , Submit     , "On")
-		Hotkey("Escape", Destruction, "On")
+	Hotkey("Enter" , Submit     , "On")
+	Hotkey("Escape", Destruction, "On")
 	g_values.OnEvent("Close", Destruction)
 
-	g_values.Show("AutoSize y0 x" A_ScreenWidth / 20 * 12.95)
+	; g_values.Show("AutoSize y0 x" A_ScreenWidth / 20 * 12.95)
+	g_values.Show("AutoSize y0 x" A_ScreenWidth / 20)
 
 }

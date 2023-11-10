@@ -5,6 +5,20 @@
 #Include <Links>
 #Include <System\Web>
 
+
+git_InstallAHKLibrary(link, folder:='Abstractions\'){
+	static libFolder := Paths.Lib . '\' . folder
+	link := StrReplace(link,'addlib ','')
+	link := StrReplace(link, 'https://github.com','')
+	link := StrReplace(link, 'blob/',,,, 1)
+	link := StrReplace(link, 'tree/','',,, 1)
+	file_html := GetHtml('https://raw.githubusercontent.com/' link)
+	RegExMatch(link, '\/([^.\/]+\.\w+)$', &match)
+	newFile := match[1]
+	WriteFile(libFolder newFile, file_html)
+	Info(newFile ' library installed in: ' libFolder)
+}
+
 class Git {
 
 	__New(workingDir) {
@@ -57,7 +71,7 @@ class Git {
 	* @returns {String} the github link
 	*/
 	static Link(path) {
-		static github := Links["my github"] ;Specify you github link (https://github.com/yourNickname/)
+		static github := Links['https://github.com/OverCastBTC/'] ;Specify you github link (https://github.com/yourNickname/)
 		static fileBlob := "/blob/main/" ;The part between the name of the repo and the other file path is different depending on whether it's a file or a folder
 		static folderBlob := "/tree/main/"
 

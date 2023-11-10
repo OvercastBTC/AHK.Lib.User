@@ -1,30 +1,5 @@
-﻿;@include-winapi
-; --------------------------------------------------------------------------------
-#MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
-#Warn All, OutputDebug
-#SingleInstance Force
-SendMode("Input")
-SetWorkingDir(A_ScriptDir)
-SetTitleMatchMode(2)
-; --------------------------------------------------------------------------------
-DetectHiddenText(true)
-DetectHiddenWindows(true)
-; --------------------------------------------------------------------------------
-#Requires AutoHotkey v2+
-; --------------------------------------------------------------------------------
-SetControlDelay(-1)
-SetMouseDelay(-1)
-SetWinDelay(-1)
-; --------------------------------------------------------------------------------
-MaximumPerMonitorDpiAwarenessContext := VerCompare(A_OSVersion, ">=10.0.15063") ? -4 : -3
-DefaultDpiAwarenessContext := MaximumPerMonitorDpiAwarenessContext
-try
-	DllCall("SetThreadDpiAwarenessContext", "ptr", MaximumPerMonitorDpiAwarenessContext, "ptr")
-catch 
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
-else
-	DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
-
+﻿#Requires AutoHotkey v2+
+#Include <Directives\__AE.v2>
 ; --------------------------------------------------------------------------------
 /**
  * @author Descolada (main v2 author)
@@ -36,13 +11,13 @@ else
 #HotIf WinExist(A_ScriptName)
 #^e::
 {
-hwnd := WinExist("A"), List := ""
-for Each, hMonitor in EnumMonitors() {
+hwnd := WinExist("A"), List := "", hMonitor := ''
+for hMonitor in EnumMonitors() {
 	dpi := GetDpiForMonitor(hMonitor)
-	List .= 'Index: [' Each ']`n' 'mhWnd: ' hMonitor '`n' 'dpi.x: ' dpi.x  '`n' 'dpi.y: ' dpi.y '`n' 'dpi.Window: ' GetDpiForWindow(hwnd) "`n"
+	List .= 'Index: [' A_Index ']`n' 'mhWnd: ' hMonitor '`n' 'dpi.x: ' dpi.x  '`n' 'dpi.y: ' dpi.y '`n' 'dpi.Window: ' GetDpiForWindow(hwnd)
 }
 
-MsgBox(List)
+Info(List, 30000)
 return
 }
 
@@ -50,8 +25,8 @@ return
 {
 	hwnd := WinExist('A')
 	dpi := GetDpiForWindow(hwnd)
-	OutputDebug(hwnd '`n' dpi)
-	reload()
+	Info(hwnd '`n' dpi,30000)
+	; reload()
 	return
 }
 

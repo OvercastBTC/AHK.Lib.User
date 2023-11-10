@@ -1,6 +1,7 @@
 #Include <Extensions\Array>
 #Include <Extensions\Gui>
 #Include <Extensions\String>
+#Include <Directives\__AE.v2>
 
 class Infos {
 
@@ -24,15 +25,18 @@ class Infos {
 	}
 
 
-	static fontSize     := 14
-	static distance     := 3
-	static unit         := A_ScreenDPI / 96
+	static fontSize     := 11
+	static distance     := 4
+	; static unit         := A_ScreenDPI / 96
+	static unit         := A_ScreenDPI / 144
 	static guiWidth     := Infos.fontSize * Infos.unit * Infos.distance
+	; static guiWidth     := 30
 	static maximumInfos := Floor(A_ScreenHeight / Infos.guiWidth)
 	static spots        := Infos._GeneratePlacesArray()
 	static foDestroyAll := (*) => Infos.DestroyAll()
 	static maxNumberedHotkeys := 12
-	static maxWidthInChars := 104
+	; static maxWidthInChars := 110
+	static maxWidthInChars := A_ScreenWidth
 
 
 	static DestroyAll() {
@@ -181,4 +185,5 @@ class Infos {
 
 }
 
-Info(text, timeout?) => Infos(text, timeout ?? 2000)
+; Info(text, timeout?) => Infos(text, timeout ?? 2000)
+Info(text, timeout?) => Infos(text, timeout ?? 0)

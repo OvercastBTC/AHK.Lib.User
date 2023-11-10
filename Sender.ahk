@@ -21,6 +21,7 @@ Send_WM_COPYDATA(StringToSend, TargetScriptTitle) {
 ; The reply is 1 if the target window processed the message, or 0 if it ignored it.
     CopyDataStruct := Buffer(3*A_PtrSize)  ; Set up the structure's memory area.
     ; First set the structure's cbData member to the size of the string, including its zero terminator:
+    StringToSend := String(StringToSend)
     SizeInBytes := (StrLen(StringToSend) + 1) * 2
     NumPut( "Ptr", SizeInBytes  ; OS requires that this be done.
 			, "Ptr", StrPtr(StringToSend)  ; Set lpData to point to the string itself.
@@ -31,7 +32,9 @@ Send_WM_COPYDATA(StringToSend, TargetScriptTitle) {
     SetTitleMatchMode( 2)
     TimeOutTime := 4000  ; Optional. Milliseconds to wait for response from receiver.ahk. Default is 5000
     ; Must use SendMessage not PostMessage.
-    RetValue := SendMessage(0x004A, 0, CopyDataStruct,, TargetScriptTitle,,,, TimeOutTime) ; 0x004A is WM_COPYDATA.
+    ; RetValue := SendMessage(0x004A, 0, CopyDataStruct,, TargetScriptTitle,,,, TimeOutTime) ; 0x004A is WM_COPYDATA.
+    iValue := SendMessage(0x004A, 0, CopyDataStruct,, 'A',,,, TimeOutTime) ; 0x004A is WM_COPYDATA.
+    RetValue := String(iValue)
     DetectHiddenWindows( Prev_DetectHiddenWindows)  ; Restore original setting for the caller.
     SetTitleMatchMode( Prev_TitleMatchMode)         ; Same.
     return RetValue  ; Return SendMessage's reply back to our caller.
