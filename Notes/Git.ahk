@@ -89,4 +89,38 @@ Notes_Git := [
 
 	"git get link to the remote repository",
 	"git remote get-url origin",
+
+	'git b_drive setup', '
+	(
+		1. Open Explorer and navigate on the b_drive to where you want to create a folder
+		2. Create the folder:
+			!!! Note the use of the '' => required if there are spaces in the folder names !!!
+			['B:\San Francisco\Engineering\AutoHotkey\over_test']
+		3. RClick new folder, open with Git Bash
+		4. Initiate a global VIEW(able) by all repo; type the following:
+			git init all
+			[explanation: all (or world or everybody) - Same as group, but make the repository readable by all users]
+		5. Navigate to the local repo folder in Git Bash; or open your local repo folder in Explorer, RClick, and open in Git Bash
+			['C:\Users\bacona\OneDrive -['C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib']
+		6. Add a remote "shortcut"; type the following:
+			!!! Note the added folder to the end of '\all' - since we created a folder that "all" can VIEW, and we initialized to that folder, so it's required !!!
+			[git remote add b_over_test 'B:\San Francisco\Engineering\AutoHotkey\over_test\all']
+		7. Push your local repo to the remote repo on the b_drive; type the following:
+			[git push b_over_test]	
+		Result:
+				$ git push b_over_test
+				Enumerating objects: 15708, done.
+				Counting objects: 100% (15708/15708), done.
+				Delta compression using up to 8 threads
+				Compressing objects: 100% (8469/8469), done.
+				Writing objects: 100% (15708/15708), 189.03 MiB | 435.00 KiB/s, done.
+				Total 15708 (delta 6815), reused 15492 (delta 6730), pack-reused 0
+				remote: Resolving deltas: 100% (6815/6815), done.
+				remote: Checking connectivity: 15708, done.
+				To B:\San Francisco\Engineering\AutoHotkey\over_test\all
+				* [new branch]      main -> main
+	)',
+	"'git remote show <remote repo name>;' setup by [git remote add b_over_test ' 'B:\San Francisco\Engineering\AutoHotkey\over_test\all']",
+	'git remote show b_over_test',
+	''
 ]
