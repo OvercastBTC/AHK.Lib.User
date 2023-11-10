@@ -1,4 +1,5 @@
 Notes_Git := [
+; Notes_Git := Map(
 
 	;; Github
 
@@ -122,5 +123,14 @@ Notes_Git := [
 	)',
 	"'git remote show <remote repo name>;' setup by [git remote add b_over_test ' 'B:\San Francisco\Engineering\AutoHotkey\over_test\all']",
 	'git remote show b_over_test',
-	''
-]
+	
+	'git update (push) your local repo to the remote repo',
+	'
+	(
+		git add *
+		git commit -m "2023.11.10 00:27"
+		git push b_over_test
+	)'
+; )
+
+] ;? changed to MAP() versus an array

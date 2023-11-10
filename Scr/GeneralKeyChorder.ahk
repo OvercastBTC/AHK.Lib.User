@@ -1,4 +1,14 @@
-; #Include <Notes\Vim>; #Include <Notes\Code>; #Include <Notes\Git>; #Include <Notes\Info>; #Include <Notes\Long>; #Include Notes\Math>; #Include <Notes\Rust>; #Include <Notes\Tech>; #Include <Notes\Terminal>; #Include <Notes\Vim>
+#Include <Notes\Vim>
+#Include <Notes\Code>
+#Include <Notes\Git>
+#Include <Notes\Info>
+#Include <Notes\Long>
+#Include <Notes\Math>
+#Include <Notes\Rust>
+#Include <Notes\Tech>
+#Include <Notes\Terminal>
+#Include <Notes\Vim>
+#Include <Utils\Choose>
 #Include <Tools\CleanInputBox>
 #Include <App\Autohotkey>
 #Include <Tools\KeycodeGetter>
@@ -13,8 +23,9 @@
 #Include <Links>
 #Include <Utils\GetWeather>
 #Include <Directives\__AE.v2>
-#Include <Common_OSTitles>
-#Include <RecLibs\Common_Rec_Texts>
+#Include <Tools\Info>
+; #Include <Common_OSTitles>
+; #Include <RecLibs\Common_Rec_Texts>
 
 #h:: {
 	; Run(A_ScriptName)
@@ -25,55 +36,16 @@
 		return
 	}
 
-	; static FilesInFolder(folder?){
-	; 	folder := ''
-	; 	files := ''
-	; 	if !folder {
-	; 		folder := Paths.Lib
-	; 	}
-	; 	for key, value in Paths.folder {
-	; 		fkey .= key . '`n'
-	; 	}
-	; 	Infos(fkey)
-	; 	folder := Choose(fkey)
-	; 	mFilesInFolder := Map()
-	; 	loop files (A_LoopFilePath '\*.ahk') {
-	; 		FileName:=StrSplit(A_LoopFileName, '.ahk')
-	; 		mFilesInFolder.Set(A_Index, FileName)
-	; 	}
-	; 	for each, value in mFilesInFolder {
-	; 		files .= value . '`n'
-	; 	}
-	; 	Infos(mFilesInFolder.Get(A_Index))
-	; 	file := mFilesInFolder.Choose(FileName)
-	; 	return _ViewChoice(file)
-	; }
-	; static _GenerateChoiceMap() {
-	; 	Choice := Map()
-	; 	; Choice.Set(Choice_General*)
-
-	; 	return Choice
-	; }
-	; static _ViewChoice(input?) {
-	; 	; if !input := CleanInputBox().WaitForInput()
-	; 	; 	return
-	; 	; choice := Environment.Notes.Choose(input)
-	; 	choice := FilesInFolder(input)
-	; 	if !choice
-	; 		return
-	; 	A_Clipboard := choice
-	; 	Infos(choice)
-	; }
 	static _ViewNote(input?) {
 		if !input := CleanInputBox().WaitForInput()
 			return
 		note := Environment.Notes.Choose(input)
-		if !note
-			return
+		; if !note
+		; 	return
 		A_Clipboard := note
 		Infos(note)
 	}
-	static _ViewLinks(input?) {
+	static _ViewLinks() {
 		if !input := CleanInputBox().WaitForInput()
 			return
 		link := Environment.Links.Choose(input)
@@ -82,7 +54,8 @@
 		A_Clipboard := link
 		Infos(link)
 	}
-	static _ViewRecs(input?) {
+
+	static _ViewRecs() {
 		if !input := CleanInputBox().WaitForInput()
 			return
 		RecLibs := Environment.RecLibs.Choose(input)
@@ -112,10 +85,11 @@
 		'i', _ViewLinks,
 		"j", () => EmojiSearch(CleanInputBox().WaitForInput()),
 		"k", KeyCodeGetter,
-		'l', HznAutoComplete(),
+		'l', HznAutoComplete,
 		"m", () => Browser.RunLink(Links["gmail"]),
-		"n", () => Browser.RunLink(Links["monkeytype"]),
-		'o', _ViewNote,
+		; "n", () => Browser.RunLink(Links["monkeytype"]),
+		'n', _ViewNote,
+		'o', (*) => _ViewNote(_ShowInInfo()),
 
 
 		"r", () => Browser.RunLink(Links["reddit"]),
@@ -135,8 +109,28 @@
 		try actions[key].Call()
 	
 	
+	Static Choose(options*) {
+		infoObjs := [Infos("")]
+		for index, option in options {
+			if infoObjs.Length >= Infos.maximumInfos
+				break
+			infoObjs.Push(Infos(option))
+		}
+		loop {
+			for index, infoObj in infoObjs {
+				if WinExist(infoObj.hwnd)
+					continue
+				text := infoObj.text
+				break 2
+			}
+		}
+		for index, infoObj in infoObjs {
+			infoObj.Destroy()
+		}
+		return text
+	}
 }
-^+#l::HznAutoComplete()
+; ^+#l::HznAutoComplete()
 
 HznAutoComplete(*) {
 	

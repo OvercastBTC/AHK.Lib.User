@@ -1,5 +1,5 @@
-Notes_Vim := [
-; Notes_Vim := Map(
+; Notes_Vim := [
+Notes_Vim := Map(
 
 	"vim ranges", "
 	(
@@ -54,5 +54,5 @@ Notes_Vim := [
 	"vim search regex magic",
 	":help magic",
 
-]
-; )
+; ]
+)

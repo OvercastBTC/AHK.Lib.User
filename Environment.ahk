@@ -1,6 +1,7 @@
 #Requires AutoHotkey v2
+#Include <Utils\Choose>
 ; ---------------------------
-#Include <RecLibs\Common_Rec_Texts>
+; #Include <RecLibs\Common_Rec_Texts>
 #Include <Notes\Rust>
 #Include <Notes\Vim>
 #Include <Notes\Long>
@@ -22,23 +23,23 @@
 #Include <Links\AhkLib>
 #Include <Links\Fonts>
 ; ---------------------------
-#Include <Common_Rec_Texts>
-#Include <Common_Abbrevations>
-#Include <Common_DSPs>
-#Include <Common_ExpenseReport>
-#Include <Common_HumanElement>
-#Include <Common_OSTitles>
-#Include <Common_Personal>
+; #Include <Common_Rec_Texts>
+; #Include <Common_Abbrevations>
+; #Include <Common_DSPs>
+; #Include <Common_ExpenseReport>
+; #Include <Common_HumanElement>
+; #Include <Common_OSTitles>
+; #Include <Common_Personal>
 ; #Include <Common_Rec_Texts>
 ; ---------------------------
 #Include <Extensions\Map>
 #Include <Tools\StateBulb>
 ; ---------------------------
-#Include <Directives\__AE.v2>
+; #Include <Directives\__AE.v2>
 
 class Environment {
 
-	static Notes => this._GenerateNotesMap()
+	static Notes => Environment._GenerateNotesMap()
 	static Links => this._GenerateLinksMap()
 	static RecLibs => this._GenerateRecLibsMap()
 	static _vimMode := false
@@ -56,6 +57,7 @@ class Environment {
 	}
 	static _GenerateNotesMap() {
 		Notes := Map()
+		Notes.Set(this.kvMap(Notes_Git))
 		Notes.Set(Notes_Terminal*)
 		Notes.Set(Notes_Code*)
 		Notes.Set(Notes_Tech*)
@@ -81,33 +83,14 @@ class Environment {
 		Links.Set(Links_Rust*)
 		return Links
 	}
-	static _GenerateRecLibsMap() {
-		RecLibs := Map()
-		RecLibs.Set(understanding_the_risk*)
-		RecLibs.Set(map_understanding_the_risk*)
-		; Common.Set(Common_Channel*)
-		; Common.Set(Common_Memes*)
-		; Common.Set(Common_Tools*)
-		; Common.Set(Common_Docs*)
-		; Common.Set(Common_AhkLib*)
-		; Common.Set(Common_DiscordPins*)
-		; Common.Set(Common_Github*)
-		; Common.Set(Common_Fonts*)
-		; Common.Set(Common_Rust*)
-		return RecLibs
+
+	static kvMap(the_map){
+		map_key:=''
+		map_value:=''
+		new_map := Map()
+		for map_key, map_value in the_map {
+			new_map.Set(map_key, map_value)
+		}
+		return new_map
 	}
-	; static _GenerateCommonMap() {
-		; Common := Map()
-		; Common.Set(Common_Abbreviations*)
-		; Common.Set(Common_Channel*)
-		; Common.Set(Common_Memes*)
-		; Common.Set(Common_Tools*)
-		; Common.Set(Common_Docs*)
-		; Common.Set(Common_AhkLib*)
-		; Common.Set(Common_DiscordPins*)
-		; Common.Set(Common_Github*)
-		; Common.Set(Common_Fonts*)
-		; Common.Set(Common_Rust*)
-		; return Common
-	; }
 }
