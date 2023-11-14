@@ -1,9 +1,10 @@
 #Include <Extensions\Initializable>
 #Include <App\Explorer> ; Needed for _Folders functions. If you don't need them (and they're syntax sugar anyway), you can just remove them and you won't need this include
+#Include <Abstractions\WindowManager>
 
 class Win extends Initializable {
 
-	winTitle        := "A"
+	winTitle        := 'A'
 	winText         := ""
 	excludeTitle    := ""
 	excludeText     := ""
@@ -54,7 +55,7 @@ class Win extends Initializable {
 		}
 	}
 
-	SetExplorerWintitle() => this.winTitle := this.exePath " ahk_exe explorer.exe"
+	static SetExplorerWintitle() => this.winTitle := this.exePath " ahk_exe explorer.exe"
 
 	static Close() {
 		try PostMessage("0x0010",,,, this.winTitle,, this.excludeTitle)
@@ -191,14 +192,15 @@ class Win extends Initializable {
 	}
 
 	Static RunAct_Folders() {
-		this.SetExplorerWintitle()
-		if !this.runOpt {
+		; this.SetExplorerWintitle()
+		Win.SetExplorerWintitle()
+		if !(this.runOpt) {
 			this.runOpt := Explorer.runOpt
 		}
-		if this.isAlwaysOnTop = 2 {
+		if (this.isAlwaysOnTop = 2) {
 			this.isAlwaysOnTop := Explorer.isAlwaysOnTop
 		}
-		if !this.position {
+		if !(this.position) {
 			this.position := Explorer.position
 		}
 		this.RunAct()
@@ -227,14 +229,14 @@ class Win extends Initializable {
 		return this
 	}
 
-	ActiveRegex() {
+	ActiveRegex(winTitle := "A", winText?, excludeTitle?, excludeText?) {
 		SetTitleMatchMode("RegEx")
 		return WinActive(this.winTitle, this.winText, this.excludeTitle, this.excludeText)
 	}
 
 	static ActiveRegex(winTitle := "A", winText?, excludeTitle?, excludeText?) {
 		SetTitleMatchMode("RegEx")
-		return WinActive(winTitle, winText?, excludeTitle?, excludeText?)
+		return WinActive(this.winTitle, this.winText, this.excludeTitle, this.excludeText)
 	}
 
 	/**

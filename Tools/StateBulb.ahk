@@ -18,7 +18,7 @@ class StateBulb {
 
 
 	; static Unit := A_ScreenDPI / 96
-	static Unit := A_ScreenDPI / 120
+	static Unit := A_ScreenDPI / 144
 
 	static Side := StateBulb.Unit * 25
 
@@ -40,12 +40,12 @@ class StateBulb {
 	)
 
 	static ColorOrder := [
+		StateBulb.Colors["blue"],
+		StateBulb.Colors["green"],
+		StateBulb.Colors["cyan"],
 		StateBulb.Colors["magenta"],
 		StateBulb.Colors["red"],
 		StateBulb.Colors["yellow"],
-		StateBulb.Colors["green"],
-		StateBulb.Colors["cyan"],
-		StateBulb.Colors["blue"],
 	]
 
 	static Bulbs := StateBulb._GeneratePossibleBulbs()
@@ -85,14 +85,14 @@ class StateBulb {
 	GuiExist  := false
 
 
-	Toggle() {
+	static Toggle() {
 		if this.GuiExist
 			this.Destroy()
 		else
 			this.Create()
 	}
 
-	Create() {
+	static Create() {
 		if this.GuiExist
 			return
 		this.GuiObj := Gui("AlwaysOnTop -Caption +ToolWindow")
@@ -101,7 +101,7 @@ class StateBulb {
 		this._Show()
 	}
 
-	Destroy() {
+	static Destroy() {
 		if !this.GuiExist
 			return
 		this.GuiObj.Destroy()
@@ -109,7 +109,7 @@ class StateBulb {
 	}
 
 
-	_Show() {
+	static _Show() {
 		this.GuiObj.Show(Format(
 			"NA w{1} h{1} x{2} y{3}",
 			Round(StateBulb.Side),

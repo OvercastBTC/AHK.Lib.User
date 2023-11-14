@@ -15,13 +15,13 @@
  * @version 3.0.2
  ***********************************************************************/
 ;@Ahk2Exe-Obey U_V, = "%A_PriorLine~U)^(.+")(.*)".*$~$2%" ? "SetVersion" : "Nop"
-;@Ahk2Exe-%U_V%        %A_AhkVersion%%A_PriorLine~U)^(.+")(.*)".*$~$2%
+;@Ahk2Exe-%U_V%%A_AhkVersion%%A_PriorLine~U)^(.+")(.*)".*$~$2%
 ;@include-winapi
 ; --------------------------------------------------------------------------------
+#Requires AutoHotkey v2
 #Warn All, OutputDebug
 #SingleInstance Force
 #WinActivateForce
-#Requires AutoHotkey v2
 ; --------------------------------------------------------------------------------
 #MaxThreads 255 ; Allows a maximum of 255 instead of default threads.
 #MaxThreadsBuffer true
@@ -38,17 +38,18 @@ _AE_PerMonitor_DPIAwareness()
 /**
  * Function: Includes
  */
-#Include <App\Autohotkey>
-#Include <Extensions\Array>
-#Include <Extensions\Gui>
-#Include <Extensions\Initializable>
-#Include <Extensions\Json>
-#Include <Extensions\Map>
-#Include <Extensions\Sort>
-#Include <Extensions\String>
+; #Include <App\Autohotkey>
+; #Include <Extensions\Array>
+; #Include <Extensions\Gui>
+; #Include <Extensions\Initializable>
+; #Include <Extensions\Json>
+; #Include <Extensions\Map>
+; #Include <Extensions\Sort>
+; #Include <Extensions\String>
+
 
 #HotIf WinActive(A_ScriptName)
-	$~^s:: Run(A_ScriptName)
+	~^s:: Run(A_ScriptName)
 #HotIf
 ; --------------------------------------------------------------------------------
 _AE_DetectHidden(bool?)

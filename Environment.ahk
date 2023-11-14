@@ -1,27 +1,14 @@
-#Requires AutoHotkey v2
+; ---------------------------
+#Include <Extensions\Map>
 #Include <Utils\Choose>
+#Include <Tools\Info>
+#Include <Tools\StateBulb>
 ; ---------------------------
-; #Include <RecLibs\Common_Rec_Texts>
-#Include <Notes\Rust>
-#Include <Notes\Vim>
-#Include <Notes\Long>
-#Include <Notes\Git>
-#Include <Notes\Math>
-#Include <Notes\Code>
-#Include <Notes\Info>
-#Include <Notes\Tech>
-#Include <Notes\Terminal>
+#Include <Includes\Notes>
 ; ---------------------------
-#Include <Links\Rust>
-#Include <Links\Github>
-#Include <Links\DiscordPins>
-#Include <Links\General>
-#Include <Links\Channel>
-#Include <Links\Memes>
-#Include <Links\Tools>
-#Include <Links\Docs>
-#Include <Links\AhkLib>
-#Include <Links\Fonts>
+#Include <Includes\Links>
+; ---------------------------
+#Include <RecLibs\Common_Rec_Texts>
 ; ---------------------------
 ; #Include <Common_Rec_Texts>
 ; #Include <Common_Abbrevations>
@@ -32,14 +19,11 @@
 ; #Include <Common_Personal>
 ; #Include <Common_Rec_Texts>
 ; ---------------------------
-#Include <Extensions\Map>
-#Include <Tools\StateBulb>
-; ---------------------------
-; #Include <Directives\__AE.v2>
+
 
 class Environment {
 
-	static Notes => Environment._GenerateNotesMap()
+	static Notes => this._GenerateNotesMap()
 	static Links => this._GenerateLinksMap()
 	static RecLibs => this._GenerateRecLibsMap()
 	static _vimMode := false
@@ -57,30 +41,30 @@ class Environment {
 	}
 	static _GenerateNotesMap() {
 		Notes := Map()
-		Notes.Set(this.kvMap(Notes_Git))
-		Notes.Set(Notes_Terminal*)
-		Notes.Set(Notes_Code*)
-		Notes.Set(Notes_Tech*)
-		Notes.Set(Notes_Info*)
-		Notes.Set(Notes_Long*)
-		Notes.Set(Notes_Math*)
-		Notes.Set(Notes_Git*)
-		Notes.Set(Notes_Vim*)
+		Notes.Set(Notes_Terminal*),
+		Notes.Set(Notes_Code*),
+		Notes.Set(Notes_Tech*),
+		Notes.Set(Notes_Info*),
+		Notes.Set(Notes_Long*),
+		Notes.Set(Notes_Math*),
+		Notes.Set(Notes_Git*),
+		Notes.Set(Notes_Vim*),
 		Notes.Set(Notes_Rust*)
 		return Notes
 	}
 	static _GenerateLinksMap() {
 		Links := Map()
-		Links.Set(Links_General*)
-		Links.Set(Links_Channel*)
-		Links.Set(Links_Memes*)
-		Links.Set(Links_Tools*)
-		Links.Set(Links_Docs*)
-		Links.Set(Links_AhkLib*)
-		Links.Set(Links_DiscordPins*)
-		Links.Set(Links_Github*)
-		Links.Set(Links_Fonts*)
-		Links.Set(Links_Rust*)
+		Links.Set(Links_General*),
+		Links.Set(Links_Channel*),
+		Links.Set(Links_Memes*),
+		Links.Set(Links_Tools*),
+		Links.Set(Links_Docs*),
+		Links.Set(Links_AhkLib*),
+		Links.Set(Links_DiscordPins*),
+		Links.Set(Links_Github*),
+		Links.Set(Links_Fonts*),
+		Links.Set(Links_Rust*),
+		Links.Set(Links*)
 		return Links
 	}
 

@@ -1,6 +1,4 @@
-﻿#Requires AutoHotkey v2
-; #Include <Directives\__AE.v2>
-Class RecLibs {
+﻿Class RecLibs {
 
 	static understanding_the_risk := [
 		
@@ -53,6 +51,17 @@ Class RecLibs {
 		In addition to the formal recommendations made, additional comments have been provided that also represent industry best practices, and should be completed.
 		)",
 		
+	)
+
+	weekly_valve_inspection := Map(
+		':*:wvit::', 'Conduct weekly, documented, fire protection valve inspections.',
+		':*:wvirfm::', 'Weekly visual inspections of all fire protection control valves will help ensure that the sprinkler system will be operational in the event of a fire. To assist you with the implementation of weekly valve inspections, FM Global offers the free, online, training course Inspecting Fire Protection Valves at https://fmglobaltraining.skillport.com. Records of these inspections should be maintained on file.',
+		':*:wvirafm::', 'Weekly visual inspections of all fire protection control valves will help ensure that the sprinkler system will be operational in the event of a fire. To assist you with the implementation of weekly valve inspections, AFM offers the free, online, training course Inspecting Fire Protection Valves at https://affiliatedfmtraining.skillport.com. Records of these inspections should be maintained on file.',
+
+	)
+	weekly_fire_pump_inspection := Map(
+		':*:weeklypumpt::', 'Conduct weekly documented fire protection pump tests via pressure drop.',
+		':*:weeklypumpr::', "Automatic starting should be tested by simulating a drop in system pressure at the fire pump control panel. This is done by releasing pressure in the line leading to the controller's pressure sensor.{Enter}At each test, checks should be made of the operation of the priming devices, the temperature and tightness of the glands, the readings of the suction and discharge gauges, and the condition of the suction supply. Check actual start and stop pressures against pressure switch settings every time the fire pump unit is started."
 	)
 }
 ;ListHotkeys
@@ -162,108 +171,19 @@ Return
 	SendLevel((A_SendLevel+1))
 	BlockInput(1)
 	Send('^u')
-	; hWnd := WinActive('A')
-	; DllCall("GetWindowThreadProcessId", "Int", hwnd, "Int*", &tpID := 0)
-	; name := WinGetProcessName(hwnd)
-	; A_Process := name
-	; if (A_Process ~= 'i)hznHorizon.exe')
-	; 	static hznHwnd := hWnd
-	; list := []
-	; list := WinGetControls(hznHwnd)
-	; ClassNN := ''
-	; hTb := 0
-	; for , ClassNN in list {
-	; 	if (ClassNN ~= 'i)m.*bar.*') {
-	; 		hTb := ControlGetHwnd(ClassNN, hznHwnd)
-	; 	}
-	; }
-	; if !(GETBUTTONSTATE(102, hTb) = 6)
-	; 	While !(GETBUTTONSTATE(102, hTb) = 6)
-	; 		Sleep(10)
-	; Sleep(100)
 	Send('^b')
-	; if !(GETBUTTONSTATE(100, hTb) = 6)
-	; 	While !(GETBUTTONSTATE(100, hTb) = 6)
-	; 		Sleep(10)
-	; Sleep(100)
 	A_Clipboard := 'Industrial Control Systems (ICS) Evaluation:'
 	; Sleep(100)
 	clip_it()
 	clip_it(1)
 	; Sleep(300)
 	Send('^u')
-	; if !(GETBUTTONSTATE(102, hTb) = 4)
-	; 	While !(GETBUTTONSTATE(102, hTb) = 4)
-	; 		Sleep(10)
-	; Sleep(100)
 	Send('^b')
-	; if !(GETBUTTONSTATE(100, hTb) = 4) {
-	; 	While !(GETBUTTONSTATE(100, hTb) = 4)
-	; 		Sleep(10)
-	; }
-	; Sleep(100)
 	A_Clipboard := '`nAn evaluation of ICS is now included in boiler and machinery evaluations and was performed for the first time at this facility during this visit.'
 	clip_it()
 	clip_it(1)
 	Sleep(100)
 	return
-; {
-; 	; sCd := A_ControlDelay
-; 	; SetControlDelay(20)
-; 	hCtl := ControlGetFocus('A')
-; 	cSleep := 50
-; 	lSleep := 5
-; 	; bClip := ClipboardAll()
-; 	DllCall("EmptyClipboard")
-; 	DllCall("OpenClipboard")
-; 	DllCall("EmptyClipboard")
-; 	DllCall("OpenClipboard", "Ptr", hCtl)
-; 	DllCall("EmptyClipboard")
-; 	DllCall("CloseClipboard")
-; 	Loop lSleep
-; 		Sleep(cSleep) ; Sleep for a bit
-; 	Until DllCall("GetOpenClipboardWindow") ; If clipboard still in use (long paste)
-; 	SendLevel((A_SendLevel+1))
-; 	BlockInput(1)
-; 	Send('^b' . '^u')
-; 	Sleep(cSleep)
-; 	A_Clipboard := 'Industrial Control Systems (ICS) Evaluation:'
-; 	Loop lSleep
-; 		Sleep(cSleep) ; Sleep for a bit
-; 	Until DllCall("GetOpenClipboardWindow") ; If clipboard still in use (long paste)
-; 	Send('^+v')
-; 	; DllCall("EmptyClipboard")
-; 	; DllCall("OpenClipboard")
-; 	; DllCall("EmptyClipboard")
-; 	; DllCall("OpenClipboard", "Ptr", hCtl)
-; 	; DllCall("EmptyClipboard")
-; 	; DllCall("CloseClipboard")
-; 	; Loop lSleep
-; 	; 	Sleep(cSleep) ; Sleep for a bit
-; 	; Until DllCall("GetOpenClipboardWindow") ; If clipboard still in use (long paste)
-; 	; Send('^b' . '^u')
-; 	Send('^u')
-; 	Sleep(cSleep)
-; 	Send('^b')
-; 	Sleep(cSleep)
-; 	DllCall("EmptyClipboard")
-; 	DllCall("OpenClipboard")
-; 	DllCall("EmptyClipboard")
-; 	DllCall("OpenClipboard", "Ptr", hCtl)
-; 	DllCall("EmptyClipboard")
-; 	DllCall("CloseClipboard")
-; 	Send('`n')
-; 	Sleep(100)
-; 	A_Clipboard := 'An evaluation of ICS is now included in boiler and machinery evaluations and was performed for the first time at this facility during this visit.'
-; 	; ClipWait(5)
-; 	Send('^+v')
-; 	DllCall("EmptyClipboard")
-; 	DllCall("OpenClipboard") ;, "Ptr", hCtl)
-; 	DllCall("EmptyClipboard")
-; 	DllCall("CloseClipboard")
-; 	; A_Clipboard := bClip
-; 	SetControlDelay(sCd)
-; return
 ;---------------------- End ICS Comment -------------------------------------------
 } 
 

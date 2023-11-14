@@ -1,6 +1,6 @@
-﻿#Requires Autohotkey v2+
+﻿; #Include <HznPlus.v2>
+#Requires Autohotkey v2+
 #Include <Directives\__AE.v2>
-#Include <HznPlus.v2>
 Persistent(1) ; Keeps script permanently running
 CoordMode("ToolTip", "Screen")
 ; ProcessSetPriority('High')
@@ -192,6 +192,7 @@ SetWinEventHook(callbackFunc, winTitle := 0, eventMin := 0x8000, eventMax := 0x8
 	SendLevel(0)
 	return hook
 }
+#Include <HznPlus.v2>
 HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dwmsEventTime) {
 	initialSendLevel := A_SendLevel
 	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel):(A_SendLevel + 1)))
@@ -297,6 +298,7 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 		}
 	; }
 	if (event == EVENT_OBJECT_CREATE) {
+		
 		; --------------------------------------------------------------------------------
 		for hznCtrls in hznCtrlsarray_ClassNN {
 			; --------------------------------------------------------------------------------
@@ -326,6 +328,7 @@ HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dw
 									. 'split: ' . test_split[1]		. '`n'
 									. '-------------------------------------`n'
 								)
+								
 						HznEnableButtons(mVal)
 						match_instr_map.Set(mKey,mVal)
 						

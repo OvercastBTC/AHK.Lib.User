@@ -1,12 +1,12 @@
 #Include <Directives\__AE.v2>
 #Requires AutoHotkey v2+
-OnError(LogError)
-i := Integer("cause_error")
+; OnError(LogError)
+; i := Integer("cause_error")
 
-LogError(exception, mode) {
-	FileAppend("Error on line " exception.Line ": " exception.Message "`n", "errorlog.txt")
-	return true
-}
+; LogError(exception, mode) {
+; 	FileAppend("Error on line " exception.Line ": " exception.Message "`n", "errorlog.txt")
+; 	return true
+; }
 ; --------------------------------------------------------------------------------
 CompressSpaces(text) => RegexReplace(text, " {2,}", " ")
 
@@ -16,7 +16,8 @@ CompressSpaces(text) => RegexReplace(text, " {2,}", " ")
 * @param text *String* The text to write
 */
 WriteFile(whichFile, text := "") {
-	fileObj := FileOpen(whichFile, "w", "UTF-8-RAW")
+	; fileObj := FileOpen(whichFile, "w", "UTF-8-RAW")
+	fileObj := FileOpen(whichFile, 'rw', 'UTF-8')
 	fileObj.Write(text)
 }
 

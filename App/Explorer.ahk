@@ -8,7 +8,8 @@ class Explorer {
 	static winTitle      := "ahk_class CabinetWClass " this.exeTitle
 	static position      := "ThirtyVert"
 	static isAlwaysOnTop := true
-	static runOpt        := "min"
+	; static runOpt        := "min"
+	static runOpt        := ""
 
 	static winObj := Win({
 		winTitle:      this.winTitle,

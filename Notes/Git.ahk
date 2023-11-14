@@ -1,5 +1,5 @@
-Notes_Git := [
 ; Notes_Git := Map(
+Notes_Git := [
 
 	;; Github
 

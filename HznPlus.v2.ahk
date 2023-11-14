@@ -27,11 +27,10 @@
 */
 ;@include-winapi
 ; --------------------------------------------------------------------------------
+; #Include <__A_Process.v2>
 #Include <Directives\__AE.v2>
 #Include <Directives\__HznToolbar>
-#Include <App\Autohotkey>
-; #Include <__A_Process.v2>
-#Include <DPI>
+#Include <System\DPI>
 ; --------------------------------------------------------------------------------
 ; --------------------------------------------------------------------------------
 #Include <EnumAllMonitorsDPI.v2>
@@ -41,8 +40,6 @@
 ; #Include <RTE.v2\master\RichEditSample>
 ; #Include <gdi_plus_plus>
 ; #Include <Gdip_All>
-; #Include <Tools\Hider>
-; #Include <Abstractions\Script>
 
 ; --------------------------------------------------------------------------------
 

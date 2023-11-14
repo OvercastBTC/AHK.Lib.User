@@ -2,13 +2,14 @@
 #Include <Utils\Choose>
 #Include <App\Git>
 #Include <Extensions\Json>
-#Include <.\Abstractions\Text>
+#Include <Abstractions\Text>
 #Include <Paths>
 #Include <Tools\Info>
 #Include <Utils\Win>
 #Include <App\Browser>
 #Include <Extensions\String>
 #Include <Converters\DateTime>
+#Include <Environment>
 
 class Shows {
 

@@ -4,9 +4,11 @@
 #Include <Utils\Cmd>
 #Include <Links>
 #Include <System\Web>
+#Include <WINDOWS.v2>
 
 
-git_InstallAHKLibrary(link, folder:='Abstractions\'){
+git_InstallAHKLibrary(link, folder:=''){
+	git_install := Map()
 	static libFolder := Paths.Lib . '\' . folder
 	link := StrReplace(link,'addlib ','')
 	link := StrReplace(link, 'https://github.com','')
@@ -15,8 +17,27 @@ git_InstallAHKLibrary(link, folder:='Abstractions\'){
 	file_html := GetHtml('https://raw.githubusercontent.com/' link)
 	RegExMatch(link, '\/([^.\/]+\.\w+)$', &match)
 	newFile := match[1]
-	WriteFile(libFolder newFile, file_html)
-	Info(newFile ' library installed in: ' libFolder)
+	file_name := StrReplace(newFile, '.url', '.ahk')
+	; try {
+	; 	WriteFile(file_name, file_html)
+	; }
+	; Infos(
+	; 	'libFolder: ' libFolder '`n'
+	; 	'file_name: ' file_name '`n'
+	; 	'file_text: ' file_html '`n'
+	; )
+	; Info(newFile ' library installed in: ' libFolder)
+	git_install.Set(
+		'libFolder', libFolder, 
+		'file_name', file_name, 
+		'file_text',file_html
+	)
+	git_file := libFolder file_name
+	If !FileExist(git_file) {
+		WriteFile(git_file, 'git_app_link := ' '"' file_html '"')
+		; FileAppend(file_html,git_file, 'UTF-8')
+	}
+	return git_install
 }
 
 class Git {

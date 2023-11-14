@@ -2746,3 +2746,381 @@ Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a 
 Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
 Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
 Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 59: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 61: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 61: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 61: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 61: Expected a String but got a Func.
+Error on line 61: Expected a String but got a Func.
+Error on line 61: Expected a String but got a Func.
+Error on line 61: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 73: This variable has not been assigned a value.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 78: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 79: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 80: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 80: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 90: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 62: Expected a String but got a Func.
+Error on line 86: Invalid number of parameters.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 86: Invalid number of parameters.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 86: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 87: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 87: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 85: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 87: Invalid number of parameters.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 62: Expected a String but got a Func.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 88: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 80: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 79: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 79: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 79: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 78: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 77: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 77: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 76: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 74: Invalid number of parameters.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 35: This value of type "StateBulb" has no method named "Create".
+Error on line 56: This value of type "Win" has no method named "MinMax".
+Error on line 56: This value of type "Win" has no method named "MinMax".
+Error on line 56: This value of type "Win" has no method named "MinMax".
+Error on line 56: This value of type "Win" has no method named "MinMax".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 56: This value of type "Win" has no method named "MinMax".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 74: Invalid number of parameters.
+Error on line 74: Invalid number of parameters.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 76: Invalid number of parameters.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 4: Parameter #1 of Integer.Call requires a Number, but received a String.
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".
+Error on line 16: This value of type "CleanInputBox" has no method named "DarkMode".

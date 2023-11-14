@@ -11,21 +11,22 @@ class Paths {
 	static OneDrive 	:= Paths.User . '\OneDrive - FM Global'
 	static Startup 		:= Paths.RoamingAppData . '\Microsoft\Windows\Start Menu\Programs\Startup'
 
-	static StandardAhkLibLocation := A_MyDocuments "\AutoHotkey\Lib"
+	static StandardAhkLibLocation := 'C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib'
 	static Prog  := Paths.AppDataProgs '\AutoHotkey\v2'
 	static v2Prog  := Paths.AppDataProgs '\AutoHotkey\v2'
 	static v1Prog  := Paths.AppDataProgs '\AutoHotkey'
 	static v2Proj  := Paths.v2Prog '\AHK.Projects.v2'
 	static v2Lib := Paths.v2Prog '\Lib'
 
+	static Lib   := Paths.StandardAhkLibLocation
+
 	static Main  := Paths.OneDrive . 'AHK.Main'
 	static Music := Paths.OneDrive . '\Music'
-	static Shows := "C:\Programming\shows"
-	static Info  := "C:\Programming\info"
+	static Shows := Paths.Lib 'App\Shows.ahk'
+	static Info  := Paths.Lib '\Tools\Info.ahk'
 	static Test  := "C:\Programming\test"
-	static Reg   := "C:\Programming\registers"
+	static Reg   := Paths.Lib '\Abstractions\Registers.ahk'
 	
-	static Lib   := Paths.StandardAhkLibLocation
 	static folder := Map(
 		'Notes',  (Paths.Lib '\Notes'),
 		'Links' , (Paths.Lib '\Links'),
@@ -42,7 +43,9 @@ class Paths {
 	static VideoTools   := Paths.Pictures "\Tools"
 	static ScreenVideos := Paths.Pictures "\Screenvideos"
 	static Screenshots  := Paths.Pictures '\Screenshots'
-	static Downloads 	:= Paths.OneDrive 'Downloads'
+	static Downloads 	:= Paths.OneDrive '\Downloads'
+	; static Downloads 	:= this.OneDrive 'Downloads'
+	; Paths.OneDrive '\Downloads'
 	static Tree         := Paths.Pictures "\Tree"
 	static Memes        := Paths.Pictures "\Tree\Memes"
 	static Emoji        := Paths.Pictures "\Tree\Emojis"
