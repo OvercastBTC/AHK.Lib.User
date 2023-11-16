@@ -63,6 +63,123 @@
 		':*:weeklypumpt::', 'Conduct weekly documented fire protection pump tests via pressure drop.',
 		':*:weeklypumpr::', "Automatic starting should be tested by simulating a drop in system pressure at the fire pump control panel. This is done by releasing pressure in the line leading to the controller's pressure sensor.{Enter}At each test, checks should be made of the operation of the priming devices, the temperature and tightness of the glands, the readings of the suction and discharge gauges, and the condition of the suction supply. Check actual start and stop pressures against pressure switch settings every time the fire pump unit is started."
 	)
+	Class HumanElement {
+		static electrical := Map(
+			'design', '
+			(
+				[-Design-]
+				Single feed, to 13.8 kV switchgear; additional 13.8 kV swgr direct tie. Stepped down to 4160 and 2400 as needed
+			)',
+		
+			'notes', '
+			(
+				[-Notes-]
+				- Arc flash event 2/2019 in ER20.
+				- Main xfmr's oil was filtered in 2022 - tested-filtered-retested. DGA retest noted - No history - due to filtering.
+				- Arc-flash: 2019
+				- Swgr Replcmnt Proj: Started 2022
+			)',
+		
+			'sNote', '
+			(
+				[-Special Note-] (AJB - 04/2023)
+				The site was unable to validate the following statement included in a previous RR:
+				The K2 DC drive was found to have an undersized breaker and was reportedly followed-up on by the plant immediately.
+			)',
+		
+			'xfmrs5+', '
+			(
+				[-Xfmrs (>5MVA)-]
+				[Online]
+				Vis: D
+				IR: A
+				DGA/O: A
+				[Offline]
+				Testing: 3 yr
+				Last 2022
+				Prior: No
+				[5-4:Tbl 2]
+				Last:
+				Prev:
+			)',
+
+			'xfmrs5-','
+			(   
+				[-Xfmrs (<5MVA)-] (who owns)
+				[Online]
+				Vis: D
+				IR: A
+				DGA/O: A
+				[Offline]
+				Testing: 3 yr
+				[5-20: Table 6]
+				Last: 2022
+				Prev: No History
+			)',
+			
+			'mvswgr', '
+			(
+				[-MV Swgr-]
+				[Online]
+				Vis: W
+				IR: A
+				PD: No
+				C/C/D/T: No
+				[Offline]
+				C/I/E: A
+				[Bkr Testing]
+				Tbl 1a: 3yr
+				Tbl 1b: 3yr
+				Relay Testing: 3yr
+				[Tbl 1a]
+				Last: 2022
+				Prev: 2019
+			)',
+		
+			'batts', '
+			(
+				[-Batts-]
+				Date Code: 5/2021
+				C/D/T: No
+				Cool: No
+				[Online]
+				IR: No
+				Vis: M
+				W/T: M
+				Capacitance (Internal Ohmic): No
+				[Offline]
+				Capacity: No
+				[Rmt Mon]
+				Temp: No
+				Low Voltage: No
+			)',
+
+			'lvswgr', '
+			(
+				[-LV Swgr-]
+				[Online]
+				Vis: W
+				IR: A
+				C/D/T: Y
+				Clean: Ok
+				[Offline]
+				C/I/E: A
+				[5-20:Tbl 1]
+				Last: 2022
+				Prev: 2019
+			)',
+		
+			'edg', '
+			(
+				[-EDG-] (quarry portable crusher)
+				ITM: S/A, A
+				No Loads: W
+				Load Xfr: M
+				Load Bank: A
+				Batts: rplc. 5yrs
+			)',
+		)
+		}
 }
 ;ListHotkeys
 ;#NoTrayIcon

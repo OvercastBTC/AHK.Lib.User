@@ -54,17 +54,17 @@ class Environment {
 	}
 	static _GenerateLinksMap() {
 		Links := Map()
-		Links.Set(Links_General*),
-		Links.Set(Links_Channel*),
-		Links.Set(Links_Memes*),
-		Links.Set(Links_Tools*),
-		Links.Set(Links_Docs*),
+		Links.Set(Links*),
 		Links.Set(Links_AhkLib*),
+		Links.Set(Links_Channel*),
+		Links.Set(Links_Docs*),
 		Links.Set(Links_DiscordPins*),
-		Links.Set(Links_Github*),
 		Links.Set(Links_Fonts*),
+		Links.Set(Links_General*),
+		Links.Set(Links_Github*),
+		Links.Set(Links_Memes*),
 		Links.Set(Links_Rust*),
-		Links.Set(Links*)
+		Links.Set(Links_Tools*)
 		return Links
 	}
 

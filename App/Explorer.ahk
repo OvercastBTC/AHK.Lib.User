@@ -52,6 +52,7 @@ class Explorer {
 		static Emoji        := Win({exePath: Paths.Emoji})
 		static Downloads    := Win({exePath: Paths.Downloads})
 		static Screenshots  := Win({exePath: Paths.Screenshots})
+		static Notes        := Win({exePath: Paths.Lib '\Notes'})
 
 	}
 }

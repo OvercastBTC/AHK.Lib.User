@@ -5,18 +5,20 @@ class Paths {
 	static User         := "C:\Users\" A_UserName
 	static AppData 		:= Paths.User "\AppData"
 	static LocalAppData := Paths.AppData "\Local"
-	static AppDataProgs := Paths.AppData "\Programs"
+	static AppDataProgs := Paths.LocalAppData "\Programs"
 	static RoamingAppData := Paths.AppData "\Roaming"
 	static System32     := "C:\Windows\System32"
 	static OneDrive 	:= Paths.User . '\OneDrive - FM Global'
 	static Startup 		:= Paths.RoamingAppData . '\Microsoft\Windows\Start Menu\Programs\Startup'
 
-	static StandardAhkLibLocation := 'C:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib'
+	static StandardAhkLibLocation := A_MyDocuments '\AutoHotkey\Lib'
 	static Prog  := Paths.AppDataProgs '\AutoHotkey\v2'
 	static v2Prog  := Paths.AppDataProgs '\AutoHotkey\v2'
 	static v1Prog  := Paths.AppDataProgs '\AutoHotkey'
 	static v2Proj  := Paths.v2Prog '\AHK.Projects.v2'
 	static v2Lib := Paths.v2Prog '\Lib'
+
+	static lnchr := Paths.v2Proj '\LNCHR'
 
 	static Lib   := Paths.StandardAhkLibLocation
 

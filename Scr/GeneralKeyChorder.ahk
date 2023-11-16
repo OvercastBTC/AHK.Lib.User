@@ -34,12 +34,56 @@
 		return
 	}
 
+	static actions := Map(
+
+		; "a", () => Browser.RunLink(Links["ahk v2 docs"]),
+		'a', HznAutoComplete,
+		; 'b', [func here],
+		"c", () => Infos(A_Clipboard),
+		; "d", () => DS4.winObj.App(),
+		"d", () => Browser.RunLink(Links["ahk v2 docs"]),
+		"e", () => Browser.RunLink(Links["gogoanime"]),
+		"f", () => Browser.RunLink(Links["skill factory"]),
+		"g", () => Browser.RunLink(Links["my github"]),
+		"h", () => Browser.RunLink(Links["phind"]),
+		"i", _ShowInInfo,
+		"j", () => EmojiSearch(CleanInputBox().WaitForInput()),
+		"k", KeyCodeGetter,
+		; 'l', HznAutoComplete,
+		'l', _ViewLinks(),
+		; 'l', _ViewRecs,
+		"m", () => Browser.RunLink(Links["gmail"]),
+		'n', _ViewNote,
+		"o", () => Browser.RunLink(Links["monkeytype"]),
+		'p', () => Infos(A_MyDocuments),
+		;q
+		"r", () => Browser.RunLink(Links["reddit"]),
+		"s", () => Steam.winObj.App(),
+		"t", () => Browser.RunLink(Links["mastodon"]),
+		"T", () => Browser.RunLink(Links["twitch"]),
+		"u", () => Infos(GetWeather()),
+		"v", () => Browser.RunLink(Links["vk"]),
+		"w", () => Browser.RunLink(Links["wildberries"]),
+		"x", () => Browser.RunLink(Links["regex"]),
+		; 'y', ,
+		; 'z', ,
+
+	)
+	; --------------------------------------------------------------------------------
+	if (key) {
+		try {
+			actions[key].Call()
+		}
+	}
+	; --------------------------------------------------------------------------------
 	static _ViewNote(input?) {
-		if !input := CleanInputBox().WaitForInput()
+		if !input := CleanInputBox().WaitForInput() {
 			return
+		}
 		note := Environment.Notes.Choose(input)
-		; if !note
-		; 	return
+		if !note{
+			return
+		}
 		A_Clipboard := note
 		Infos(note)
 	}
@@ -79,127 +123,41 @@
 			return
 		Infos(input)
 	}
-	static actions := Map(
-
-		"a", () => Browser.RunLink(Links["ahk v2 docs"]),
-		
-		"c", () => Infos(A_Clipboard),
-		"d", () => DS4.winObj.App(),
-		"e", () => Browser.RunLink(Links["gogoanime"]),
-		"f", () => Browser.RunLink(Links["skill factory"]),
-		"g", () => Browser.RunLink(Links["my github"]),
-		"h", () => Browser.RunLink(Links["phind"]),
-		"i", _ShowInInfo,
-		"j", () => EmojiSearch(CleanInputBox().WaitForInput()),
-		"k", KeyCodeGetter,
-		'l', HznAutoComplete,
-		; 'l', _ViewRecs,
-		"m", () => Browser.RunLink(Links["gmail"]),
-		"n", () => Browser.RunLink(Links["monkeytype"]),
-		;o
-		'p', () => Infos(A_MyDocuments),
-		;q
-		"r", () => Browser.RunLink(Links["reddit"]),
-		"s", () => Steam.winObj.App(),
-		"t", () => Browser.RunLink(Links["mastodon"]),
-		"T", () => Browser.RunLink(Links["twitch"]),
-		"u", () => Infos(GetWeather()),
-		"v", () => Browser.RunLink(Links["vk"]),
-		"w", () => Browser.RunLink(Links["wildberries"]),
-		"x", () => Browser.RunLink(Links["regex"]),
-
-	)
-	/*
-	static actions := Map(
-
-		"a", () => Browser.RunLink(Links["ahk v2 docs"]),
-		; "^a", () => Browser.RunLink(Links["ahk v2 docs"]),
-		"c", () => Infos(A_Clipboard),
-		; "d", () => DS4.winObj.App(),
-		; "e", () => Browser.RunLink(Links["gogoanime"]),
-		; "f", () => Browser.RunLink(Links["skill factory"]),
-		; "g", () => Browser.RunLink(Links["my github"]),
-		; "h", () => Browser.RunLink(Links["phind"]),
-		'i', _ViewLinks,
-		; "j", () => EmojiSearch(CleanInputBox().WaitForInput()),
-		"k", KeyCodeGetter,
-		'l', HznAutoComplete,
-		; "m", () => Browser.RunLink(Links["gmail"]),
-		; "n", () => Browser.RunLink(Links["monkeytype"]),
-		'n', _ViewNote,
-		; 'o', 
-		
-		; 'q', 
-		"r", () => Browser.RunLink(_OpenLinks()),
-		; "s", () => Steam.winObj.App(),
-		; "t", () => Browser.RunLink(Links["mastodon"]),
-		; "T", () => Browser.RunLink(Links["twitch"]),
-		; "u", () => Infos(GetWeather()),
-		; "x", () => Browser.RunLink(Links["regex"]),
-		; "v", () => Browser.RunLink(Links["vk"]),
-		; "w", () => Browser.RunLink(Links["wildberries"]),
-		'l', _ViewRecs,
-		; "i", _ShowInInfo,
-		; "i", _ViewChoice('Notes'),
-		)
-		*/
-	; --------------------------------------------------------------------------------
-	if (key) {
-		try {
-			actions[key].Call()
-		}
-	}
-	; --------------------------------------------------------------------------------
-	; Static Choose(options*) {
-	; 	infoObjs := [Infos("")]
-	; 	for index, option in options {
-	; 		if infoObjs.Length >= Infos.maximumInfos
-	; 			break
-	; 		infoObjs.Push(Infos(option))
-	; 	}
-	; 	loop {
-	; 		for index, infoObj in infoObjs {
-	; 			if WinExist(infoObj.hwnd)
-	; 				continue
-	; 			text := infoObj.text
-	; 			break 2
-	; 		}
-	; 	}
-	; 	for index, infoObj in infoObjs {
-	; 		infoObj.Destroy()
-	; 	}
-	; 	return text
-	; }
 }
 ; ^+#l::HznAutoComplete()
 
-HznAutoComplete(*) {
-	
-	SetCapsLockState( "Off")
-	acInfos := Infos('Press "ctrl + a" to activate, or press "Shift+Enter"')
-	Hotkey("^a", (*) => createGUI())
+HznAutoComplete() {
+	; SetCapsLockState("Off")
+	acInfos := Infos('AutoComplete enabled'
+					'Press "Shift+{Enter}",to activate'
+				)
+	; acInfos := Infos('Press "ctrl + a" to activate, or press "Shift+Enter"')
+	; Hotkey(" ", (*) => createGUI())
+	; Hotkey("^a", (*) => createGUI())
 	Hotkey('+Enter', (*) => createGUI() )
-	
+	; createGUI()
 	createGUI() {
 		initQuery := "Recommendation Library"
 		initQuery := ""
 		; global entriesList := ["Red", "Green", "Blue"]
 		mList := []
 		mlist := RecLibs.understanding_the_risk
+		; mlist := [RecLibs.understanding_the_risk, RecLibs.HumanElement.electrical]
 		; Infos(mlist)
 		; entriesList := [mlist]
 		; entries := []
+		entries := ''
 		entriesList := []
-		for each, value in mList {
-			entriesList.Push(value)
-			; entries.Push(value)
+		m:=''
+		for each, m in mList {
+			entriesList.Push(m)
 		}
-		; for each, value in entries {
-		for each, value in entriesList {
+		e:=''
+		for each, e in entriesList {
 			; entriesList := ''
-			entries := ''
+			; entries := ''
 			; entriesList .= value '`n'
-			entries .= value '`n'
+			entries .= e '`n'
 		}
 		
 		global QSGui, initQuery, entriesList

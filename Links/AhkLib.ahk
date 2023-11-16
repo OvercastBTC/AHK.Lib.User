@@ -85,5 +85,8 @@ Links_AhkLib := [
 
 	"iseahound imageput",
 	"https://github.com/iseahound/ImagePut",
+		
+	'classAutoComplete',
+	'https://github.com/oif2003/AHK_v2_64bit_Scripts/blob/master/Lib/classAutoPath.ahk',
 
 ]

@@ -12,8 +12,9 @@ class CleanInputBox extends Gui {
 	 * Call WaitForInput() after creating the class instance.
 	 */
 	__New() {
-		super.__New("AlwaysOnTop -Caption")
-		this.DarkMode().MakeFontNicer(30)
+		super.__New("AlwaysOnTop -Caption +Border")
+		; this.DarkMode().MakeFontNicer(30)
+		this.DarkMode().MakeFontNicer(15)
 		this.MarginX := 0
 
 		this.InputField := this.AddEdit(
@@ -54,6 +55,7 @@ class CleanInputBox extends Gui {
 	RegisterHotkeys() {
 		HotIfWinactive("ahk_id " this.Hwnd)
 		Hotkey("Enter", (*) => this.SetInput(), "On")
+		Hotkey('CapsLock', (*) => this.SetCancel())
 		this.OnEvent("Escape", (*) => this.SetCancel())
 	}
 
