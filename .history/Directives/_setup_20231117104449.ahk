@@ -29,8 +29,8 @@ class Setups {
 		this._Show()
 	}
 
-	static fontSize     := 8
-	static distance     := 2
+	static fontSize     := 11
+	static distance     := 3
 	; static unit         := A_ScreenDPI / 96
 	static unit         := A_ScreenDPI / 144
 	static guiWidth     := Setups.fontSize * Setups.unit * Setups.distance
@@ -61,32 +61,66 @@ class Setups {
 	; }
 	
 	static initial_setups_gui(*) {
+		; static _map_to_array() {
+		; 	k := ''
+		; 	v := ''
+		; 	static ak := []
+		; 	static av := []
+		; 	at := ''
+		; 	for k, v in user_info.info_map {
+		; 		; ak.Push(k)
+		; 		; av.Push(v)
+		; 		at .= 'key: ' k ' value: ' v '`n'
+		; 		; info('key: ' k ' | value: ' v)
+		; 	}
+		; }
 		static ak_map_to_array() {
-			k := '', v := '',	ak := []
+			k := ''
+			v := ''
+			ak := []
+			at := ''
 			for k, v in user_info.info_map {
 				ak.Push(k)
-				;? for validation
-				; at := ''
 				; at .= 'key: ' A_Index ' value: ' v '`n'
 				; info('key: ' k ' | value: ' v)
 				; info(at)
 			}
 			return ak
 		}
+		; static av_map_to_array() {
+		; 	k := ''
+		; 	v := ''
+		; 	av := []
+		; 	at := ''
+		; 	for k, v in user_info.info_map {
+		; 		av.Push(v)
+		; 		at .= 'key: ' A_Index ' value: ' v '`n'
+		; 		; info('key: ' k ' | value: ' v)
+		; 	}
+		; 	return av
+		; }
 		
-		this.gSetup := Gui('AlwaysOnTop +Caption +ToolWindow'
-						,  'FM Global New User Setup')
-						.DarkMode() ;? Looks good both ways. if !DarkMode => change text color
-						.MakeFontNicer(Setups.fontSize)
-						.NeverFocusWindow()
-		this.gSetup.SetFont( "cBlue s10 q5", "Fira Code") ;? added
+		this.gSetup := Gui("AlwaysOnTop +Caption +ToolWindow", 'FM Global New User Setup').DarkMode().MakeFontNicer(Setups.fontSize).NeverFocusWindow()
+		; this.gSetup.SetFont( "s10 q5", "Fira Code") ;? added
 		; this.gcText := Setups.gSetup.AddText(, Setups._FormatText())
 		width := (this.maxWidthInChars/7)
-		kk := '', kv := '', vk := '', vv := ''
-		office_info := [], ak_array := [], av_array := [], val_array := []
+		kk := ''
+		kv := ''
+		vk := ''
+		vv := ''
+		office_info := []
+		ak_array := []
+		av_array := []
+		val_array := []
 		ak_array := ak_map_to_array()
+		; av_array := av_map_to_array()
+		; for kk, kv in this._map_to_array.ak {
 		for kv in ak_array {
-			static index := 1, margin := 10
+			index := 1
+			margin := 10
+			; if (kv ~= 'i)office.*') {
+			; 	office_info.Push(kv)
+			; }
 			;? add a text box with the map keys ; x+margin needed for readability
 			this.gSetup.AddText('x' margin,kv ': `t`t')
 			; this.gSetup.AddText(,'`t`t')

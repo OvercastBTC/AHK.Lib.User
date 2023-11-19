@@ -24,6 +24,8 @@
 #Include <App\Browser>
 ; --------------------------------------------------------------------------------
 #Include <Scr\GeneralKeyChorder>
+#Include <Directives\_setup>
+#Include <Tools\KeycodeGetter>
 ; --------------------------------------------------------------------------------
 
 
@@ -50,12 +52,16 @@ CapsLock:: {
 		; "down",		() => Shows.Run("downloads"),
 		"down",		() => Run(Paths.Downloads),
 		'start',	() => Run(A_StartUp),
+		'setup',	() => Setups(),
 		; "gimp", 	() => Gimp.winObj.RunAct(),
 		; "davinci", 	() => Davinci.winObj.RunAct(),
 
-		; "ext",		() => Explorer.WinObjs.VsCodeExtensions.RunAct_Folders(), ; fix RunAct_Folders() => dunno where that is
-		; "saved",	() => Explorer.WinObjs.SavedScreenshots.RunAct_Folders(), ; fix RunAct_Folders() => dunno where that is
-		; "screenshots", () => Explorer.WinObjs.Screenshots.RunAct_Folders(), ; fix RunAct_Folders() => dunno where that is
+		; fix RunAct_Folders() => dunno where that is
+		; "ext",		() => Explorer.WinObjs.VsCodeExtensions.RunAct_Folders(), 
+		; fix RunAct_Folders() => dunno where that is
+		; "saved",	() => Explorer.WinObjs.SavedScreenshots.RunAct_Folders(), 
+		; fix RunAct_Folders() => dunno where that is
+		; "screenshots", () => Explorer.WinObjs.Screenshots.RunAct_Folders(), 
 		'vim', 		() => Environment.VimMode:=true,
 		; 'main',		() => Win.App(Paths.Prog '\AHK Script.v2.ahk'),
 		; 'main',	_Install_Git,
@@ -72,6 +78,7 @@ CapsLock:: {
 		'lnchr', () => Run(Paths.lnchr),
 		'run lnchr', () => Run(Paths.lnchr '\LNCHR-Main.ahk'),
 		'test', () => uFile(3,0,1),
+		'key', () => KeyCodeGetter
 	)
 	static _RunEnvNoter() {
 		SendLevel(5)

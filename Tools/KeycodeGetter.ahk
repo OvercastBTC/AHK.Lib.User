@@ -15,11 +15,11 @@ KeyCodeGetter() {
 
 	values_hwnd := g_values.hwnd
 
-	g_values_input := g_values.Add("Edit", "background 255")
+	g_values_input := g_values.AddEdit("background 255")
 
-	g_values_name := g_values.Add("Text", "w400", "Key name")
-	g_values_SC   := g_values.Add("Text",, "SC code")
-	g_values_VK   := g_values.Add("Text", "x+100", "VK code")
+	g_values_name := g_values.AddText("w400", "Key name")
+	g_values_SC   := g_values.AddText(, "SC code")
+	g_values_VK   := g_values.AddText("x+100", "VK code")
 
 	Destruction(*) {
 		HotIfWinActive("ahk_id " values_hwnd)

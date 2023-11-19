@@ -354,7 +354,7 @@ EnumToolbarButtons(ctrlhwnd, idBtn:=0) ;, is_apply_scale:=1) {
 		; --------------------------------------------------------------------------------
 		btnstate := enumGETBUTTONSTATE(idButton, ctrlhwnd)
 		; --------------------------------------------------------------------------------
-		rectangle := Enum_GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
+		rectangle := GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
 		ReadRemoteBuffer(hpRemote, remote_buffer, &RECT, 32)
 		; --------------------------------------------------------------------------------
 		; oldx1:=x1
@@ -433,7 +433,7 @@ hp_Remote(pid_target)
 	return hpRemote := DllCall("OpenProcess", "UInt", 8 | 16 | 32, "Int", 0, "UInt", pid_target, "Ptr")
 }
 
-Enum_GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
+GETITEMRECT(COMMANDTOINDEX, ctrlhwnd, hpRemote, remote_buffer, &RECT)
 {
 	rectangle := Array()
 	Static 	TB_GETITEMRECT  		:= 1053 ; 0x41D, WM_USER+29

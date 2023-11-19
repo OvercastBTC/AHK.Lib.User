@@ -14,11 +14,16 @@
  * @date 2023.08.15
  * @version 3.0.2
  ***********************************************************************/
+;@Ahk2Exe-IgnoreBegin
+#Include <CheckUpdate\ScriptVersionMap>
+version :=  ScriptVersion.ScriptVersionMap['main'] 
+;@Ahk2Exe-IgnoreEnd
+SetVersion := "3.0.0" ; If quoted literal not empty, do 'SetVersion'
+;@Ahk2Exe-Nop
 ;@Ahk2Exe-Obey U_V, = "%A_PriorLine~U)^(.+")(.*)".*$~$2%" ? "SetVersion" : "Nop"
-;@Ahk2Exe-%U_V%%A_AhkVersion%%A_PriorLine~U)^(.+")(.*)".*$~$2%
-;@include-winapi
+;@Ahk2Exe-%U_V% %A_PriorLine~U)^(.+")(.*)".*$~$2%
 ; --------------------------------------------------------------------------------
-#Requires AutoHotkey v2
+#Requires AutoHotkey v2+
 #Warn All, OutputDebug
 #SingleInstance Force
 #WinActivateForce
@@ -35,18 +40,20 @@ _AE_DetectHidden(true)
 _AE_SetDelays(-1)
 _AE_PerMonitor_DPIAwareness()
 ; --------------------------------------------------------------------------------
+;@Ahk2Exe-IgnoreBegin
 /**
  * Function: Includes
  */
-; #Include <App\Autohotkey>
-; #Include <Extensions\Array>
-; #Include <Extensions\Gui>
-; #Include <Extensions\Initializable>
-; #Include <Extensions\Json>
-; #Include <Extensions\Map>
-; #Include <Extensions\Sort>
-; #Include <Extensions\String>
-
+#Include <App\Autohotkey>
+#Include <Extensions\Array>
+#Include <Extensions\Gui>
+#Include <Extensions\Initializable>
+#Include <Extensions\Json>
+#Include <Extensions\Map>
+#Include <Extensions\Sort>
+#Include <Extensions\String>
+#Include <Tools\Info>
+;@Ahk2Exe-IgnoreEnd
 
 #HotIf WinActive(A_ScriptName)
 	~^s:: Run(A_ScriptName)

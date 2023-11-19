@@ -76,7 +76,7 @@ class Setups {
 		
 		this.gSetup := Gui('AlwaysOnTop +Caption +ToolWindow'
 						,  'FM Global New User Setup')
-						.DarkMode() ;? Looks good both ways. if !DarkMode => change text color
+						; .DarkMode() ;? Looks good both ways. if !DarkMode => change text color
 						.MakeFontNicer(Setups.fontSize)
 						.NeverFocusWindow()
 		this.gSetup.SetFont( "cBlue s10 q5", "Fira Code") ;? added

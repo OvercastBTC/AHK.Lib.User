@@ -7,7 +7,7 @@ DarkMode(guiObj) {
 Gui.Prototype.DefineProp("DarkMode", {Call: DarkMode})
 
 MakeFontNicer(guiObj, fontSize := 20) {
-	guiObj.SetFont("s" fontSize " cC5C5C5", "Consolas") ;? cC5C5C5 = gray,gray,silver
+	guiObj.SetFont("s" fontSize " cC5C5C5", "Consolas")
 	return guiObj
 }
 Gui.Prototype.DefineProp("MakeFontNicer", {Call: MakeFontNicer})
@@ -19,12 +19,7 @@ PressTitleBar(guiObj) {
 Gui.Prototype.DefineProp("PressTitleBar", {Call: PressTitleBar})
 
 NeverFocusWindow(guiObj) {
-	WinSetExStyle("0x08000000L", guiObj) ;? WS_EX_NOACTIVATE
-	WinSetExStyle('0x00000020L', guiObj) ;? WS_EX_TRANSPARENT
-	WinSetExStyle('0x02000000L', guiObj) ;? WS_EX_COMPOSITED ; Paints all descendants of a window in bottom-to-top painting order using double-buffering. Bottom-to-top painting order allows a descendent window to have translucency (alpha) and transparency (color-key) effects, ...
-	WinSetExStyle('0x00000200L', guiObj) ;? WS_EX_CLIENTEDGE ; The window has a border with a sunken edge.
-	WinSetExStyle('0x00040000L', guiObj) ;? WS_EX_APPWINDOW ; Forces a top-level window onto the taskbar when the window is visible.
-	
+	WinSetExStyle("0x08000000L", guiObj)
 	return guiObj
 }
 Gui.Prototype.DefineProp("NeverFocusWindow", {Call: NeverFocusWindow})

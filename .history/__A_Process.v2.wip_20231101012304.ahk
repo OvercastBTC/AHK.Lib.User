@@ -12,7 +12,6 @@ TraySetIcon(ICON) ; this changes the icon into a little dllcall thing.
 ; --------------------------------------------------------------------------------
 Hzn := 'ahk_exe hznHorizon.exe'
 hHzn := WinExist(Hzn)
-hzn_map := Map()
 ; #HotIf WinActive('ahk_exe hznHorizon.exe')
 
 

@@ -15,19 +15,8 @@
  * @date 2023.09.28
  * @version 3.0.2
  ***********************************************************************/
-/**
- * 
-;@Ahk2Exe-Obey U_V, = "%A_PriorLine~U)^(.+")(.*)".*$~$2%" ? "SetVersion" : "Nop"
-;@Ahk2Exe-%U_V%        %A_AhkVersion%%A_PriorLine~U)^(.+")(.*)".*$~$2%
-;@Ahk2Exe-SetMainIcon HznPlus256.ico
-;@Ahk2Exe-AddResource HznPlus256.ico, 160  ; Replaces 'H on blue'
-;@Ahk2Exe-AddResource HznPlus256.ico, 206  ; Replaces 'S on green'
-;@Ahk2Exe-AddResource HznPlus256.ico, 207  ; Replaces 'H on red'
-;@Ahk2Exe-AddResource HznPlus256.ico, 208  ; Replaces 'S on red'
-*/
-;@include-winapi
 ; --------------------------------------------------------------------------------
-; #Include <__A_Process.v2>
+Persistent(1)
 #Include <Directives\__AE.v2>
 #Include <Directives\__HznToolbar>
 #Include <System\DPI>
@@ -35,11 +24,13 @@
 ; --------------------------------------------------------------------------------
 #Include <EnumAllMonitorsDPI.v2>
 #Include <GetNearestMonitorInfo().v2>
-#Include <RichEdit\RichEdit>
-#Include <RichEdit\RichEditDlgs>
-; #Include <RTE.v2\master\RichEditSample>
-; #Include <gdi_plus_plus>
-; #Include <Gdip_All>
+#Include <Class\RTE\RichEdit>
+#Include <Class\RTE\RichEditDlgs>
+#Include <__receiver>
+#Include <Tools\Info>
+; #Include <Misc\Out>
+#Include <System\UIA>
+; #Include <RTE.v2\Project Files\RichEdit_Editor_v2>
 
 ; --------------------------------------------------------------------------------
 
@@ -337,11 +328,7 @@ HznSelectAll(*)
  * @param A_Clipboard .: The AHK builtin clipboard
  * @returns {text in the control (RT6TextBox or TX11)}
 ***********************************************************************/
-; #IncludeAgain <Sender>
-#Include <__receiver>
-#Include <Tools\Info>
-#Include <Misc\Out>
-#Include <System\UIA>
+
 HznGetText(*)
 {
 	initialSendLevel := A_SendLevel
@@ -353,13 +340,13 @@ HznGetText(*)
 	nCtl := ControlGetClassNN(hCtl)
 	hCtl_title := WinGetTitle(hCtl)
 	hHzn := WinExist('hznHorizon.exe')
-	hznUIA := UIA.ElementFromHandle(hCtl).BoundingRectangle
-	Infos(
-		hznUIA.l . '`n' .
-		hznUIA.r . '`n' .
-		hznUIA.t . '`n' .
-		hznUIA.b
-	)
+	; hznUIA := UIA.ElementFromHandle(hCtl).BoundingRectangle
+	; Infos(
+	; 	hznUIA.l . '`n' .
+	; 	hznUIA.r . '`n' .
+	; 	hznUIA.t . '`n' .
+	; 	hznUIA.b
+	; )
 	;// rect := WindowGetRect(hCtl)
 	;// rect := GetClientSize(hCtl)
 	;// rect := GetRect(hCtl)
@@ -373,33 +360,29 @@ HznGetText(*)
 	width := Round((w - (w/3)))
 	height := h
 	rect.Set('width',width, 'height',height, 'x', x, 'y', y)
-	infos('Title: ' . hCtl_title . '`n' 
-		. 'ClassNN: ' . nCtl . ' (' . hCtl . ')' . '`n' 
-		. 'width: ' . width . '`n' 
-		. ' w: ' . w . '`n'
-		. 'height: ' . height . '`n'
-		. 'h: ' . h . '`n'
-		. 'x: ' . x . ' y: ' . y . '`n' .
-		hznUIA.l . '`n' .
-		hznUIA.r . '`n' .
-		hznUIA.t . '`n' .
-		hznUIA.b
-	)
+	; infos('Title: ' . hCtl_title . '`n' 
+	; 	. 'ClassNN: ' . nCtl . ' (' . hCtl . ')' . '`n' 
+	; 	. 'width: ' . width . '`n' 
+	; 	. ' w: ' . w . '`n'
+	; 	. 'height: ' . height . '`n'
+	; 	. 'h: ' . h . '`n'
+	; 	. 'x: ' . x . ' y: ' . y . '`n'
+	; 	; hznUIA.l . '`n' .
+	; 	; hznUIA.r . '`n' .
+	; 	; hznUIA.t . '`n' .
+	; 	; hznUIA.b
+	; )
 	MouseMove(x, y, -1)
-	RTE_Title := RichEdit_Editor_v2.file_name
-	RTE := RichEdit_Editor_v2.run
+	; RTE_Title := RichEdit_Editor_v2.file_name
+	; path := Paths.Lib '\RTE.v2\Project Files'
+	; RTE := path '\RichEdit_Editor_v2.ahk'
+	RTE_Title := 'test'
+	; RTE := RichEdit_Editor_v2.run
 	file_name := '__receiver.ahk'
-	file_line := ''
-	aTX11 := []
-	TX11 := ''
-	width_needle := 'i)width'
-	height_needle := 'i)height'
-	x_needle := 'i)x'
-	y_needle := 'i)y'
+	file_line := '', TX11 := '', match:='', aLine := ''
+	aTX11 := [], new_map := []
+	width_needle := 'i)width', height_needle := 'i)height',	x_needle := 'i)x', y_needle := 'i)y'
 	match_array := [width_needle, height_needle, x_needle, y_needle]
-	new_map := []
-	match:=''
-	aLine := ''
 	; --------------------------------------------------------------------------------
 	HznSelectAll(hCtl)
 	clip_it()
@@ -422,7 +405,7 @@ HznGetText(*)
 				if ((aLine ~= match)) {
 					str_match := StrSplit(match,')','i ) "')
 					rMatch := str_match[2]
-					OutputDebug(rMatch)
+					; Infos(rMatch)
 					rect_match := rect[rMatch]
 					; rect_match := dpiRect.%str_match[2]%
 					new_str := RegExReplace(aLine, ':= ([0-9].*)', ':= ' rect_match . ',' )
@@ -451,7 +434,7 @@ HznGetText(*)
 	; Info('Loading Rich Text Editor...', 3000)
 	; Sleep(500)
 	
-	Run(RTE)
+	; RTE := RichEdit()
 	hRTE := WinWaitActive('hznRTE ')
 	pid_RTE := WinGetPID(hRTE)
 	Sleep(100)

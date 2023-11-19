@@ -1,39 +1,46 @@
-; ======================================================================================================================
-; Scriptname:     RichEdit.ahk
-; Namespace:      RichEdit
-; Author:         just me
-; AHK Version:    2.0.2 (Unicode)
-; OS Version:     Win 10 Pro (x64)
-; Function:       The class provides some wrapper functions for rich edit controls (v4.1 Unicode).
-; Change History:
-;    1.0.00.00    2023-05-23/just me - initial release
-; Credits:
-;    corrupt for cRichEdit:
-;       http://www.autohotkey.com/board/topic/17869-crichedit-standard-richedit-control-for-autohotkey-scripts/
-;    jballi for HE_Print:
-;       http://www.autohotkey.com/board/topic/45513-function-he-print-wysiwyg-print-for-the-hiedit-control/
-;    majkinetor for Dlg:
-;       http://www.autohotkey.com/board/topic/15836-module-dlg-501/
-; ======================================================================================================================
+/************************************************************************
+ * @description   Rich Text Editor
+ * Function:      The class provides some wrapper functions for rich edit controls (v4.1 Unicode).
+ * @file          RichEdit.ahk
+ * @author        just me
+ * @date          2023/09/25
+ * @version       1.0.0
+ * @ahkversion    2.0.2 (Unicode)
+ * @osversion     Win 10 Pro (x64)
+ ***********************************************************************/
+; --------------------------------------------------------------------------------
+;  Change History:
+;  1.0.00.00    2023-05-23/just me - initial release
+;  Credits:
+;  corrupt for cRichEdit:
+;  http://www.autohotkey.com/board/topic/17869-crichedit-standard-richedit-control-for-autohotkey-scripts/
+;  jballi for HE_Print:
+;  http://www.autohotkey.com/board/topic/45513-function-he-print-wysiwyg-print-for-the-hiedit-control/
+;  majkinetor for Dlg:
+;  http://www.autohotkey.com/board/topic/15836-module-dlg-501/
+; --------------------------------------------------------------------------------
 #Requires AutoHotkey v2.0
 #DllLoad "Msftedit.dll"
-; ======================================================================================================================
+; --------------------------------------------------------------------------------
 Class RichEdit {
-   ; ===================================================================================================================
-   ; Class variables - do not change !!!
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
+   ; ! Class variables - do not change !!!
+   ; --------------------------------------------------------------------------------
    ; Callback functions for RichEdit
+   ; --------------------------------------------------------------------------------
    Static GetRTFCB := 0
    Static LoadRTFCB := 0
    Static SubclassCB := 0
+   ; --------------------------------------------------------------------------------
    ; Initialize the class on startup
+   ; --------------------------------------------------------------------------------
    Static __New() {
       ; RichEdit.SubclassCB := CallbackCreate(RichEdit_SubclassProc)
       RichEdit.GetRTFCB := CallbackCreate(ObjBindMethod(RichEdit, "GetRTFProc"), , 4)
       RichEdit.LoadRTFCB := CallbackCreate(ObjBindMethod(RichEdit, "LoadRTFProc"), , 4)
       RichEdit.SubclassCB := CallbackCreate(ObjBindMethod(RichEdit, "SubclassProc"), , 6)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Static GetRTFProc(dwCookie, pbBuff, cb, pcb) { ; Callback procedure for GetRTF
       Static RTF := ""
       If (cb > 0) {
@@ -48,23 +55,35 @@ Class RichEdit {
       }
       Return 1
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Static LoadRTFProc(FileHandle, pbBuff, cb, pcb) { ; Callback procedure for LoadRTF
       Return !DllCall("ReadFile", "Ptr", FileHandle, "Ptr", pbBuff, "UInt", cb, "Ptr", pcb, "Ptr", 0)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Static SubclassProc(H, M, W, L, I, R) { ; RichEdit subclassproc
       ; See -> docs.microsoft.com/en-us/windows/win32/api/commctrl/nc-commctrl-subclassproc
       ; WM_GETDLGCODE = 0x87, DLGC_WANTALLKEYS = 4
       Return (M = 0x87) ? 4 : DllCall("DefSubclassProc", "Ptr", H, "UInt", M, "Ptr", W, "Ptr", L, "Ptr")
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; CONSTRUCTOR
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    __New(GuiObj, Options, MultiLine := True) {
-      Static WS_TABSTOP := 0x10000, WS_HSCROLL := 0x100000, WS_VSCROLL := 0x200000, WS_VISIBLE := 0x10000000,WS_CHILD := 0x40000000,WS_EX_CLIENTEDGE := 0x200, WS_EX_STATICEDGE := 0x20000,ES_MULTILINE := 0x0004, ES_AUTOVSCROLL := 0x40, ES_AUTOHSCROLL := 0x80, ES_NOHIDESEL := 0x0100,ES_WANTRETURN := 0x1000, ES_DISABLENOSCROLL := 0x2000, ES_SUNKEN := 0x4000, ES_SAVESEL := 0x8000,ES_SELECTIONBAR := 0x1000000
-      Static MSFTEDIT_CLASS := "RICHEDIT50W" ; RichEdit v4.1+ (Unicode)
+      Static   WS_TABSTOP := 0x10000,        WS_HSCROLL := 0x100000,
+               WS_VSCROLL := 0x200000,       WS_VISIBLE := 0x10000000,
+               WS_CHILD := 0x40000000,       WS_EX_CLIENTEDGE := 0x200,
+               WS_EX_STATICEDGE := 0x20000,  ES_MULTILINE := 0x0004,
+               ES_AUTOVSCROLL := 0x40,       ES_AUTOHSCROLL := 0x80,
+               ES_NOHIDESEL := 0x0100,       ES_WANTRETURN := 0x1000,
+               ES_DISABLENOSCROLL := 0x2000, ES_SUNKEN := 0x4000,
+               ES_SAVESEL := 0x8000,         ES_SELECTIONBAR := 0x1000000
+      ; --------------------------------------------------------------------------------
+      ; RichEdit v4.1+ (Unicode)
+      ; --------------------------------------------------------------------------------
+      Static MSFTEDIT_CLASS := "RICHEDIT50W"
+      ; --------------------------------------------------------------------------------
       ; Specify default styles & exstyles
+      ; --------------------------------------------------------------------------------
       Styles := WS_TABSTOP | WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL
       If (MultiLine)
          Styles |= WS_HSCROLL | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN | ES_DISABLENOSCROLL | ES_SAVESEL ; | ES_SELECTIONBAR ; does not work properly
@@ -72,6 +91,7 @@ Class RichEdit {
       ; Create the control
       CtrlOpts := "Class" . MSFTEDIT_CLASS . " " . Options . " +" . Styles . " +E" . ExStyles
       This.RE := GuiObj.AddCustom(CtrlOpts)
+      ; This.RE.Add('Custom',CtrlOpts)
       ; Initialize control
       ; EM_SETLANGOPTIONS = 0x0478 (WM_USER + 120)
       ; IMF_AUTOKEYBOARD = 0x01, IMF_AUTOFONT = 0x02
@@ -93,7 +113,7 @@ Class RichEdit {
          ; Set advanced typographic options
          ; EM_SETTYPOGRAPHYOPTIONS = 0x04CA (WM_USER + 202)
          ; TO_ADVANCEDTYPOGRAPHY	= 1, TO_ADVANCEDLAYOUT = 8 ? not documented
-         SendMessage(0x04CA, 1, 1, This.HWND)
+         SendMessage(0x04CA, 1, 8, This.HWND)
       }
       ; Correct AHK font size setting, if necessary
       If (Round(This.DefFont.Size) != This.DefFont.Size) {
@@ -105,18 +125,18 @@ Class RichEdit {
       ; Initialize the text limit
       This.LimitText(2147483647)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; DESTRUCTOR
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    __Delete() {
       If DllCall("IsWindow", "Ptr", This.HWND) && (RichEdit.SubclassCB) {
          DllCall("RemoveWindowSubclass", "Ptr", This.HWND, "Ptr", RichEdit.SubclassCB, "Ptr", 0)
       }
       This.RE := 0
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; GUICONTROL PROPERTIES =============================================================================================
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ClassNN => This.RE.ClassNN
    Enabled => This.RE.Enabled
    Focused => This.RE.Focused
@@ -127,9 +147,9 @@ Class RichEdit {
       Set => This.RE.Name := Value
    }
    Visible => This.RE.Visible
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; GUICONTROL METHODS ================================================================================================
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    Focus() => This.RE.Focus()
    GetPos(&X?, &Y?, &W?, &H?) => This.RE.GetPos(&X?, &Y?, &W?, &H?)
    Move(X?, Y?, W?, H?) => This.RE.Move(X?, Y?, W?, H?)
@@ -137,12 +157,11 @@ Class RichEdit {
    OnNotify(Code, Callback, AddRemove?) => This.RE.OnNotify(Code, Callback, AddRemove?)
    Opt(Options) => This.RE.Opt(Options)
    Redraw() => This.RE.Redraw()
-   ; ===================================================================================================================
-   ; PUBLIC METHODS ====================================================================================================
-   ; ===================================================================================================================
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
+   ; PUBLIC METHODS
+   ; --------------------------------------------------------------------------------
    ; Methods to be used by advanced users only
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    GetCharFormat() { ; Retrieves the character formatting of the current selection
       ; For details see http://msdn.microsoft.com/en-us/library/bb787883(v=vs.85).aspx.
       ; Returns a 'CF2' object containing the formatting settings.
@@ -151,14 +170,14 @@ Class RichEdit {
       SendMessage(0x043A, 1, CF2.Ptr, This.HWND)
       Return (CF2.Mask ? CF2 : False)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetCharFormat(CF2) { ; Sets character formatting of the current selection
       ; For details see http://msdn.microsoft.com/en-us/library/bb787883(v=vs.85).aspx.
       ; CF2 : CF2 object like returned by GetCharFormat().
       ; EM_SETCHARFORMAT = 0x0444
       Return SendMessage(0x0444, 1, CF2.Ptr, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetParaFormat() { ; Retrieves the paragraph formatting of the current selection
       ; For details see http://msdn.microsoft.com/en-us/library/bb787942(v=vs.85).aspx.
       ; Returns a 'PF2' object containing the formatting settings.
@@ -167,34 +186,31 @@ Class RichEdit {
       SendMessage(0x043D, 0, PF2.Ptr, This.HWND)
       Return (PF2.Mask ? PF2 : False)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetParaFormat(PF2) { ; Sets the  paragraph formatting for the current selection
       ; For details see http://msdn.microsoft.com/en-us/library/bb787942(v=vs.85).aspx.
       ; PF2 : PF2 object like returned by GetParaFormat().
       ; EM_SETPARAFORMAT = 0x0447
       Return SendMessage(0x0447, 0, PF2.Ptr, This.HWND)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Control specific
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    IsModified() { ; Has the control been  modified?
       ; EM_GETMODIFY = 0xB8
       Return SendMessage(0xB8, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetModified(Modified := False) {  ; Sets or clears the modification flag for an edit control
       ; EM_SETMODIFY = 0xB9
       Return SendMessage(0xB9, !!Modified, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetEventMask(Events?) { ; Set the events which shall send notification codes control's owner
       ; Events : Array containing one or more of the keys defined in 'ENM'.
       ; For details see http://msdn.microsoft.com/en-us/library/bb774238(v=vs.85).aspx
       ; EM_SETEVENTMASK	= 	0x0445
-      Static ENM := {NONE: 0x00, CHANGE: 0x01, UPDATE: 0x02, SCROLL: 0x04, SCROLLEVENTS: 0x08, DRAGDROPDONE: 0x10,
-                     PARAGRAPHEXPANDED: 0x20, PAGECHANGE: 0x40, KEYEVENTS: 0x010000, MOUSEEVENTS: 0x020000,
-                     REQUESTRESIZE: 0x040000, SELCHANGE: 0x080000, DROPFILES: 0x100000, PROTECTED: 0x200000,
-                     LINK: 0x04000000}
+      Static ENM := {NONE: 0x00, CHANGE: 0x01, UPDATE: 0x02, SCROLL: 0x04, SCROLLEVENTS: 0x08, DRAGDROPDONE: 0x10, PARAGRAPHEXPANDED: 0x20, PAGECHANGE: 0x40, KEYEVENTS: 0x010000, MOUSEEVENTS: 0x020000, REQUESTRESIZE: 0x040000, SELCHANGE: 0x080000, DROPFILES: 0x100000, PROTECTED: 0x200000, LINK: 0x04000000}
       If !IsSet(Events) || (Type(Events) != "Array")
          Events := ["NONE"]
       Mask := 0
@@ -206,9 +222,9 @@ Class RichEdit {
       }
       Return SendMessage(0x0445, 0, Mask, This.HWND)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Loading and storing RTF format
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    GetRTF(Selection := False) { ; Gets the whole content of the control as rich text
       ; Selection = False : whole contents (default)
       ; Selection = True  : current selection
@@ -224,7 +240,7 @@ Class RichEdit {
       SendMessage(0x044A, Flags, ES.Ptr, This.HWND)
       Return RichEdit.GetRTFProc("*GetRTF*", 0, 0, 0)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    LoadRTF(FilePath, Selection := False) { ; Loads RTF file into the control
       ; FilePath = file path
       ; Selection = False : whole contents (default)
@@ -244,9 +260,9 @@ Class RichEdit {
       File.Close()
       Return Result
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Scrolling
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    GetScrollPos() { ; Obtains the current scroll position
       ; Returns on object with keys 'X' and 'Y' containing the scroll position.
       ; EM_GETSCROLLPOS = 0x04DD
@@ -263,13 +279,13 @@ Class RichEdit {
       NumPut("Int", X, "Int", Y, PT)
       Return SendMessage(0x04DE, 0, PT.Ptr, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ScrollCaret() { ; Scrolls the caret into view
       ; EM_SCROLLCARET = 0x00B7
       SendMessage(0x00B7, 0, 0, This.HWND)
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ShowScrollBar(SB, Mode := True) { ; Shows or hides one of the scroll bars of a rich edit control
       ; SB   : Identifies which scroll bar to display: horizontal or vertical.
       ;        This parameter must be 1 (SB_VERT) or 0 (SB_HORZ).
@@ -278,9 +294,9 @@ Class RichEdit {
       SendMessage(0x0460, SB, !!Mode, This.HWND)
       Return True
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Text and selection
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    FindText(Find, Mode?) { ; Finds Unicode text within a rich edit control
       ; Find : Text to search for.
       ; Mode : Optional array containing one or more of the keys specified in 'FR'.
@@ -307,7 +323,7 @@ Class RichEdit {
       This.ScrollCaret()
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ; Finds the next word break before or after the specified character position or retrieves information about
    ; the character at that position.
    FindWordBreak(CharPos, Mode := "Left") { 
@@ -321,7 +337,7 @@ Class RichEdit {
       Option := WB.HasProp(Mode) ? WB[Mode] : 0
       Return SendMessage(0x044C, Option, CharPos, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetSelText() { ; Retrieves the currently selected text as plain text
       ; Returns selected text.
       ; EM_GETSELTEXT = 0x043E, EM_EXGETSEL = 0x0434
@@ -335,7 +351,7 @@ Class RichEdit {
       }
       Return Txt
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetSel() { ; Retrieves the starting and ending character positions of the selection in a rich edit control
       ; Returns an object containing the keys S (start of selection) and E (end of selection)).
       ; EM_EXGETSEL = 0x0434
@@ -343,7 +359,7 @@ Class RichEdit {
       SendMessage(0x0434, 0, CR.Ptr, This.HWND)
       Return {S: NumGet(CR, 0, "Int"), E: NumGet(CR, 4, "Int")}
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetText() {  ; Gets the whole content of the control as plain text
       ; EM_GETTEXTEX = 0x045E
       Txt := ""
@@ -357,17 +373,17 @@ Class RichEdit {
       }
       Return Txt
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ; GetTextColors() { ; Gets the text and background colors - not implemented
    ; }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetTextLen() { ; Calculates text length in various ways
       ; EM_GETTEXTLENGTHEX = 0x045F
       GTL := Buffer(8, 0)     ; GETTEXTLENGTHEX structure
       NumPut( "UInt", 1200, GTL, 4)  ; codepage = Unicode
       Return SendMessage(0x045F, GTL.Ptr, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ; Retrieves the position of the first occurence of the specified text within the specified range.
    GetTextPos(Find, Min := 0, Max := -1, Mode := 1) { 
       ; Find : Text to search for.
@@ -387,7 +403,7 @@ Class RichEdit {
       P := SendMessage(0x047C, Flags, FTX.Ptr, This.Hwnd) << 32 >> 32
       Return (P = -1) ? False : {S: NumGet(FTX, 8 + A_PtrSize, "Int"), E: NumGet(FTX, 12 + A_PtrSize, "Int")}
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetTextRange(Min, Max) { ; Retrieves a specified range of characters from a rich edit control
       ; Min : Character position index immediately preceding the first character in the range.
       ;       Integer value to store as cpMin in the CHARRANGE structure.
@@ -405,14 +421,14 @@ Class RichEdit {
       VarSetStrCapacity(&Txt, -1)
       Return Txt
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    HideSelection(Mode) { ; Hides or shows the selection
       ; Mode : True to hide or False to show the selection.
       ; EM_HIDESELECTION = 0x043F (WM_USER + 63)
       SendMessage(0x043F, !!Mode, 0, This.HWND)
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    LimitText(Limit) { ; Sets an upper limit to the amount of text the user can type or paste into a rich edit control
       ; Limit : Specifies the maximum amount of text that can be entered.
       ;         If this parameter is zero, the default maximum is used, which is 64K characters.
@@ -420,12 +436,12 @@ Class RichEdit {
       SendMessage(0x0435, 0, Limit, This.HWND)
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ReplaceSel(Text := "") { ; Replaces the selected text with the specified text
       ; EM_REPLACESEL = 0xC2
       Return SendMessage(0xC2, 1, StrPtr(Text), This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetText(Text := "", Mode?) { ; Replaces the selection or the whole content of the control
       ; Mode : Array of option flags. It can be any reasonable combination of the keys defined in 'ST'.
       ; For details see http://msdn.microsoft.com/en-us/library/bb774284(v=vs.85).aspx.
@@ -451,7 +467,7 @@ Class RichEdit {
       NumPut("UInt", Flags, "UInt", CP, STX) ; flags, codepage
       Return SendMessage(0x0461, STX.Ptr, TxtPtr, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetSel(Start, End) { ; Selects a range of characters
       ; Start : zero-based start index
       ; End   : zero-beased end index (-1 = end of text))
@@ -460,9 +476,9 @@ Class RichEdit {
       NumPut("Int", Start, "Int", End, CR)
       Return SendMessage(0x0437, 0, CR.Ptr, This.HWND)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Appearance, styles, and options
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    AutoURL(Mode := 1) { ; En- or disable AutoURLDetection
       ; Mode   :  one or a combination of the following values:
       ; Disable                  0
@@ -476,7 +492,7 @@ Class RichEdit {
       WinRedraw(This.HWND)
       Return RetVal
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetRect(&RC := "") { ; Retrieves the rich edit control's formatting rectangle
       ; Returns an object with keys L (eft), T (op), R (ight), and B (ottom).
       ; If a variable is passed in the Rect parameter, the complete RECT structure will be stored in it.
@@ -486,7 +502,7 @@ Class RichEdit {
       SendMessage(0x00B2, 0, RC.Ptr, This.HWND)
       Return {L: NumGet(RC, 0, "Int"), T: NumGet(RC, 4, "Int"), R: NumGet(RC, 8, "Int"), B: NumGet(RC, 12, "Int")}
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetOptions(&Options := "") { ; Retrieves the rich edit control`s options
       ; Returns an array of currently set options as the keys defined in 'ECO'.
       ; If a variable is passed in the Option parameter, the combined numeric value of the options will be stored in it.
@@ -502,7 +518,7 @@ Class RichEdit {
             O.Push(Key)
       Return O
    }
-   ; -------------------------------------------------------------------------------------------------------------------.
+   ; --------------------------------------------------------------------------------.
    GetStyles(&Styles := "") { ; Retrieves the current edit style flags
       ; Returns an object containing keys as defined in 'SES'.
       ; If a variable is passed in the Styles parameter, the combined numeric value of the styles will be stored in it.
@@ -521,7 +537,7 @@ Class RichEdit {
             S.Push(Value)
       Return S
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetZoom() { ; Gets the current zoom ratio
       ; Returns the zoom ratio in percent.
       ; EM_GETZOOM = 0x04E0
@@ -530,7 +546,7 @@ Class RichEdit {
       N := NumGet(N, 0, "Int"), D := NumGet(D, 0, "Int")
       Return (N = 0) && (D = 0) ? 100 : Round(N / D * 100)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetBkgndColor(Color) { ; Sets the background color
       ; Color : RGB integer value or HTML color name or
       ;         "Auto" to reset to system default color.
@@ -543,15 +559,13 @@ Class RichEdit {
       Result := SendMessage(0x0443, System, Color, This.HWND)
       Return This.GetRGB(Result)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetOptions(Options, Mode := "SET") { ; Sets the options for a rich edit control
       ; Options : Array of options as the keys defined in 'ECO'.
       ; Mode    : Settings mode: SET, OR, AND, XOR
       ; For details see http://msdn.microsoft.com/en-us/library/bb774254(v=vs.85).aspx.
       ; EM_SETOPTIONS = 0x044D
-      Static ECO := {AUTOWORDSELECTION: 0x01, AUTOVSCROLL: 0x40, AUTOHSCROLL: 0x80, NOHIDESEL: 0x100, READONLY: 0x800
-                   , WANTRETURN: 0x1000, SAVESEL: 0x8000, SELECTIONBAR: 0x01000000, VERTICAL: 0x400000}
-           , ECOOP := {SET: 0x01, OR: 0x02, AND: 0x03, XOR: 0x04}
+      Static ECO := {AUTOWORDSELECTION: 0x01, AUTOVSCROLL: 0x40, AUTOHSCROLL: 0x80, NOHIDESEL: 0x100, READONLY: 0x800, WANTRETURN: 0x1000, SAVESEL: 0x8000, SELECTIONBAR: 0x01000000, VERTICAL: 0x400000}, ECOOP := {SET: 0x01, OR: 0x02, AND: 0x03, XOR: 0x04}
       If (Type(Options) != "Array") || !ECOOP.HasProp(Mode)
          Return False
       O := 0
@@ -563,7 +577,7 @@ Class RichEdit {
       }
       Return SendMessage(0x044D, ECOOP.%Mode%, O, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetRect(L, T, R, B) { ; Sets the formatting rectangle of a multiline edit control
       ; L (eft), T (op), R (ight), B (ottom)
       ; Set all parameters to zero to set it to its default values.
@@ -579,18 +593,13 @@ Class RichEdit {
       SendMessage(0xB3, 0, RC.Ptr, This.HWND)
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetStyles(Styles) { ; Sets the current edit style flags for a rich edit control.
       ; Styles : Object containing on or more of the keys defined in 'SES'.
       ;          If the value is 0 the style will be removed, otherwise it will be added.
       ; For details see http://msdn.microsoft.com/en-us/library/bb774236(v=vs.85).aspx.
       ; EM_SETEDITSTYLE	= 0x04CC (WM_USER + 204)
-      Static SES := {EMULATESYSEDIT: 1, BEEPONMAXTEXT: 2, EXTENDBACKCOLOR: 4, NOXLTSYMBOLRANGE: 32, USEAIMM: 64,
-                     NOIME: 128, ALLOWBEEPS: 256, UPPERCASE: 512, LOWERCASE: 1024, NOINPUTSEQUENCECHK: 2048,
-                     BIDI: 4096, SCROLLONKILLFOCUS: 8192, XLTCRCRLFTOCR: 16384, DRAFTMODE: 32768,
-                     USECTF: 0x0010000, HIDEGRIDLINES: 0x0020000, USEATFONT: 0x0040000, CUSTOMLOOK: 0x0080000,
-                     LBSCROLLNOTIFY: 0x0100000, CTFALLOWEMBED: 0x0200000, CTFALLOWSMARTTAG: 0x0400000,
-                     CTFALLOWPROOFING: 0x0800000}
+      Static SES := {EMULATESYSEDIT: 1, BEEPONMAXTEXT: 2, EXTENDBACKCOLOR: 4, NOXLTSYMBOLRANGE: 32, USEAIMM: 64, NOIME: 128, ALLOWBEEPS: 256, UPPERCASE: 512, LOWERCASE: 1024, NOINPUTSEQUENCECHK: 2048, BIDI: 4096, SCROLLONKILLFOCUS: 8192, XLTCRCRLFTOCR: 16384, DRAFTMODE: 32768, USECTF: 0x0010000, HIDEGRIDLINES: 0x0020000, USEATFONT: 0x0040000, CUSTOMLOOK: 0x0080000, LBSCROLLNOTIFY: 0x0100000, CTFALLOWEMBED: 0x0200000, CTFALLOWSMARTTAG: 0x0400000, CTFALLOWPROOFING: 0x0800000}
       If (Type(Styles) != "Object")
          Return False
       Flags := Mask := 0
@@ -603,68 +612,68 @@ Class RichEdit {
       }
       Return Mask ? SendMessage(0x04CC, Flags, Mask, This.HWND) : False
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetZoom(Ratio := "") { ; Sets the zoom ratio of a rich edit control.
       ; Ratio : Float value between 100/64 and 6400; a ratio of 0 turns zooming off.
       ; EM_SETZOOM = 0x4E1
       Return SendMessage(0x04E1, (Ratio > 0 ? Ratio : 100), 100, This.HWND)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Copy, paste, etc.
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    CanRedo() { ; Determines whether there are any actions in the control redo queue.
       ; EM_CANREDO = 0x0455 (WM_USER + 85)
       Return SendMessage(0x0455, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    CanUndo() { ; Determines whether there are any actions in an edit control's undo queue.
       ; EM_CANUNDO = 0x00C6
       Return SendMessage(0x00C6, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Clear() {
       ; WM_CLEAR = 0x303
       Return SendMessage(0x0303, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Copy() {
       ; WM_COPY = 0x301
       Return SendMessage(0x0301, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Cut() {
       ; WM_CUT = 0x300
       Return SendMessage(0x0300, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Paste() {
       ; WM_PASTE = 0x302
       Return SendMessage(0x0302, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Redo() {
       ; EM_REDO := 0x454
       Return SendMessage(0x0454, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Undo() {
       ; EM_UNDO = 0xC7
       Return SendMessage(0x00C7, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SelAll() {
       ; Select all
       Return This.SetSel(0, -1)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    Deselect() {
       ; Deselect all
       Sel := This.GetSel()
       Return This.SetSel(Sel.S, Sel.S)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Font & colors
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ChangeFontSize(Diff) { ; Change font size
       ; Diff : any positive or negative integer, positive values are treated as +1, negative as -1.
       ; Returns new size.
@@ -679,7 +688,7 @@ Class RichEdit {
       Font := This.GetFont()
       Return Font.Size
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetFont(Default := False) { ; Get current font
       ; Set Default to True to get the default font.
       ; Returns an object containing current options (see SetFont())
@@ -697,12 +706,10 @@ Class RichEdit {
       CF2.Effects := Effects
       SendMessage(0x043A, (Default ? 0 : 1), CF2.Ptr, This.HWND)
       Font := {}
-      ; Font.Name := CF2.FaceName
-      Font.Name := FontName
-      ; Font.Size := CF2.Height / 20
-      Font.Size := FontSize
+      Font.Name := CF2.FaceName
+      Font.Size := CF2.Height / 20
       CFS := CF2.Effects
-      Style := 	(CFS & 1 ? "B" : "") . (CFS & 2 ? "I" : "") . (CFS & 4 ? "U" : "") . (CFS & 8 ? "S" : "") . (CFS & 0x10000 ? "L" : "") . (CFS & 0x20000 ? "H" : "") . (CFS & 16 ? "P" : "")
+	Style := (CFS & 1 ? "B" : "") . (CFS & 2 ? "I" : "") . (CFS & 4 ? "U" : "") . (CFS & 8 ? "S" : "") 	. (CFS & 0x10000 ? "L" : "") . (CFS & 0x20000 ? "H" : "") . (CFS & 16 ? "P" : "")
       Font.Style := Style = "" ? "N" : Style
       Font.Color := This.GetRGB(CF2.TextColor)
       If (CF2.Effects & 0x40000000)  ; CFE_AUTOCOLOR
@@ -716,7 +723,7 @@ Class RichEdit {
       Font.CharSet := CF2.CharSet
       Return Font
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetDefaultFont(Font := "") { ; Set default font
       ; Font : Optional object - see SetFont().
       If IsObject(Font) {
@@ -726,8 +733,8 @@ Class RichEdit {
       }
       Return This.SetFont(This.DefFont)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
-   SetFont(Font) { ; Set current/default font
+   ; --------------------------------------------------------------------------------
+   SetFont(Font*) { ; Set current/default font
       ; Font : Object containing the following keys
       ;        Name    : optional font name
       ;        Size    : optional font size in points
@@ -752,8 +759,7 @@ Class RichEdit {
          CF2.FaceName := Font.Name
       }
       If Font.HasProp("Size") && (Font.Size != "") {
-         ; Size := Font.Size
-         Size := FontSize
+         Size := Font.Size
          If (Size < 161)
             Size *= 20
          Mask |= 0x80000000, Effects |= 0x80000000 ; CFM_SIZE, CFE_SIZE
@@ -795,14 +801,14 @@ Class RichEdit {
          CF2.CharSet := Font.CharSet = 2 ? 2 : 1 ; SYMBOL|DEFAULT
       }
       If (Mask != 0) {
-         Mode := Font.HasProp("Times New Roman") ? 0 : 1
+         Mode := Font.HasProp("Default") ? 0 : 1
          CF2.Mask := Mask
          CF2.Effects := Effects
          Return SendMessage(0x0444, Mode, CF2.Ptr, This.HWND)
       }
       Return False
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetFontStyles(Styles, Default := False) { ; Set the font styles for the current selection or the default font
       ; Styles : a string containing one or more of the following styles
       ;          B = bold, I = italic, U = underline, S = strikeout, L = subscript, H = superschript, P = protected,
@@ -820,7 +826,7 @@ Class RichEdit {
             CF2.Effects |= FontStyles.HasProp(Style) ? FontStyles.%Style% : 0
       Return SendMessage(0x0444, !Default, CF2.Ptr, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ToggleFontStyle(Style) { ; Toggle single font style
       ; Style : one of the following styles
       ;         B = bold, I = italic, U = underline, S = strikeout, L = subscript, H = superschript, P = protected,
@@ -839,9 +845,9 @@ Class RichEdit {
          CF2.Effects ^= FontStyles.%Style%
       Return SendMessage(0x0444, 1, CF2.Ptr, This.HWND)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Paragraph formatting
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    AlignText(Align := 1) { ; Set paragraph's alignment
       ; Note:  Values greater 3 doesn't seem to work though they should as documented
       ; Align: may contain one of the following numbers:
@@ -867,7 +873,7 @@ Class RichEdit {
       }
       Return False
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetBorder(Widths, Styles) { ; Set paragraph's borders
       ; Borders are not displayed in RichEdit, so the call of this function has no visible result.
       ; Even WordPad distributed with Win7 does not show them, but e.g. Word 2007 does.
@@ -903,7 +909,7 @@ Class RichEdit {
       PF2.Borders := S
       Return SendMessage(0x0447, 0, PF2.Ptr, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetLineSpacing(Lines) { ; Sets paragraph's line spacing.
       ; Lines : number of lines as integer or float.
       ; SpacingRule = 5:
@@ -916,7 +922,7 @@ Class RichEdit {
       PF2.LineSpacingRule := 5
       Return SendMessage(0x0447, 0, PF2.Ptr, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetParaIndent(Indent := "Reset") { ; Sets space left/right of the paragraph.
       ; Indent : Object containing up to three keys:
       ;          - Start  : Optional - Absolute indentation of the paragraph's first line.
@@ -955,7 +961,7 @@ Class RichEdit {
          Return SendMessage(0x0447, 0, PF2.Ptr, This.HWND)
       Return False
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetParaNumbering(Numbering := "Reset") {
       ; Numbering : Object containing up to four keys:
       ;             - Type  : Options used for bulleted or numbered paragraphs.
@@ -1013,7 +1019,7 @@ Class RichEdit {
          Return SendMessage(0x0447, 0, PF2.Ptr, This.HWND)
       Return False
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetParaSpacing(Spacing := "Reset") { ; Set space before / after the paragraph
       ; Spacing : Object containing one or two keys:
       ;           - Before : additional space before the paragraph in points
@@ -1042,14 +1048,13 @@ Class RichEdit {
          Return SendMessage(0x0447, 0, PF2.Ptr, This.HWND)
       Return False
    }
-   ; -------------------------------------------------------------------------------------------------------------------
-   ; Distance will be interpreted as inches or centimeters depending on the current user's locale.
-   ; Set default tabstops
-   SetDefaultTabs(Distance) { 
+   ; --------------------------------------------------------------------------------
+   SetDefaultTabs(Distance) { ; Set default tabstops
+      ; Distance will be interpreted as inches or centimeters depending on the current user's locale.
       ; EM_SETTABSTOPS = 0xCB
-      Static   DUI    := 64   ; dialog units per inch
-            ,  MinTab := 0.20 ; minimal tab distance
-            ,  MaxTab := 3.00 ; maximal tab distance
+      Static DUI := 64      ; dialog units per inch
+				, MinTab := 0.20 ; minimal tab distance
+				, MaxTab := 3.00 ; maximal tab distance
       IM := This.GetMeasurement()
       Distance := StrReplace(Distance, ",", ".")
       Distance := Round(Distance / IM, 2)
@@ -1063,7 +1068,7 @@ Class RichEdit {
       DllCall("UpdateWindow", "Ptr", This.HWND)
       Return Result
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    SetTabStops(TabStops := "Reset") { ; Set paragraph's tabstobs
       ; TabStops is an object containing the integer position as hundredth of inches/centimeters as keys
       ; and the alignment ("L", "C", "R", or "D") as values.
@@ -1098,28 +1103,28 @@ Class RichEdit {
       }
       Return False
    }
-   ;
+   ; --------------------------------------------------------------------------------
    ; Line handling
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    GetCaretLine() { ; Get the line containing the caret
       ; EM_LINEINDEX = 0xBB, EM_EXLINEFROMCHAR = 0x0436
       Result := SendMessage(0x00BB, -1, 0, This.HWND)
       Return SendMessage(0x0436, 0, Result, This.HWND) + 1
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetLineCount() { ; Get the total number of lines
       ; EM_GETLINECOUNT = 0xBA
       Return SendMessage(0x00BA, 0, 0, This.HWND)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetLineIndex(LineNumber) { ; Get the index of the first character of the specified line.
       ; EM_LINEINDEX := 0x00BB
       ; LineNumber   -  zero-based line number
       Return SendMessage(0x00BB, LineNumber, 0, This.HWND)
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Statistics
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    GetStatistics() { ; Get some statistic values
       ; Get the line containing the caret, it's position in this line, the total amount of lines, the absulute caret
       ; position and the total amount of characters.
@@ -1134,9 +1139,9 @@ Class RichEdit {
       Stats.CharCount := This.GetTextLen()
       Return Stats
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Layout
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    WordWrap(On) { ; Turn wordwrapping on/off
       ; EM_SCROLLCARET = 0xB7
       Sel := This.GetSel()
@@ -1145,7 +1150,7 @@ Class RichEdit {
       SendMessage(0x00B7, 0, 0, This.HWND)
       Return On
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    WYSIWYG(On) { ; Show control as printed (WYSIWYG)
       ; Text measuring is based on the default printer's capacities, thus changing the printer may produce different
       ; results. See remarks/comments in Print() also.
@@ -1190,15 +1195,15 @@ Class RichEdit {
       DllCall("LockWindowUpdate", "Ptr", 0)
       Return True
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; File handling
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    LoadFile(File, Mode := "Open") { ; Load file
-      ; File : file name
-      ; Mode : Open / Add / Insert
-      ;        Open   : Replace control's content
-      ;        Append : Append to conrol's content
-      ;        Insert : Insert at / replace current selection
+      ;  File : file name
+      ;  Mode : Open / Add / Insert
+      ;  Open   : Replace control's content
+      ;  Append : Append to conrol's content
+      ;  Insert : Insert at / replace current selection
       If !FileExist(File)
          Return False
       Ext := ""
@@ -1229,10 +1234,12 @@ Class RichEdit {
       }
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
-   SaveFile(File) { ; Save file
-      ; File : file name
-      ; Returns True on success, otherwise False.
+   ; --------------------------------------------------------------------------------
+   ; Save file
+   ; @param File : file name
+   ; @return {bool} Returns True on success, otherwise False.
+   ; --------------------------------------------------------------------------------
+   SaveFile(File) { 
       This.Gui.Opt("+OwnDialogs")
       Ext := ""
       SplitPath(File, , , &Ext)
@@ -1248,22 +1255,18 @@ Class RichEdit {
          Return False
       }
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Printing
    ; THX jballi ->  http://www.autohotkey.com/board/topic/45513-function-he-print-wysiwyg-print-for-the-hiedit-control/
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    Print() {
       ; EM_FORMATRANGE = 0x0439, EM_SETTARGETDEVICE = 0x0448
-      ; ----------------------------------------------------------------------------------------------------------------
+      ; --------------------------------------------------------------------------------
       ; Static variables
-      Static PD_ALLPAGES := 0x00, PD_SELECTION := 0x01, PD_PAGENUMS := 0x02, PD_NOSELECTION := 0x04
-           , PD_RETURNDC := 0x0100, PD_USEDEVMODECOPIES := 0x040000, PD_HIDEPRINTTOFILE := 0x100000
-           , PD_NONETWORKBUTTON := 0x200000, PD_NOCURRENTPAGE := 0x800000
-           , MM_TEXT := 0x1
-           , DocName := "AHKRichEdit"
-           , PD_Size := (A_PtrSize = 8 ? (13 * A_PtrSize) + 16 : 66)
+      ; --------------------------------------------------------------------------------
+      Static PD_ALLPAGES := 0x00, PD_SELECTION := 0x01, PD_PAGENUMS := 0x02, PD_NOSELECTION := 0x04, PD_RETURNDC := 0x0100, PD_USEDEVMODECOPIES := 0x040000, PD_HIDEPRINTTOFILE := 0x100000, PD_NONETWORKBUTTON := 0x200000, PD_NOCURRENTPAGE := 0x800000, MM_TEXT := 0x1, DocName := "AHKRichEdit", PD_Size := (A_PtrSize = 8 ? (13 * A_PtrSize) + 16 : 66)
       ErrorMsg := ""
-      ; ----------------------------------------------------------------------------------------------------------------
+      ; --------------------------------------------------------------------------------
       ; Prepare to call PrintDlg
       ; Define/Populate the PRINTDLG structure
       PD := Buffer(PD_Size, 0)
@@ -1272,8 +1275,7 @@ Class RichEdit {
       ; Collect Start/End select positions
       Sel := This.GetSel()
       ; Determine/Set Flags
-      Flags := PD_ALLPAGES | PD_RETURNDC | PD_USEDEVMODECOPIES | PD_HIDEPRINTTOFILE | PD_NONETWORKBUTTON
-             | PD_NOCURRENTPAGE
+      Flags := PD_ALLPAGES | PD_RETURNDC | PD_USEDEVMODECOPIES | PD_HIDEPRINTTOFILE | PD_NONETWORKBUTTON | PD_NOCURRENTPAGE
       If (Sel.S = Sel.E)
          Flags |= PD_NOSELECTION
       Else
@@ -1282,11 +1284,11 @@ Class RichEdit {
       ; Flags, pages, and copies
       NumPut("UInt", Flags, "UShort", 1, "UShort", 1, "UShort", 1, "UShort", -1, "UShort", 1, PD, Offset)
       ; Note: Use -1 to specify the maximum page number (65535).
-      ; Programming note: The values that are loaded to these fields are critical. The Print dialog will not
-      ; display (returns an error) if unexpected values are loaded to one or more of these fields.
-      ; ----------------------------------------------------------------------------------------------------------------
+      ; Programming note: The values that are loaded to these fields are critical. The Print dialog will not display (returns an error) if unexpected values are loaded to one or more of these fields.
+      ; --------------------------------------------------------------------------------
       ; Print dialog box
       ; Open the Print dialog.  Bounce If the user cancels.
+      ; --------------------------------------------------------------------------------
       If !DllCall("Comdlg32.dll\PrintDlg", "Ptr", PD, "UInt")
          Throw Error("Function: " . A_ThisFunc . " - DLLCall of 'PrintDlg' failed.", -1)
       ; Get the printer device context.  Bounce If not defined.
@@ -1295,19 +1297,27 @@ Class RichEdit {
       ; Free global structures created by PrintDlg
       DllCall("GlobalFree", "Ptr", NumGet(PD, A_PtrSize * 2, "UPtr"))
       DllCall("GlobalFree", "Ptr", NumGet(PD, A_PtrSize * 3, "UPtr"))
-      ; ----------------------------------------------------------------------------------------------------------------
+      ; --------------------------------------------------------------------------------
       ; Prepare to print
       ; Collect Flags
+      ; --------------------------------------------------------------------------------
       Offset := A_PtrSize * 5
-      Flags := NumGet(PD, OffSet, "UInt")           ; Flags
-      ; Determine From/To Page
+      ; --------------------------------------------------------------------------------
+      ; Flags
+      ; --------------------------------------------------------------------------------
+      Flags := NumGet(PD, OffSet, "UInt")           
+      ; --------------------------------------------------------------------------------
+      ; function ...:   Determine From/To Page
+      ; --------------------------------------------------------------------------------
       If (Flags & PD_PAGENUMS) {
          PageF := NumGet(PD, Offset += 4, "UShort") ; nFromPage (first page)
          PageL := NumGet(PD, Offset += 2, "UShort") ; nToPage (last page)
       }
       Else
          PageF := 1, PageL := 65535
-      ; Collect printer capacities
+      ; --------------------------------------------------------------------------------
+      ; function ...:   Collect printer capacities
+      ; --------------------------------------------------------------------------------
       Caps := This.GetPrinterCaps(PDC)
       ; Set up page size and margins in Twips (1/20 point or 1/1440 of an inch)
       UML := This.Margins.LT                   ; user margin left
@@ -1320,12 +1330,16 @@ Class RichEdit {
       PMB := Caps.PHYH - Caps.VRES - Caps.POFY ; physical margin bottom
       LPW := Caps.HRES                         ; logical page width
       LPH := Caps.VRES                         ; logical page height
-      ; Adjust margins
+      ; --------------------------------------------------------------------------------
+      ; function ...:   Adjust margins
+      ; --------------------------------------------------------------------------------
       UML := UML > PML ? (UML - PML) : 0
       UMT := UMT > PMT ? (UMT - PMT) : 0
       UMR := UMR > PMR ? (UMR - PMR) : 0
       UMB := UMB > PMB ? (UMB - PMB) : 0
+      ; --------------------------------------------------------------------------------
       ; Define/Populate the FORMATRANGE structure
+      ; --------------------------------------------------------------------------------
       FR := Buffer((A_PtrSize * 2) + (4 * 10), 0)
       NumPut("UPtr", PDC, "UPtr", PDC, FR) ; hdc , hdcTarget
       ; Define FORMATRANGE.rc
@@ -1412,7 +1426,7 @@ Class RichEdit {
          Throw Error(ErrorMsg, -1)
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetMargins() { ; Get the default print margins
       Static PSD_RETURNDEFAULT := 0x00000400, PSD_INTHOUSANDTHSOFINCHES := 0x00000004
            , I := 1000 ; thousandth of inches
@@ -1444,7 +1458,7 @@ Class RichEdit {
       }
       Return True
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetPrinterCaps(DC) { ; Get printer's capacities
       Static HORZRES         := 0x08, VERTRES         := 0x0A
            , LOGPIXELSX      := 0x58, LOGPIXELSY      := 0x5A
@@ -1466,9 +1480,9 @@ Class RichEdit {
       Caps.VRES := Round((DllCall("GetDeviceCaps", "Ptr", DC, "Int", VERTRES, "Int") / LPXY) * 1440)
       Return Caps
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Internally used classes *
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; CHARFORMAT2 structure -> docs.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-charformat2w_1
    Class CHARFORMAT2 Extends Buffer {
       Size {
@@ -1551,14 +1565,14 @@ Class RichEdit {
          Get => NumGet(This, 115, "UChar")
          Set => NumPut("UChar", Value, This, 115)
       }
-      ; ----------------------------------------------------------------------------------------------------------------
+      ; --------------------------------------------------------------------------------
       __New() {
          Static CF2_Size := 116
          Super.__New(CF2_Size, 0)
          This.Size := CF2_Size
       }
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    ; PARAFORMAT2 structure -> docs.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-paraformat2_1
    Class PARAFORMAT2 Extends Buffer {
       Size {
@@ -1676,9 +1690,9 @@ Class RichEdit {
          This.Size := PF2_Size
       }
    }
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    ; Internally called methods *
-   ; ===================================================================================================================
+   ; --------------------------------------------------------------------------------
    GetBGR(RGB) { ; Get numeric BGR value from numeric RGB value or HTML color name
       Static HTML := {BLACK:  0x000000, SILVER: 0xC0C0C0, GRAY:   0x808080, WHITE:   0xFFFFFF
                     , MAROON: 0x000080, RED:    0x0000FF, PURPLE: 0x800080, FUCHSIA: 0xFF00FF
@@ -1688,11 +1702,11 @@ Class RichEdit {
          Return HTML.%RGB%
       Return ((RGB & 0xFF0000) >> 16) + (RGB & 0x00FF00) + ((RGB & 0x0000FF) << 16)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetRGB(BGR) {  ; Get numeric RGB value from numeric BGR-Value
       Return ((BGR & 0xFF0000) >> 16) + (BGR & 0x00FF00) + ((BGR & 0x0000FF) << 16)
    }
-   ; -------------------------------------------------------------------------------------------------------------------
+   ; --------------------------------------------------------------------------------
    GetMeasurement() { ; Get locale measurement (metric / inch)
       ; LOCALE_USER_DEFAULT = 0x0400, LOCALE_IMEASURE = 0x0D, LOCALE_RETURN_NUMBER = 0x20000000
       Static Metric := 2.54  ; centimeters
