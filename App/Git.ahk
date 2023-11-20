@@ -4,8 +4,32 @@
 #Include <Utils\Cmd>
 #Include <Links>
 #Include <System\Web>
-#Include <WINDOWS.v2>
+; #Include <WINDOWS.v2>
+#Include <Tools\Info>
 
+class gitlibrary {
+	__New() {
+		ghLib := Gui().MakeFontNicer(11)
+		ghLib.Opt('+Resize')
+		ghLib.AddText('cWhite Section x+10','Paste Link: ')
+		ghLib.AddEdit('vLink x+5','www.github.com...')
+		ghLib.AddText('Section', 'Enter the folder to save to: ')
+		ghLib.AddEdit('vFolder')
+		ghLib.Submit()
+		ghLib.Show()
+	}
+}
+^+!t::testgui()
+testgui() {
+	ghLib := Gui().DarkMode().MakeFontNicer(11)
+	ghLib.Opt('+Resize')
+	ghLib.AddText('Section x10','Paste Link: ')
+	ghLib.AddEdit('vLink x10 y+20','www.github.com...')
+	ghLib.AddText('Section x10 y+20', 'Enter the folder to save to: ')
+	ghLib.AddEdit('vFolder x10 y+20')
+	ghLib.Submit()
+	ghLib.Show()
+}
 
 git_InstallAHKLibrary(link, folder:=''){
 	git_install := Map()
@@ -32,7 +56,7 @@ git_InstallAHKLibrary(link, folder:=''){
 		'file_name', file_name, 
 		'file_text',file_html
 	)
-	git_file := libFolder file_name
+	git_file := libFolder '\' file_name
 	If !FileExist(git_file) {
 		WriteFile(git_file, 'git_app_link := ' '"' file_html '"')
 		; FileAppend(file_html,git_file, 'UTF-8')
