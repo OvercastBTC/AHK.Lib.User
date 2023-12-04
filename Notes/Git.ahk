@@ -90,7 +90,8 @@ Notes_Git := [
 
 	"git get link to the remote repository",
 	"git remote get-url origin",
-
+	
+	
 	'git b_drive setup', '
 	(
 		1. Open Explorer and navigate on the b_drive to where you want to create a folder

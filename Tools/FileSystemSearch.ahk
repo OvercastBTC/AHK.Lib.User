@@ -63,6 +63,12 @@ class FileSystemSearch extends Gui {
 		}
 		this.StartSearch(input)
 	}
+	static GetInput(input) {
+		if !input := CleanInputBox().WaitForInput() {
+			return false
+		}
+		this.StartSearch(input)
+	}
 
 	ValidatePath() {
 		SetTitleMatchMode("RegEx")

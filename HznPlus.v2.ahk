@@ -30,7 +30,7 @@ Persistent(1)
 #Include <Tools\Info>
 ; #Include <Misc\Out>
 #Include <System\UIA>
-; #Include <RTE.v2\Project Files\RichEdit_Editor_v2>
+#Include <RTE.v2\Project Files\RichEdit_Editor_v2>
 
 ; --------------------------------------------------------------------------------
 
@@ -43,9 +43,9 @@ Persistent(1)
 * @version 2.0.1
  ***********************************************************************/
 TraySetIcon('HICON:' Create_HznHorizon_ico())
-; --------------------------------------------------------------------------------
+; ---------------------------------------------------------------------------
 ; Check_Startup_Status()
-; -------------------------------------------------------------------------------------------------
+; ---------------------------------------------------------------------------
 /************************************************************************
 * @Title .........: Create Tray Menu
 * @Description ...: Create options (//TODO add functions here) for use with the script (e.g., run at startup, open horizon, etc.)
@@ -74,14 +74,14 @@ TraySetIcon('HICON:' Create_HznHorizon_ico())
 @function Save			(CTRL+S)
 @function HznGetText 	(CTRL+SHIFT+C) (like Ctrl+c & displays the text)
 @function Find			(CTRL+SHIFT+F)
-@function Replace			(CTRL+SHIFT+R)
+@function Replace		(CTRL+SHIFT+R)
  ***********************************************************************/
 
 ; --------------------------------------------------------------------------------
-#Hotif WinActive(A_ScriptName) && WinActive('__A_Process.v2.ahk')
+#Hotif WinActive(A_ScriptName) && WinExist('__A_Process.v2.ahk')
 	$^s::
 	{
-		Run('__A_Process.v2.ahk')
+		Run(WinExist('__A_Process.v2.ahk'))
 		Run(A_ScriptName)
 	}
 #HotIf
@@ -163,7 +163,7 @@ F7::button(117)			; spell check
 ^+c::HznGetText()
 *^s::HznSave()
 ^F4::HznClose() 		; fix [] => need to only be on certain screen(s).
-; ^+9::HznEnableButtons() ; works!!!
+; ^+9::HznEnableButtons(hTb := HznToolbar._hTb()) ; works!!!
 ^+8::HznTbCustomize() 	; works!!! enables and shows all buttons on the toolbar
 ; ^+7:: 					; ! test hotkey
 ; {
@@ -237,6 +237,7 @@ HznSave()
 	BlockInput(1)
 	pvTxt := A_DetectHiddenText, 	DetectHiddenText(0)
 	pvWin := A_DetectHiddenWindows, DetectHiddenWindows(0)
+	fCtl := ControlGetFocus('A')
 	; pvKey := A_KeyDelay, 			SetKeyDelay(20)
 	; Sleep(200)
 	idWin := WinGetID('ahk_exe hznHorizon.exe')
@@ -249,6 +250,7 @@ HznSave()
 	; Sleep(50)
 	; SendEvent('s')
 	SendEvent('{LAlt Up}')
+	Sleep(100)
 	; Send('{Down}' . '{Up}')
 	; try {
 	; 	hCtl := ControlGetFocus('A')
@@ -260,7 +262,8 @@ HznSave()
 	; ControlChooseIndex(1, hCtl, hWnd)
 	; ToolTip(win_title . ' (' . hWnd . ')' . '`n' . nCtl . ' (' . hCtl . ')')
 	SendEvent('{Enter}')
-	; Sleep(100)
+	Sleep(100)
+	ControlFocus(fCtl, 'A')
 	BlockInput(0)
 	SendLevel(0)
 	return
@@ -336,10 +339,10 @@ HznGetText(*)
 	BlockInput(1) ; 1 = On, 0 = Off
 	rect := Map()
 	hRect := []
-	hCtl := ControlGetFocus('A')
-	nCtl := ControlGetClassNN(hCtl)
-	hCtl_title := WinGetTitle(hCtl)
-	hHzn := WinExist('hznHorizon.exe')
+	static hCtl := ControlGetFocus('A')
+	static nCtl := ControlGetClassNN(hCtl)
+	static hCtl_title := WinGetTitle(hCtl)
+	static hHzn := WinExist('ahk_exe hznHorizon.exe')
 	; hznUIA := UIA.ElementFromHandle(hCtl).BoundingRectangle
 	; Infos(
 	; 	hznUIA.l . '`n' .
@@ -373,11 +376,7 @@ HznGetText(*)
 	; 	; hznUIA.b
 	; )
 	MouseMove(x, y, -1)
-	; RTE_Title := RichEdit_Editor_v2.file_name
-	; path := Paths.Lib '\RTE.v2\Project Files'
-	; RTE := path '\RichEdit_Editor_v2.ahk'
-	RTE_Title := 'test'
-	; RTE := RichEdit_Editor_v2.run
+	RTE_Title := 'hznRTE - A Rich Text Editor for Horizon'
 	file_name := '__receiver.ahk'
 	file_line := '', TX11 := '', match:='', aLine := ''
 	aTX11 := [], new_map := []
@@ -430,11 +429,11 @@ HznGetText(*)
 		return 0
 	}
 	
-	; --------------------------------------------------------------------------------
+	; -----------------------------------------------------------------------------
 	; Info('Loading Rich Text Editor...', 3000)
 	; Sleep(500)
 	
-	; RTE := RichEdit()
+	RTE()
 	hRTE := WinWaitActive('hznRTE ')
 	pid_RTE := WinGetPID(hRTE)
 	Sleep(100)
@@ -453,11 +452,11 @@ HznGetText(*)
 	WinActivate(hCtl)
 	ControlFocus(hCtl, hCtl_title)
 	HznSelectAll(hCtl)
-	; Send('+{Insert}') ; fix <==== DON'T USE THIS, IT PASTES THE WINDOWS DEFAULT FONT WHICH IS ARIAL 12, HORIZON IS TIMES NEW ROMAN 11.
-	; Send('^v')
+	; Send('+{Insert}') ;! <==== DON'T USE THIS, IT PASTES THE WINDOWS DEFAULT FONT WHICH IS ARIAL 12, HORIZON IS TIMES NEW ROMAN 11.
+	Send('^v')
 	BlockInput(0)
 	SendLevel(0)
-	return
+	; return
 }
 
 ; --------------------------------------------------------------------------------
@@ -496,13 +495,13 @@ HznEnableButtons(hTb) {
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
 	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0,, hTb)
-	OutputDebug(buttonCount)
+	; Infos('Btn Ct: ' buttonCount)
 	; --------------------------------------------------------------------------------
 	; Step: Use the @params to enable the button
 	; --------------------------------------------------------------------------------
 	Loop buttonCount {
 		idCommand := A_Index +99
-		If (idCommand <= 103) {
+		If (idCommand <= 102) {
 			Msg := TB_SETSTATE, wParam := idCommand, lParam_HI := 4, lParam_LO := TBSTATE_ENABLED, control := hTb
 		; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 			SendMessage(Msg, wParam, lParam_HI|lParam_LO,control,hTb)
@@ -527,7 +526,7 @@ HznEnableButtons(hTb) {
 			}
 		}
 	}
-	OutputDebug(item_list)
+	; Infos(item_list)
 	BlockInput(0)
 	SendLevel(0)
 	; return
@@ -567,10 +566,18 @@ button(idCommand:=0)
 	initialSendLevel := A_SendLevel
 	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel) : (A_SendLevel + 1)))
 	BlockInput(1) ; 1 = On, 0 = Off
+	Static  WM_COMMAND := 273, TB_GETBUTTON := 1047, TB_BUTTONCOUNT := 1048
+	Static	TB_COMMANDTOINDEX := 1049, TB_GETITEMRECT := 1053 
+	Static	MEM_PHYSICAL := 4, MEM_RELEASE := 32768, TB_GETSTATE := 1042
+	Static	TB_GETBUTTONSIZE := 1082, TB_ENABLEBUTTON := 0x0401
 	hTb := HznToolbar._hTb()
 	nCtl := HznToolbar._nCtl()
 	; --------------------------------------------------------------------------------
-	HznButton(hTb, idCommand, nCtl)
+	; HznButton(hTb, idCommand, nCtl)
+	; function: !!! ===> Programatically "Click" the button!!! <=== !!!
+	Msg := WM_COMMAND, wParam_hi := 0, wParam_lo := idCommand, lParam := control := hTb
+	; DllCall('SendMessage', 'UInt', hTb, 'UInt', Msg, 'UInt', wParam_hi | wParam_lo, 'UIntP', lParam)
+	SendMessage(Msg, wParam_hi | wParam_lo, lParam, , hTb)
 	; --------------------------------------------------------------------------------
 	SendLevel(0) ; restore normal SendLevel
 	BlockInput(0) ; 1 = On, 0 = Off
@@ -653,8 +660,8 @@ HznButton(hTb, idCommand, nCtl?) {
 		; * Allocate memory for the TBBUTTON structure in the target process's address space
 		remoteMemory := remote_mem_buff(hProcess, Is32bit, &TBBUTTON_SIZE)
 		; --------------------------------------------------------------------------------
-		DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", MEM_RELEASE)
-		DllCall("CloseHandle", "Ptr", hProcess)
+		; DllCall("VirtualFreeEx", "Ptr", hProcess, "Ptr", remoteMemory, "UPtr", 0, "UInt", MEM_RELEASE)
+		; DllCall("CloseHandle", "Ptr", hProcess)
 		; --------------------------------------------------------------------------------
 		; Step: Store previous and set min delay
 		; --------------------------------------------------------------------------------
@@ -662,15 +669,15 @@ HznButton(hTb, idCommand, nCtl?) {
 		SetControlDelay(-1), SetMouseDelay(-1), SetWinDelay(-1)
 		; --------------------------------------------------------------------------------
 		; try (idCommand < 100) ? idCommand := ((n - 1) + 100) : idCommand
-		btnstate := GETBUTTONSTATE(idCommand, hTb)
+		; btnstate := GETBUTTONSTATE(idCommand, hTb)
 		; If (!btnstate = 4) || (!btnstate = 6) ;! note: (AJB - 09/2023) verified
 		; 	return
 		
 		; --------------------------------------------------------------------------------
-		; function: !!! ===> Programatically "Click" the button!!! <=== !!!
-		Msg := WM_COMMAND, wParam_hi := 0, wParam_lo := idCommand, lParam := control := hTb
-		; DllCall('SendMessage', 'UInt', hTb, 'UInt', Msg, 'UInt', wParam_hi | wParam_lo, 'UIntP', lParam)
-		SendMessage(Msg, wParam_hi | wParam_lo, lParam, , hTb)
+		; ; function: !!! ===> Programatically "Click" the button!!! <=== !!!
+		; Msg := WM_COMMAND, wParam_hi := 0, wParam_lo := idCommand, lParam := control := hTb
+		; ; DllCall('SendMessage', 'UInt', hTb, 'UInt', Msg, 'UInt', wParam_hi | wParam_lo, 'UIntP', lParam)
+		; SendMessage(Msg, wParam_hi | wParam_lo, lParam, , hTb)
 		; --------------------------------------------------------------------------------
 		; Step: Restore previous and set delay
 		; --------------------------------------------------------------------------------
@@ -681,13 +688,7 @@ HznButton(hTb, idCommand, nCtl?) {
 	}
 	catch
 		throw ValueError("The specified toolbar " nCtl " was not found. Please ensure the edit field has been selected and try again.", -1)
-	try OutputDebug('ButtonCount: ' buttonCount '`n'
-		. 'pID: ' tpID '`n'
-		. 'remoteMemory: ' remoteMemory '`n'
-		. 'hProcess: ' hProcess '`n'
-		. 'btnstate: ' btnstate '`n'
-	)
-	Return 0
+	; Return 0
 }
 ; --------------------------------------------------------------------------------
 /**
@@ -997,23 +998,25 @@ GETBUTTONINFO(hTb?){
 	; } TBBUTTONINFO, *LPTBBUTTONINFO ;
 	; 48: 32
 }
-GETBUTTONSTATE(idButton,hTb)
+GETBUTTONSTATE(idButton, hTb := HznToolbar._hTb())
 {
 	Static TB_GETSTATE := 1042 ; 0x0412
 	; hTb := HznToolbar._hTb()
+	btnCt := hznButtonCount()
+	; Infos(btnCt)
 	Msg := TB_GETSTATE, wParam := idButton, lParam := 0, control := hTb
-	GETSTATE := SendMessage(TB_GETSTATE, idButton, 0, hTb, hTb)
+	GETSTATE := SendMessage(TB_GETSTATE, wParam, lParam, hTb, hTb)
 	btnstate := SubStr(GETSTATE,1,1)
 	btnname := idButton = 100 ? 'Bold' : idButton = 101 ? 'Italic' : idButton = 102 ? 'Underline' : ''
-	If (btnstate = 4) || (btnstate = 6) || (btnstate = 1)
-		{
-		return btnstate
-		}
-	MsgBox(   'The ' btnname
-			. ' button is not available.' '`n'
-			. 'idButton: ' idButton '`n'
-			. 'btnstate: ' btnstate)
-	OutputDebug("btnstate: " . btnstate . "`n")
+	; If (btnstate = 4) || (btnstate = 6) || (btnstate = 1)
+	; 	{
+	; 	return btnstate
+	; 	}
+	; MsgBox(   'The ' btnname
+	; 		. ' button is not available.' '`n'
+	; 		. 'idButton: ' idButton '`n'
+	; 		. 'btnstate: ' btnstate)
+	; OutputDebug("btnstate: " . btnstate . "`n")
 	return btnstate
 }
 ; --------------------------------------------------------------------------------

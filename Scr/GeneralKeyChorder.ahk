@@ -39,9 +39,11 @@
 		; "a", () => Browser.RunLink(Links["ahk v2 docs"]),
 		'a', HznAutoComplete,
 		; 'b', [func here],
-		"c", () => Infos(A_Clipboard),
+		; "c", () => Infos(A_Clipboard),
+		"c", () => Browser.RunLink(Links["chromeriver"]),
 		; "d", () => DS4.winObj.App(),
-		"d", () => Browser.RunLink(Links["ahk v2 docs"]),
+		; "d", () => Browser.RunLink(Links["ahk v2 docs"]),
+		"d", Browser.RunLink(Links["ahk v2 docs"]),
 		"e", () => Browser.RunLink(Links["gogoanime"]),
 		"f", () => Browser.RunLink(Links["skill factory"]),
 		"g", () => Browser.RunLink(Links["my github"]),
@@ -67,6 +69,59 @@
 		"x", () => Browser.RunLink(Links["regex"]),
 		; 'y', ,
 		; 'z', ,
+		; --------------------------------------------------------------------------------
+		; 'a', ,
+		; 'b', ,
+		; 'c', ,
+		; 'd', ,
+		; 'e', ,
+		; 'f', ,
+		; 'g', ,
+		; 'h', ,
+		; 'i', ,
+		; 'j', ,
+		; 'k', ,
+		; 'l', ,
+		; 'm', ,
+		; 'n', ,
+		; 'o', ,
+		; 'p', ,
+		; 'q', ,
+		; 'r', ,
+		; 's', ,
+		; 't', ,
+		; 'u', ,
+		; 'v', ,
+		; 'w', ,
+		; 'x', ,
+		; 'y', ,
+		; 'z', ,
+		; 'A', ,
+		; 'B', ,
+		; 'C', ,
+		; 'D', ,
+		; 'E', ,
+		; 'F', ,
+		; 'G', ,
+		; 'H', ,
+		; 'I', ,
+		; 'J', ,
+		; 'K', ,
+		; 'L', ,
+		; 'M', ,
+		; 'N', ,
+		; 'O', ,
+		; 'P', ,
+		; 'Q', ,
+		; 'R', ,
+		; 'S', ,
+		; 'T', ,
+		; 'U', ,
+		; 'V', ,
+		; 'W', ,
+		; 'X', ,
+		; 'Y', ,
+		; 'Z', ,
 
 	)
 	; --------------------------------------------------------------------------------
@@ -129,7 +184,7 @@
 HznAutoComplete() {
 	; SetCapsLockState("Off")
 	acInfos := Infos('AutoComplete enabled'
-					'Press "Shift+{Enter}",to activate'
+					'Press "Shift+{Enter}" to activate'
 				)
 	; acInfos := Infos('Press "ctrl + a" to activate, or press "Shift+Enter"')
 	; Hotkey(" ", (*) => createGUI())
@@ -138,7 +193,7 @@ HznAutoComplete() {
 	; createGUI()
 	createGUI() {
 		initQuery := "Recommendation Library"
-		initQuery := ""
+		; initQuery := ""
 		; global entriesList := ["Red", "Green", "Blue"]
 		mList := []
 		mlist := RecLibs.understanding_the_risk
@@ -183,7 +238,7 @@ HznAutoComplete() {
 		QSGui.OnEvent("Escape", (*) => QSGui.Destroy())
 		; QSGui.Show( "w222")
 		; QSGui.Show("w" width ' h200')
-		QSGui.Show( "AutoSize")
+		QSGui.Show( "AutoSize NA")
 	}
 
 	processInput() {

@@ -32,17 +32,11 @@
 #include <System\UIA>
 #Include <Scr\Keys\VimMode>
 #Include <Utils\GetFilesSortedByDate>
-#Include <Common\Misc Scripts.V2>
 ; --------------------------------------------------------------------------------
-RTM := A_TrayMenu
-; TrayMenu := MenuBar()
-RTM.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
-RTM.Add()
-RTM.AddStandard()
-; Tray.Show
-; ---------------------------------------------------------------------------
+
 SetCapsLockState("AlwaysOff")
-; ---------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+
 toggleCapsLock()
 {
     SetCapsLockState(!GetKeyState('CapsLock', 'T'))
@@ -57,7 +51,6 @@ SaveCR(){
 	
 }
 #HotIf
-
 CapsLock:: {
 	
 	if !input := CleanInputBox().WaitForInput() {
@@ -87,7 +80,7 @@ CapsLock:: {
 		; 'edit runner', () => VSCodeEdit(, 'runner.ahk'),
 		; 'edit', (input) => VSCodeEdit(, input),
 		; 'runner', () => VSCodeEdit('c:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\Scr\Runner.ahk'),
-		'runner', () => Run(Paths.Code ' "c:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\Scr\Runner.ahk"'),
+		; 'runner', () => Run(Paths.Code ' "c:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\Scr\Runner.ahk"'),
 		; 'runner', () => EditFile(Paths.Lib '\Scr\Runner.ahk'),
 		; 'runner', RunWithVSCode(Paths.code, Paths.Lib '\Scr\Runner.ahk'),
 		'hznp', () => EditFile(Paths.Lib '\HznPlus.v2.ahk'),
@@ -145,24 +138,11 @@ CapsLock:: {
 		'run lnchr', () => Run(Paths.lnchr '\LNCHR-Main.ahk'),
 		'test', () => uFile(3,0,1),
 		'key', () => KeyCodeGetter,
-		'uia', () => Run(Paths.v2Lib '\System\UIA.ahk'),
+		'uia', () => Run(Paths.Lib '\System\UIA.ahk'),
 		; 'bmle', () => FileSystemSearch(Paths.FMGlobal) => FileSystemSearch.StartSearch(),
-		'mytime',MyTime,
-		'approvals',approvals,
-		'map', makeCheatSheet,
-		'os',OSGui,
 	)
-	; ---------------------------------------------------------------------------
-	static makeCheatSheet(){
-		for key, value in runner_commands {
-			Infos('key: ' key ' ' 'value: ' value)
-		}
-	}
 	; --------------------------------------------------------------------------------
-	static MyTime(){
-		Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp')
-		; Run('https://engnet/EngNet/engnet/engnet.asp')
-	}
+
 	; --------------------------------------------------------------------------------
 		/**
 	 * Syntax sugar: "Run *this* using *this program*"
@@ -186,6 +166,7 @@ CapsLock:: {
 
 	static visitplanner(search := '') {
 		vpLink := 'https://app.fmglobal.com/polaris/assignments/'
+		; vpLink := 'https://prodfmgidp.b2clogin.com/prodfmgidp.onmicrosoft.com/b2c_1a_main_signup_signin/oauth2/v2.0/authorize?client_id=c3115488-df7a-48b6-afdf-5c9bf9bb50a8&scope=c3115488-df7a-48b6-afdf-5c9bf9bb50a8%20openid%20profile%20offline_access&redirect_uri=https%3A%2F%2Fapp.fmglobal.com%2Fpolaris%2Fassignments%2F&client-request-id=e45f427d-e897-4aec-bcec-da88fdd76839&response_mode=fragment&response_type=code&x-client-SKU=msal.js.browser&x-client-VER=2.32.2&client_info=1&code_challenge=X2m2_jDyAxSZxhE1e5VKxk6f5B0EmKWVqrjHg3LJW2U&code_challenge_method=S256&nonce=22c37f1f-0dc0-4868-ba06-2a51b08df346&state=eyJpZCI6ImI2NmQyMzY0LTdiNjMtNDQwYi04MGU4LTYyNWNjNTI4OTM2MiIsIm1ldGEiOnsiaW50ZXJhY3Rpb25UeXBlIjoicmVkaXJlY3QifX0%3D'
 
 		login()
 		login(){
@@ -195,7 +176,7 @@ CapsLock:: {
 			; Sleep(100)
 			WinWaitActive('Sign In - Google Chrome') || WinWaitActive('Polaris - Assignments - Google Chrome')
 			; WinWaitActive('Sign In - Google Chrome')
-			vp := UIA.ElementFromChromium('A',false,5000)
+			vp := UIA.ElementFromChromium('A',false,1000)
 			evp := vp.FindElement({AutomationId: 'signInName'})
 			evp.Value := 'adam.bacon@fmglobal.com'
 			; vvp := vp.FindElement({AutomationId: 'signInName'})
@@ -210,51 +191,6 @@ CapsLock:: {
 			vpN.Invoke()
 		}
 	}
-	static approvals(search := '') {
-		vpLink := 'https://www.approvalguide.com/'
-		Title := 'FM Approvals - Approval Guide - '
-		login()
-		
-		login(){
-			RunWait(vpLink)
-			; hWe := WinExist(pIDvp)
-			; WinWaitActive(hWe)
-			; Sleep(100)
-			Loop 5 {
-				WinWaitActive(Title)
-				If !WinActive(Title) {
-					Sleep(500)
-				}
-			} Until WinActive(Title)
-			aG := UIA.ElementFromChromium('A',false,5000)
-			; sleep(3000)
-			log_in := aG.WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},5000).Invoke()
-			; evp := vp.FindElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"})
-			; evp := vp.FindElement({Name: "Log In"})
-			; evp.Highlight(5000)
-			; evp.Invoke()
-			; Sleep(2000)
-			; weml := eml.WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit"},5000)
-			Sleep(3000)
-			agE := UIA.ElementFromChromium('A',false,5000)
-			feml := agE.FindElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"}).Value := 'adam.bacon@fmglobal.com'
-			; levp := vp.FindElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},5000)
-			; feml.Value := 'adam.bacon@fmglobal.com'
-			; ---------------------------------------------------------------------------
-			agL := UIA.ElementFromChromium('A',false,5000)
-			slink := agL.WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},5000)
-			; flink := agL.FindElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},5000)
-			slink.Invoke()
-			; ---------------------------------------------------------------------------
-			Sleep(2000)
-			pass := UIA.ElementFromChromium('A',false,5000)
-			wpass := pass.WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},5000).Value := '80ab{*}{*}HD19KB'
-			; wpass.value := 'abcd1234'
-			; ---------------------------------------------------------------------------
-			return
-		}
-	}
-	
 	; --------------------------------------------------------------------------------
 	static exitvp(){
 		ehW := WinExist('Polaris ')
@@ -432,7 +368,20 @@ CapsLock:: {
 	; 	'addlib'	(input) => CleanInputBox.SetInput(git_InstallAHKLibrary(input)),
 	; )
 
+	if runner_commands.Has(input) {
+		runner_commands[input].Call()
+		return
+	}
 
+	regex := "^("
+	for key, _ in runner_regex {
+		regex .= key "|"
+	}
+	regex .= ") (.+)"
+	result := input.RegexMatch(regex)
+	if runner_regex.Has(result[1]){
+		runner_regex[result[1]].Call(result[2])
+	}
 	static _GitLinkOpenCopy(input) {
 		link := Git.Link(input)
 		Browser.RunLink(link)
@@ -724,23 +673,10 @@ CapsLock:: {
 			file_Open := ''
 			return rf
 		}
-		return 0
 	}
 	; --------------------------------------------------------------------------------
-	if runner_commands.Has(input) {
-		runner_commands[input].Call()
-		return
-	}
-
-	regex := "^("
-	for key, _ in runner_regex {
-		regex .= key "|"
-	}
-	regex .= ") (.+)"
-	result := input.RegexMatch(regex)
-	if runner_regex.Has(result[1]){
-		runner_regex[result[1]].Call(result[2])
-	}
+	; hzntx11 := FileOpen(file_name,'rw','UTF-8')
+	return 0
 }
 ; }
 

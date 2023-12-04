@@ -6,10 +6,11 @@
 #Include <Tools\ToggleInfo>
 #Include <Environment>
 #Include <Abstractions\Mouse>
-
+; --------------------------------------------------------------------------------
 !Space::Environment.VimMode := !Environment.VimMode
 
 #HotIf Environment.VimMode
+
 
 s::Mouse.MoveLeft(Mouse.MediumMove)
 d::Mouse.MoveUp(Mouse.MediumMove)
@@ -74,12 +75,14 @@ i::Home
 o::End
 u::PgUp
 p::PgDn
-*z::SendInput("{Blind}{Click WheelLeft}") ; Solution by childfs6865
+;? ..........: Solution by childfs6865
+*z::SendInput("{Blind}{Click WheelLeft}") 
 *x::SendInput("{Blind}{Click WheelUp}")
 *c::SendInput("{Blind}{Click WheelDown}")
 *v::SendInput("{Blind}{Click WheelRight}")
 
-a::Volume_Down
+; a::Volume_Down
++q::Volume_Down
 q::Volume_Up
 t::Media_Play_Pause
 m::Volume_Mute

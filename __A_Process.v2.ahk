@@ -401,38 +401,20 @@ EnableButtons(hTb) {
 	; Step: count and load all the msvb_lib_toolbar buttons into memory
 	; --------------------------------------------------------------------------------
 	buttonCount := SendMessage(TB_BUTTONCOUNT, 0, 0,, hTb)
-	; Infos(buttonCount)
 	; --------------------------------------------------------------------------------
 	; Step: Use the @params to enable the button
 	; --------------------------------------------------------------------------------
 	Loop buttonCount {
 		idCommand := A_Index +99
-		If (idCommand <= 103) {
+		If (idCommand <= 102) {
 			Msg := TB_SETSTATE, wParam := idCommand, lParam_HI := 4, lParam_LO := TBSTATE_ENABLED, control := hTb
-		; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 			SendMessage(Msg, wParam, lParam_HI|lParam_LO,control,hTb)
-			tryGetItemList(idCommand)
 		}
 		If (idCommand > 108) {
 			Msg := TB_SETSTATE, wParam := idCommand, lParam_HI := 4, lParam_LO := TBSTATE_ENABLED, control := hTb
-		; SendMessage(TB_SETSTATE, idCommand, 0|TBSTATE_ENABLED,,hTb)
 			SendMessage(Msg, wParam, lParam_HI|lParam_LO,control,hTb)
 		}
-		tryGetItemList(control) {
-			try {
-				button_items_rows := ControlGetItems(control)
-				item := ''
-				item_list := ''
-				; try {
-					for item in button_items_rows {
-						item_list .= item . '`n'
-						FileAppend(item_list, '_button_items_rows.ahk', 'UTF-8')
-					}
-				; }
-			}
-		}
 	}
-	; Infos(item_list)
 	BlockInput(0)
 	SendLevel(0)
 }

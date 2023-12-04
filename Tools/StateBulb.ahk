@@ -12,7 +12,7 @@ class StateBulb {
 		switch Type(color) {
 			case "String":  this.Color := StateBulb.Colors[color]
 			case "Integer": this.Color := StateBulb.ColorOrder[color]
-			default:        throw StateBulb.ConstructorColorTypeError(color)
+			default: throw StateBulb.ConstructorColorTypeError(color)
 		}
 	}
 
