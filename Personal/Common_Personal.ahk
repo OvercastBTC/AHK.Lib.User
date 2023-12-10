@@ -109,32 +109,45 @@
 #HotIf
 ; - Delta---------------------
 :*:deltalog::Run("https://www.delta.com/mydelta/walletMyReceiptSummary")
-#HotIf WinActive("Delta")
-:*:usr::9339385271
-:*:pw::HDBacon{!}9801988
-#HotIf
+
+HotIf(WinActive("Delta"))
+; :*:usr::9339385271
+:X*:usr::Send(log.delta.login['u'])
+; :*:pw::HDBacon{!}9801988
+:X*:pw::Send(log.delta.login['p'])
+HotIf()
 ; - Alaska--------------------
 :X?:aklog::Run('https://www.alaskaair.com')
 
 aTitle := 'Alaska Airlines'
-HotIf(WinActive(aTitle))
+; HotIf(WinActive(aTitle))
+HotIf(WinActive('Alaska Airlines'))
 ; #HotIf WinActive("Alaska Airlines")
-:*:usr::72832631
-:*:pw::Ah{!}9801988
+; :*:usr::72832631
+:X*:usr::Send(log.alaksa.login['u'])
+:X*:pw::Send(log.alaksa.login['p'])
 ; #HotIf
 HotIf()
 
-hotif(WinActive('Alaska'))
-:*X:pw::pw.pws['alaska']
-class pw {
+HotIf(WinActive('Alaska'))
+:*X:pw::log.alaksa.login['u']
+class log {
 	class alaksa {
-		usr := 72832631
-		pw	:= 'Ah{!}9801988'
+		static usr := 72832631
+		static pw  := 'Ah{!}9801988'
+		static login := Map(
+			'u', this.usr,
+			'p',this.pw,
+		)
 	}
-	static pws := Map(
-		'alaska usr', 'Ah{!}9801988',
-		'alaska pw','Ah{!}9801988',
-	)
+	Class delta {
+		static usr := '9339385271'
+		static pw := 'Ah{!}9801988'
+		static login := Map(
+			'u', this.usr,
+			'p', this.pw,
+		)
+	}
 }
 ; --------------------------------------------------------------------------------
 /** @airline United */

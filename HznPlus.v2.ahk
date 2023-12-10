@@ -250,7 +250,7 @@ HznSave()
 	; Sleep(50)
 	; SendEvent('s')
 	SendEvent('{LAlt Up}')
-	Sleep(100)
+	Sleep(150)
 	; Send('{Down}' . '{Up}')
 	; try {
 	; 	hCtl := ControlGetFocus('A')

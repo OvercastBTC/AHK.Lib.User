@@ -30,7 +30,7 @@
 
 expensereport() {
 	expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-	; expRpt.FindElement({Type:'Text', Name:'help'}).Highlight(100).Invoke()
+	; expRpt.WaitElement({Type:'Text', Name:'help'}, delay).Highlight(100).Invoke()
 	; Run(A_ScriptName)
 	sValidKeys := Registers.ValidRegisters "[]\{}|-=_+;:'`",<.>/?"
 	try key := Registers.ValidateKey(GetInput("L1", "{Esc}").Input, sValidKeys)
@@ -152,6 +152,9 @@ expensereport() {
 		}
 	}
 	; --------------------------------------------------------------------------------
+	static waitelement_delay := delay := 30000
+	static delay := waitelement_delay
+	; --------------------------------------------------------------------------------
 	static _ViewNote(input?) {
 		if !input := CleanInputBox().WaitForInput() {
 			return
@@ -183,7 +186,6 @@ expensereport() {
 		Infos(link)
 		Browser.RunLink(link)
 	}
-
 	static _ViewRecs() {
 		if !input := CleanInputBox().WaitForInput()
 			return
@@ -193,7 +195,6 @@ expensereport() {
 		A_Clipboard := RecLibs
 		Infos(RecLibs)
 	}
-
 	static _ShowInInfo() {
 		if !input := CleanInputBox().WaitForInput()
 			return
@@ -203,7 +204,7 @@ expensereport() {
 	static TripPurpose() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
 		Sleep(100)
-		expRpt.FindElement({Type: '50003 (ComboBox)', Name: "Trip Purpose", Value: "-- Select --", LocalizedType: "combo box", AutomationId: "TripPurpose"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50003 (ComboBox)', Name: "Trip Purpose", Value: "-- Select --", LocalizedType: "combo box", AutomationId: "TripPurpose"},delay).Highlight(100).Invoke()
 		Send('{Down 3}')
 		Sleep(100)
 		Send('{Enter}')
@@ -226,12 +227,12 @@ expensereport() {
 	static FeeType(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
 		Sleep(100)
-		expRpt.FindElement({Type: '50003 (ComboBox)', Name: "Fee Type", Value: "-- Select --", LocalizedType: "combo box", AutomationId: "TypeAirFees"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50003 (ComboBox)', Name: "Fee Type", Value: "-- Select --", LocalizedType: "combo box", AutomationId: "TypeAirFees"}, delay).Highlight(100).Invoke()
 	}
 	static Save(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
 		Sleep(100)
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Save", LocalizedType: "button", AutomationId: "save-btn"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Save", LocalizedType: "button", AutomationId: "save-btn"}, delay).Highlight(100).Invoke()
 		
 	}
 	static WorkClothes(){
@@ -246,7 +247,7 @@ expensereport() {
 	}
 	static Travel_Agency(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Travel Agency Transaction Fees - TMC", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Travel Agency Transaction Fees - TMC", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static RentalCar() {
 		travel()
@@ -260,11 +261,11 @@ expensereport() {
 	}
 	static Airline_Fee(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Airline Fee", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Airline Fee", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static Rental_Car(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Car Rental", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Car Rental", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static Office_Expenses(){
 		OfficeExpenses()
@@ -273,19 +274,19 @@ expensereport() {
 	}
 	static OfficeExpenses() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Office Expenses", LocalizedType: "menu item"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Office Expenses", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 	}
 	static OfficeSupplies(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Office Supplies", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Office Supplies", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static Misc() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Misc", LocalizedType: "menu item"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Misc", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 	}
 	static OtherMisc(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Other / Misc", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Other / Misc", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static Hotel() {
 		travel()
@@ -294,11 +295,11 @@ expensereport() {
 	}
 	static travel() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Travel", LocalizedType: "menu item"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Travel", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 	}
 	static h_hotel() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Hotel", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Hotel", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static CarService() {
 		travel()
@@ -307,11 +308,11 @@ expensereport() {
 
 		static travel() {
 			expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-			expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Travel", LocalizedType: "menu item"}).Highlight(100).Invoke()
+			expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Travel", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 		}
 		static Car_Service() {
 			expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-			expRpt.FindElement({Type: '50000 (Button)', Name: "Car Service", LocalizedType: "button"}).Highlight(100).Invoke()
+			expRpt.WaitElement({Type: '50000 (Button)', Name: "Car Service", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 		}
 	}
 	static CompanyCar(){
@@ -321,16 +322,16 @@ expensereport() {
 	}
 	static Company_Car() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Company Car", LocalizedType: "menu item"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Company Car", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 	}
 	static Fuel(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50000 (Button)', Name: "Fuel / Company Car", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Fuel / Company Car", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	; static empMeal() {
 	; 	; static Meal() {
 	; 	; 	expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-	; 	; 	expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Meals / Entertainment", LocalizedType: "menu item"}).Highlight(100).Invoke()
+	; 	; 	expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Meals / Entertainment", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 	; 	; }
 	; }
 	static EmployeeMeal(){
@@ -340,15 +341,20 @@ expensereport() {
 	}
 	static Meals_Entertainment() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: '50011 (MenuItem)', Name: "Meals / Entertainment", LocalizedType: "menu item"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Meals / Entertainment", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
 	}
 	static Employee_Meals() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.FindElement({Type: 'Type: 50000 (Button)', Name: "Employee Meals", LocalizedType: "button"}).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: 'Type: 50000 (Button)', Name: "Employee Meals", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	; --------------------------------------------------------------------------------
 }
 
+; HotIfWinActive('Chrome River - Google Chrome')
+	; Hotstring("EndChars", " ")
+; Hotstring(':*:meal', 'Business Travel - Meal - ')
+; :*:meal::'Business Travel - Meal - '
+; HotIfWinActive()
 ; ^+#l::HznAutoComplete()
 
 hAutoComplete() {

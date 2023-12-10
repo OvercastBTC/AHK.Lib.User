@@ -1,63 +1,27 @@
-; --------------------------------------------------------------------------------
+; ---------------------------------------------------------------------------
 #Requires AutoHotkey v2+
 #Include <Directives\__AE.v2>
-; --------------------------------------------------------------------------------
-#Include <Environment>
-#Include <Links>
-#Include <App\Spotify>
-#Include <App\Davinci>
-#Include <Extensions\String>
-#Include <Utils\ClipSend>
-#Include <Extensions\String>
-#Include <Utils\Win>
-#Include <Paths>
-#Include <Utils\Unicode>
-#Include <Abstractions\Script>
-#Include <Abstractions\Text>
-#Include <Converters\DateTime>
-#Include <Tools\CleanInputBox>
-#Include <Misc\Meditate>
-#Include <Misc\CountLibraries>
-#Include <App\Gimp>
-#Include <App\Shows>
-#Include <Misc\Calculator>
-#Include <App\Explorer>
-#Include <App\Browser>
-; --------------------------------------------------------------------------------
-#Include <Scr\GeneralKeyChorder>
-#Include <Scr\ExpenseReportKeyChorder>
-#Include <Directives\_setup>
-#Include <Tools\KeycodeGetter>
-#Include <Tools\FileSystemSearch>
-#include <System\UIA>
-#Include <Scr\Keys\VimMode>
-#Include <Utils\GetFilesSortedByDate>
-#Include <Common\Misc Scripts.V2>
-; --------------------------------------------------------------------------------
+; ---------------------------------------------------------------------------
 RTM := A_TrayMenu
-; TrayMenu := MenuBar()
-RTM.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
+RTM.Delete()
 RTM.Add()
 RTM.AddStandard()
-; Tray.Show
+; RTM.Show() ;? For a menu at the mouse
+; ---------------------------------------------------------------------------
+#Include <Includes\Includes_Runner>
+; ---------------------------------------------------------------------------
+
 ; ---------------------------------------------------------------------------
 SetCapsLockState("AlwaysOff")
 ; ---------------------------------------------------------------------------
-toggleCapsLock()
-{
-    SetCapsLockState(!GetKeyState('CapsLock', 'T'))
-}
-; #j:: {
-#HotIf WinActive("Chrome River - Google Chrome")
-*^s::SaveCR()
-SaveCR(){
-	expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-	Sleep(100)
-	expRpt.FindElement({Type: '50000 (Button)', Name: "Save", LocalizedType: "button", AutomationId: "save-btn"}).Highlight(100).Invoke()
-	
-}
-#HotIf
+; toggleCapsLock() {
+; 	SetCapsLockState(!GetKeyState('CapsLock', 'T'))
+; }
+; ---------------------------------------------------------------------------
 
+
+
+; ---------------------------------------------------------------------------
 CapsLock:: {
 	
 	if !input := CleanInputBox().WaitForInput() {
@@ -67,9 +31,10 @@ CapsLock:: {
 	static runner_commands := Map(
 
 		"libs?",	() => Infos(CountLibraries()),
-		"drop",		() => Shows.DeleteShow(true),
-		"finish",	() => Shows.DeleteShow(false),
-		"show",		() => Shows.Run("episode"),
+		; "drop",		() => Shows.DeleteShow(true),
+		; "finish",	() => Shows.DeleteShow(false),
+		; "show",		() => Shows.Run("episode"),
+		'getkey', KeyCodeGetter,
 		; "down",		() => Shows.Run("downloads"),
 		"down",		() => Run(Paths.Downloads),
 		'start',	() => Run(A_StartUp),
@@ -126,11 +91,12 @@ CapsLock:: {
 		; "saved",	() => Explorer.WinObjs.SavedScreenshots.RunAct_Folders(), 
 		; fix RunAct_Folders() => dunno where that is
 		; "screenshots", () => Explorer.WinObjs.Screenshots.RunAct_Folders(), 
-		'vim', () => Environment.VimMode := !Environment.VimMode,
-		'yy', () => Environment.VimMode := !Environment.VimMode,
-		; 'main',		() => Win.App(Paths.Prog '\AHK Script.v2.ahk'),
+		'vim', 		() => Environment.VimMode := !Environment.VimMode,
+		'yy', 		() => Environment.VimMode := !Environment.VimMode,
+		'main',		() => Main.winObj.App(),
 		; 'main',	_Install_Git,
-		'main',	_CheckUpdate,
+		; 'main',	_CheckUpdate,
+		'checkupdate',	_CheckUpdate,
 		; 'main', () => Infos(DriveGetFileSystem('https://fmglobal.sharepoint.com/:u:/r/teams/AutoHotKeyUserGroup/Shared Documents/General/Starter Script Files and Guide - V2/Lib')),
 		; 'main',	bDriveStatus,
 		; 'main',	() => Infos(bStatus := DriveGetStatus('\\corp\data\')),
@@ -140,6 +106,8 @@ CapsLock:: {
 		; 'n', _RunEnvNoter ,
 		'Lib', () => Run(Paths.Lib),
 		'lib', () => Run(Paths.Lib),
+		'Libv2', () => Run(Paths.v2Lib),
+		'libv2', () => Run(Paths.v2Lib),
 		'scr', () => Run(Paths.Lib '\Scr'),
 		'lnchr', () => Run(Paths.lnchr),
 		'run lnchr', () => Run(Paths.lnchr '\LNCHR-Main.ahk'),
@@ -151,7 +119,91 @@ CapsLock:: {
 		'approvals',approvals,
 		'map', makeCheatSheet,
 		'os',OSGui,
+		; 'grog',git_InstallAHKLibrary('https://github.com/GroggyOtter/ahkv2_definition_rewrite/blob/main/ahk2.d.ahk','C:\Users\bacona\.vscode\extensions\thqby.vscode-autohotkey2-lsp-2.2.8\syntaxes'),
+		; 'grog',Install_Git_Lib('https://github.com/GroggyOtter/ahkv2_definition_rewrite/blob/main/ahk2.d.ahk','C:\Users\bacona\.vscode\extensions\thqby.vscode-autohotkey2-lsp-2.2.8\syntaxes'),
 	)
+
+	static runner_regex := Map(
+
+		"go",      (input) => _GitLinkOpenCopy(input),
+		"gl",      (input) => ClipSend(Git.Link(input),, false),
+		"cp",      (input) => (A_Clipboard := input, Info('"' input '" copied')),
+		"rap",     (input) => Spotify.NewRapper(input),
+		"fav",     (input) => Spotify.FavRapper(input),
+		"disc",    (input) => Spotify.NewDiscovery(input),
+		; "link",    (input) => Shows.SetLink(input),
+		; "ep",      (input) => Shows.SetEpisode(input),
+		; "finish",  (input) => Shows._OperateConsumed(input, false),
+		; "dd",      (input) => Shows.SetDownloaded(input),
+		; "drop",    (input) => Shows._OperateConsumed(input, true),
+		; "relink",  (input) => Shows.UpdateLink(input),
+		"ev",      (input) => Infos(Calculator(input)),
+		"evp",     (input) => ClipSend(Calculator(input)),
+		'o',       (input) => _LinkOpen(input),
+		
+
+	)
+
+	if runner_commands.Has(input) {
+		runner_commands[input].Call()
+		return
+	}
+
+	regex := "^("
+	for key, _ in runner_regex {
+		regex .= key "|"
+	}
+	regex .= ") (.+)"
+	result := input.RegexMatch(regex)
+	if runner_regex.Has(result[1]){
+		runner_regex[result[1]].Call(result[2])
+	}
+
+	static _GitLinkOpenCopy(input) {
+		link := Git.Link(input)
+		Browser.RunLink(link)
+		A_Clipboard := link
+	}
+
+	static _LinkPaste(input) {
+		link := Environment.Links.Choose(input)
+		if !link
+			return
+		ClipSend(link,, false)
+	}
+
+	static _LinkOpen(input?) {
+		link := Environment.Links.Choose(input)
+		if (input) {
+			Browser.RunLink(link)
+			return
+		}
+
+		if !input := CleanInputBox().WaitForInput()
+			return
+
+		if (!link){
+			return
+		}
+		Browser.RunLink(link)
+	}
+	; ---------------------------------------------------------------------------
+	static _NoteOpen(input) {
+		note := Environment.Notes.Choose(input)
+		if !note
+			return
+		Browser.RunLink(note)
+	}
+	; ---------------------------------------------------------------------------
+	static _ShortcutOpen(input) {
+		sc_text := Environment.shortcutkeys.Choose(input)
+		if (!sc_text){
+			Infos("No Match Found", 2000)
+			return
+		}
+		Infos(sc_text)
+		return
+	}
 	; ---------------------------------------------------------------------------
 	static makeCheatSheet(){
 		for key, value in runner_commands {
@@ -160,8 +212,25 @@ CapsLock:: {
 	}
 	; --------------------------------------------------------------------------------
 	static MyTime(){
-		Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp')
-		; Run('https://engnet/EngNet/engnet/engnet.asp')
+		login()
+		login(){
+			aCtls := []
+			activeWindow := 'EngNET - Work'
+			nCtl := 'Internet Explorer_Server1'
+			; wEx := WinExist()
+			Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp')
+			WinWaitActive('EngNET - Work')
+			WinActivate('ahk_exe msedge.exe')
+			hCtl := ControlGetHwnd(nCtl, 'A')
+			ControlFocus(hCtl)
+			Sleep(1000)
+			BlockInput(1)
+			SendLevel(5)
+			Sleep(1000)
+			SendEvent('pw{Enter}')
+			BlockInput(0)
+			return
+		}
 	}
 	; --------------------------------------------------------------------------------
 		/**
@@ -189,25 +258,42 @@ CapsLock:: {
 
 		login()
 		login(){
-			RunWait(vpLink)
+			Run(vpLink)
+			WaitElement_timeDelay := 30000
 			; hWe := WinExist(pIDvp)
 			; WinWaitActive(hWe)
 			; Sleep(100)
-			WinWaitActive('Sign In - Google Chrome') || WinWaitActive('Polaris - Assignments - Google Chrome')
-			; WinWaitActive('Sign In - Google Chrome')
-			vp := UIA.ElementFromChromium('A',false,5000)
-			evp := vp.FindElement({AutomationId: 'signInName'})
-			evp.Value := 'adam.bacon@fmglobal.com'
-			; vvp := vp.FindElement({AutomationId: 'signInName'})
-			; vvp.Value := 'adam.bacon@fmglobal.com'
-			vp.FindElement({Name:'Continue', AutomationId:'next'}).Invoke()
-			Sleep(1000)
-			wE := WinExist('Polaris - Assignments - Google Chrome')
-			; Infos(we '`n' WinGetTitle(wE))
-			; WinActivate(wE)
-			; WinWaitActive(wE)
-			vpN := UIA.ElementFromChromium().FindElement({Type:'button', Name:'Load More'})
-			vpN.Invoke()
+			; WinWaitActive('Sign In - Google Chrome') || WinWaitActive('Polaris - Assignments - Google Chrome')
+			WinWaitActive('Sign In - Google Chrome')
+			vp := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+			vp.WaitElement({AutomationId: 'signInName'},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
+			vpC := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+			; vpC.WaitElement({Name:'Continue', AutomationId:'next'},WaitElement_timeDelay).Invoke()
+			vpC.WaitElement({Name:'Continue', AutomationId:'next'},WaitElement_timeDelay).Click(,,,,true)
+			; ---------------------------------------------------------------------------
+			; WinWaitActive('Polaris - Assignments - Google Chrome')
+			; vpN := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+			; vpN.WaitElement({Type:'button', Name:'Load More'},WaitElement_timeDelay).Invoke()
+			; ---------------------------------------------------------------------------
+			WinWaitActive('Polaris - Assignments - Google Chrome')
+			try {
+				fvL := vL.FindElement({Type: '50000 (Button)', Name: "All Loaded", LocalizedType: "button", AutomationId: "rds-button-8"})
+			}
+			if !fvL {
+				Loop {
+					vL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+					try fvL := vL.FindElement({Type: '50000 (Button)', Name: "All Loaded", LocalizedType: "button", AutomationId: "rds-button-8"})
+					vpN := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+					; vpN.WaitElement({Type:'button', Name:'Load More'},WaitElement_timeDelay).Invoke()
+					vpN.WaitElement({Type:'button', Name:'Load More'},WaitElement_timeDelay).Click(,,,,true)
+					; counter++
+					Sleep(200)
+				} until fvL := vL.FindElement({Type: '50000 (Button)', Name: "All Loaded", LocalizedType: "button", AutomationId: "rds-button-8"})
+			} else {
+				return
+			}
+			; vpN.Invoke()
+			; HotIf()
 		}
 	}
 	static approvals(search := '') {
@@ -216,58 +302,27 @@ CapsLock:: {
 		login()
 		
 		login(){
-			RunWait(vpLink)
-			; hWe := WinExist(pIDvp)
-			; WinWaitActive(hWe)
-			; Sleep(100)
-			Loop 5 {
-				WinWaitActive(Title)
-				If !WinActive(Title) {
-					Sleep(500)
-				}
-			} Until WinActive(Title)
-			aG := UIA.ElementFromChromium('A',false,5000)
-			; sleep(3000)
-			log_in := aG.WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},5000).Invoke()
-			; evp := vp.FindElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"})
-			; evp := vp.FindElement({Name: "Log In"})
-			; evp.Highlight(5000)
-			; evp.Invoke()
-			; Sleep(2000)
-			; weml := eml.WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit"},5000)
-			Sleep(3000)
-			agE := UIA.ElementFromChromium('A',false,5000)
-			feml := agE.FindElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"}).Value := 'adam.bacon@fmglobal.com'
-			; levp := vp.FindElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},5000)
-			; feml.Value := 'adam.bacon@fmglobal.com'
+			Run(vpLink)
+			WaitElement_timeDelay := 30000
+			aG := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},WaitElement_timeDelay).Invoke()
+			agE := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
 			; ---------------------------------------------------------------------------
-			agL := UIA.ElementFromChromium('A',false,5000)
-			slink := agL.WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},5000)
-			; flink := agL.FindElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},5000)
-			slink.Invoke()
+			agL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},WaitElement_timeDelay).Invoke()
 			; ---------------------------------------------------------------------------
-			Sleep(2000)
-			pass := UIA.ElementFromChromium('A',false,5000)
-			wpass := pass.WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},5000).Value := '80ab{*}{*}HD19KB'
-			; wpass.value := 'abcd1234'
+			pass := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},WaitElement_timeDelay).Value := '80ab{*}{*}HD19KB'
 			; ---------------------------------------------------------------------------
-			return
+			; return
 		}
 	}
 	
 	; --------------------------------------------------------------------------------
 	static exitvp(){
 		ehW := WinExist('Polaris ')
+		WaitElement_timeDelay := 30000
 		WinActivate(ehW)
-		exitV := UIA.ElementFromChromium(WinActive())
-		vv := exitV.FindElement({Type:'MenuItem', Name: 'Profile'})
-		vv.Invoke()
-		Sleep(100)
-		vvl := exitV.FindElement({Type:'MenuItem', Name: 'Log Out'})
-		vvl.Invoke()
-		Sleep(100)
-		; Send('{Tab 3}{Enter}')
-		Sleep(100)
+		exitV := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type:'MenuItem', Name: 'Profile'}, WaitElement_timeDelay).Invoke()
+		
+		UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type:'MenuItem', Name: 'Log Out'}, WaitElement_timeDelay).Invoke()
 		wE := WinExist('FM Global - Google Chrome')
 		WinActivate(wE)
 		wWwE := WinWaitActive(wE)
@@ -385,88 +440,11 @@ CapsLock:: {
 	static _RunEnvNoter() {
 		SendLevel(5)
 		Send('#h')
-		Sleep(300)
-		SendLevel(0)
+		Sleep(500)
+		; SendLevel(0)
 		Send('n')
-		return
+		; return
 	}
-	static runner_regex := Map(
-
-		"go",      (input) => _GitLinkOpenCopy(input),
-		"gl",      (input) => ClipSend(Git.Link(input),, false),
-		"cp",      (input) => (A_Clipboard := input, Info('"' input '" copied')),
-		"rap",     (input) => Spotify.NewRapper(input),
-		"fav",     (input) => Spotify.FavRapper(input),
-		"disc",    (input) => Spotify.NewDiscovery(input),
-		"link",    (input) => Shows.SetLink(input),
-		"ep",      (input) => Shows.SetEpisode(input),
-		"finish",  (input) => Shows._OperateConsumed(input, false),
-		"dd",      (input) => Shows.SetDownloaded(input),
-		"drop",    (input) => Shows._OperateConsumed(input, true),
-		"relink",  (input) => Shows.UpdateLink(input),
-		"ev",      (input) => Infos(Calculator(input)),
-		"evp",     (input) => ClipSend(Calculator(input)),
-		'o',       (input) => _LinkOpen(input),
-		
-
-	)
-
-	; static runner_regex := Map(
-	; 	"go",      	(input) => _GitLinkOpenCopy(input),
-	; 	"gl",      	(input) => ClipSend(Git.Link(input),, false),
-	; 	"p",       	(input) => _LinkPaste(input),
-	; 	"o",       	(input) => _LinkOpen(input),
-	; 	; "o",       	(input) => _NoteOpen(input),
-	; 	"cp",      	(input) => (Infos((A_Clipboard := input) '" copied')),
-	; 	"rap",     	(input) => Spotify.NewRapper(input),
-	; 	"fav",     	(input) => Spotify.FavRapper(input),
-	; 	"disc",    	(input) => Spotify.NewDiscovery(input),
-	; 	"link",    	(input) => Shows.SetLink(input),
-	; 	"ep",      	(input) => Shows.SetEpisode(input),
-	; 	"finish",  	(input) => Shows._OperateConsumed(input, false),
-	; 	"dd",      	(input) => Shows.SetDownloaded(input),
-	; 	"drop",    	(input) => Shows._OperateConsumed(input, true),
-	; 	"relink",  	(input) => Shows.UpdateLink(input),
-	; 	"ev",      	(input) => Infos(Calculator(input)),
-	; 	"evp",     	(input) => ClipSend(Calculator(input)),
-	; 	'addlib'	(input) => CleanInputBox.SetInput(git_InstallAHKLibrary(input)),
-	; )
-
-
-	static _GitLinkOpenCopy(input) {
-		link := Git.Link(input)
-		Browser.RunLink(link)
-		A_Clipboard := link
-	}
-
-	static _LinkPaste(input) {
-		link := Environment.Links.Choose(input)
-		if !link
-			return
-		ClipSend(link,, false)
-	}
-
-	static _LinkOpen(input?) {
-		if (input) {
-			Browser.RunLink(input)
-		}
-
-		if !input := CleanInputBox().WaitForInput()
-			return
-
-		link := Environment.Links.Choose(input)
-		if (!link){
-			return
-		}
-		Browser.RunLink(link)
-	}
-	static _NoteOpen(input) {
-		note := Environment.Notes.Choose(input)
-		if !note
-			return
-		Browser.RunLink(note)
-	}
-
 	static _bdrive(){
         ; static b_drive := '\\corp\data\San Francisco\Engineering\AutoHotkey'
         static b_drive := '\\corp\data'
@@ -478,25 +456,6 @@ CapsLock:: {
         Infos(bStatus, 5000)
         return bStatus
     }
-
-	static _getWord(){
-		delimiter1 := A_Space '```(`)`,.`=/\+-*!@#$`%^&*?<>~`;`:`{`}`[`]'
-		word := GetWordUnderMouse(delimiter1)
-		Infos(word)
-
-
-		GetWordUnderMouse(delim) 
-		{ 
-		; delim = character(s) specified to separate words
-		; if no delimiter character(s) specified then the entire line of text 
-		; under the mouse pointer will be returned.
-		VarSetStrCapacity(&word, 2048) 
-		; RetVal := DllCall("gwrd.dll\GetWord", "str", word, "str", delim, "Uint")
-		; RetVal := DllCall("gwetw\GetWord", "str", word, "str", delim, "Uint")
-		; The DLL returns the handle to the control the mouse is over 
-		Return word
-		}
-	}
 
 	static _Install_Git(){
 		Git_Link := 'https://github.com/git-for-windows/git-for-windows.github.io/blob/main/latest-64-bit-installer.url'
@@ -645,7 +604,7 @@ CapsLock:: {
 		static Lib 			:= Paths.Lib
 		static bFile 		:= b_drive uFolder '\' uFile
 		static lFile 		:= Lib uFolder '\' uFile
-		static fNeedle := "'[0-9].[0-9].[0-9]'"
+		static fNeedle := "([0-9]\.[0-9]\.[0-9])"
 		; static m:='major', mi:='minor', p:='patch' ;? vMap.Set(m, major, mi, minor, p, patch)
 		; m:='', mi:='', p:=''
 		vMap := Map()
@@ -727,20 +686,7 @@ CapsLock:: {
 		return 0
 	}
 	; --------------------------------------------------------------------------------
-	if runner_commands.Has(input) {
-		runner_commands[input].Call()
-		return
-	}
 
-	regex := "^("
-	for key, _ in runner_regex {
-		regex .= key "|"
-	}
-	regex .= ") (.+)"
-	result := input.RegexMatch(regex)
-	if runner_regex.Has(result[1]){
-		runner_regex[result[1]].Call(result[2])
-	}
 }
 ; }
 

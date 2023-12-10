@@ -1,29 +1,26 @@
-; --------------------------------------------------------------------------------
-#Requires AutoHotkey v2
-#Include <Directives\__AE.v2>
-; --------------------------------------------------------------------------------
-#Include <Environment>
-#Include <Includes\Links>
-; --------------------------------------------------------------------------------
-#Include <Tools\CleanInputBox>
-#Include <App\Autohotkey>
-#Include <Tools\KeycodeGetter>
-#Include <Misc\EmojiSearch>
-#Include <Utils\GetInput>
-#Include <App\Browser>
-#Include <App\Steam>
-#Include <App\DS4>
-#Include <Abstractions\Registers>
-#Include <Converters\Layouts>
-; --------------------------------------------------------------------------------
-#Include <Utils\GetWeather>
-#Include <Tools\Info>
-; --------------------------------------------------------------------------------
-#HotIf WinActive('Runner.ahk')
-	*^s::Run('Runner.ahk')
-#HotIf
-; --------------------------------------------------------------------------------
-#Include <RecLibs\Common_Rec_Texts>
+; ; --------------------------------------------------------------------------------
+; #Requires AutoHotkey v2
+; #Include <Directives\__AE.v2>
+; ; --------------------------------------------------------------------------------
+; #Include <Environment>
+; #Include <Includes\Links>
+; ; --------------------------------------------------------------------------------
+; #Include <Tools\CleanInputBox>
+; #Include <App\Autohotkey>
+; #Include <Tools\KeycodeGetter>
+; #Include <Misc\EmojiSearch>
+; #Include <Utils\GetInput>
+; #Include <App\Browser>
+; #Include <App\Steam>
+; #Include <App\DS4>
+; #Include <Abstractions\Registers>
+; #Include <Converters\Layouts>
+; ; --------------------------------------------------------------------------------
+; #Include <Utils\GetWeather>
+; #Include <Tools\Info>
+; ; --------------------------------------------------------------------------------
+; #Include <RecLibs\Common_Rec_Texts>
+; ; --------------------------------------------------------------------------------
 
 #h:: {
 	; Run(A_ScriptName)
@@ -43,18 +40,19 @@
 		"c", () => Browser.RunLink(Links["chromeriver"]),
 		; "d", () => DS4.winObj.App(),
 		; "d", () => Browser.RunLink(Links["ahk v2 docs"]),
-		"d", Browser.RunLink(Links["ahk v2 docs"]),
+		"d", () => Browser.RunLink(Links["ahk v2 docs"]),
 		"e", () => Browser.RunLink(Links["gogoanime"]),
 		"f", () => Browser.RunLink(Links["skill factory"]),
 		"g", () => Browser.RunLink(Links["my github"]),
 		"h", () => Browser.RunLink(Links["phind"]),
-		"i", _ShowInInfo,
+		"i", () => _ShowInInfo,
 		"j", () => EmojiSearch(CleanInputBox().WaitForInput()),
-		"k", KeyCodeGetter,
+		"k", () => KeyCodeGetter,
 		; 'l', HznAutoComplete,
-		'l', _ViewLinks(),
-		; 'l', _ViewRecs,
+		'l', () => _ViewLinks(),
+		; 'l', () => _ViewRecs,
 		"m", () => Browser.RunLink(Links["gmail"]),
+		; 'n', () => _ViewNote,
 		'n', _ViewNote,
 		"o", () => Browser.RunLink(Links["monkeytype"]),
 		'p', () => Infos(A_MyDocuments),
@@ -222,7 +220,7 @@ HznAutoComplete() {
 		QSGui.BackColor := 0x161821
 		QSGui.SetFont( "s10 q5", "Fira Code")
 		; QSCB := QSGui.AddComboBox("vQSEdit w200", entriesList)
-		QSCB := QSGui.AddComboBox("vQSEdit w" width ' h200' ' Wrap', entriesList)
+		QSCB := QSGui.AddComboBox("vQSEdit w" width ' h200' ' Wrap', "*" entriesList)
 		qEdit := QSGui.AddEdit('vqEdit w' width ' h200')
 		; qEdit.OnEvent('Change', (*) => updateEdit(QSCB, entriesList))
 		; QSGui_Change(QSCB) => qEdit.OnEvent('Change',qEdit)

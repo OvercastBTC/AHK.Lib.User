@@ -47,10 +47,6 @@
 
 		"C",     "C# en-us",
 		"vimap", "vim.keymap.set()",
-		
-		;; Expense Report
-
-		'meal', 'Business Travel - Meal - ',
 
 	)
 	Hotstringer.DynamicHotstrings := DynamicHotstrings
