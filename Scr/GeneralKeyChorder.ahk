@@ -1,25 +1,25 @@
 ; ; --------------------------------------------------------------------------------
-; #Requires AutoHotkey v2
-; #Include <Directives\__AE.v2>
+#Requires AutoHotkey v2
+#Include <Directives\__AE.v2>
 ; ; --------------------------------------------------------------------------------
-; #Include <Environment>
-; #Include <Includes\Links>
-; ; --------------------------------------------------------------------------------
-; #Include <Tools\CleanInputBox>
-; #Include <App\Autohotkey>
-; #Include <Tools\KeycodeGetter>
-; #Include <Misc\EmojiSearch>
-; #Include <Utils\GetInput>
-; #Include <App\Browser>
-; #Include <App\Steam>
-; #Include <App\DS4>
-; #Include <Abstractions\Registers>
-; #Include <Converters\Layouts>
-; ; --------------------------------------------------------------------------------
-; #Include <Utils\GetWeather>
-; #Include <Tools\Info>
-; ; --------------------------------------------------------------------------------
-; #Include <RecLibs\Common_Rec_Texts>
+#Include <Environment>
+#Include <Includes\Links>
+; --------------------------------------------------------------------------------
+#Include <Tools\CleanInputBox>
+#Include <App\Autohotkey>
+#Include <Tools\KeycodeGetter>
+#Include <Misc\EmojiSearch>
+#Include <Utils\GetInput>
+#Include <App\Browser>
+#Include <App\Steam>
+#Include <App\DS4>
+#Include <Abstractions\Registers>
+#Include <Converters\Layouts>
+; --------------------------------------------------------------------------------
+#Include <Utils\GetWeather>
+#Include <Tools\Info>
+; --------------------------------------------------------------------------------
+#Include <RecLibs\Common_Rec_Texts>
 ; ; --------------------------------------------------------------------------------
 
 #h:: {
@@ -186,7 +186,7 @@ HznAutoComplete() {
 				)
 	; acInfos := Infos('Press "ctrl + a" to activate, or press "Shift+Enter"')
 	; Hotkey(" ", (*) => createGUI())
-	; Hotkey("^a", (*) => createGUI())
+	Hotkey("^a", (*) => createGUI())
 	Hotkey('+Enter', (*) => createGUI() )
 	; createGUI()
 	createGUI() {

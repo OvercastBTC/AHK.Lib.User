@@ -2,24 +2,25 @@
 #Requires AutoHotkey v2+
 #Include <Directives\__AE.v2>
 ; ---------------------------------------------------------------------------
-; TraySetIcon("shell32.dll","16", true) ; this changes the icon into a little laptop thing.
-TraySetIcon("shell32.dll","246", true) ; this changes the icon into a little laptop thing.
-; TraySetIcon("shell32.dll","35", true) ; this changes the icon into a little laptop thing.
-; ---------------------------------------------------------------------------
 RTM := A_TrayMenu
 RTM.Delete()
 RTM.Add()
 RTM.AddStandard()
-; ---------------------------------------------------------------------------
 ; RTM.Show() ;? For a menu at the mouse
 ; ---------------------------------------------------------------------------
-#Include <Includes\Includes_Runner> 
+#Include <Includes\Includes_Runner>
 ; ---------------------------------------------------------------------------
-#Include <Sandbox_Install_Test\Install_Script.V2>
-; ---------------------------------------------------------------------------
-toggleCapsLock() 
+
 ; ---------------------------------------------------------------------------
 SetCapsLockState("AlwaysOff")
+; ---------------------------------------------------------------------------
+; toggleCapsLock() {
+; 	SetCapsLockState(!GetKeyState('CapsLock', 'T'))
+; }
+; ---------------------------------------------------------------------------
+
+
+
 ; ---------------------------------------------------------------------------
 CapsLock:: {
 	
@@ -29,38 +30,37 @@ CapsLock:: {
 
 	static runner_commands := Map(
 
+		"libs?",	() => Infos(CountLibraries()),
 		; "drop",		() => Shows.DeleteShow(true),
 		; "finish",	() => Shows.DeleteShow(false),
 		; "show",		() => Shows.Run("episode"),
-		; "down",		() => Shows.Run("downloads"),
-		"libs?",	() => Infos(CountLibraries()),
 		'getkey', KeyCodeGetter,
+		; "down",		() => Shows.Run("downloads"),
 		"down",		() => Run(Paths.Downloads),
 		'start',	() => Run(A_StartUp),
 		'setup',	() => Setups(),
 		'horizon',	() => Run('C:\Program Files\FMGlobal\Horizon\hznHorizonMgr.exe'),
 		'winspector',() => Run(Paths.OneDrive "AHK.Main\Winspector\WinspectorU.exe"),
 		'scr4',		() => Run("C:\Users\bacona\AppData\Local\Programs\AutoHotkey\AHK.Projects.v1\Scriptlet_Library_v4.ahk"),
-		'bmle', () => Run('excel.exe /e ' '"' Paths.FMGDocuments '\general\B+M Loss Expectancy Guide - July 2023.xlsx"'),
-		'bnm',() => bmle(),
+		; 'bmle', () => Run('C:\Users\' A_UserName '\FM Global\Operating Standards - Documents\general\B+M Loss Expectancy Guide - July 2023.xlsx'),
+		'bmle', () => Run('excel.exe /e ' '"' Paths.FMGlobal '\Operating Standards - Documents\general\B+M Loss Expectancy Guide - July 2023.xlsx"'),
 		'user', () => Infos(A_Username),
-		'run', () => Infos(val := GetFilesSortedByDate('runner.ahk')),
+		; 'run', () => Infos(val := GetFilesSortedByDate('runner.ahk')),
 		'code', () => Infos(val := GetFilesSortedByDate(Paths.Code)),
 		'edit runner', () => VSCodeEdit(Paths.Lib '\Scr\Runner.ahk'),
-		'runner', () => Run(Paths.Code ' "c:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\Scr\Runner.ahk"'),
-		'hznp', () => EditFile(Paths.Lib '\HznPlus.v2.ahk'),
-		'aprocess', () => EditFile(Paths.Lib '\A_Process.v2.ahk'),
-		'bdrive', () => Run('\\corp\data\San Francisco\Engineering\AutoHotkey'),
-		'install', () => Run('edit ' '\\corp\data\San Francisco\Engineering\AutoHotkey\Install_Script.V2.ahk'),
-		'visit', () => visitplanner,
-		'get', (runner := GetFilesSortedByDate('Runner.ahk')) => Infos(runner), ;! test func ; finds and shows proper file and path
-		't',Infos(A_ScriptDir),
 		; 'edit runner', () => VSCodeEdit(, Paths.Lib '\Scr\runner.ahk'),
 		; 'edit runner', () => VSCodeEdit(, 'runner.ahk'),
 		; 'edit', (input) => VSCodeEdit(, input),
 		; 'runner', () => VSCodeEdit('c:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\Scr\Runner.ahk'),
+		'runner', () => Run(Paths.Code ' "c:\Users\bacona\OneDrive - FM Global\Documents\AutoHotkey\Lib\Scr\Runner.ahk"'),
 		; 'runner', () => EditFile(Paths.Lib '\Scr\Runner.ahk'),
 		; 'runner', RunWithVSCode(Paths.code, Paths.Lib '\Scr\Runner.ahk'),
+		'hznp', () => EditFile(Paths.Lib '\HznPlus.v2.ahk'),
+		'aprocess', () => EditFile(Paths.Lib '\A_Process.v2.ahk'),
+		'bdrive', () => Run('\\corp\data\San Francisco\Engineering\AutoHotkey'),
+		'install', () => Run('edit ' '\\corp\data\San Francisco\Engineering\AutoHotkey\Install_Script.V2.ahk'),
+		'visit', visitplanner,
+		'get', (runner := GetFilesSortedByDate('Runner.ahk')) => Infos(runner), ;! test func ; finds and shows proper file and path
 		; 'e', exitvp,
 		; 'c', expensereport,
 		; 'cc', CompanyCar,
@@ -78,6 +78,7 @@ CapsLock:: {
 		; 'sfee',SeatFee,
 		; 'carservice',Car_Service,
 		; 'tr',TripPurpose, 
+		'bnm',() => bmle(),
 		; 'bdrive', () => RunWait("Powershell.exe -WindowStyle hidden -Command -LiteralPath " '\\corp\data\San Francisco\Engineering\AutoHotkey' " -DestinationPath " "") ,
 	
 		; 'info test', Run(Paths.AppDataProgs),
@@ -93,16 +94,16 @@ CapsLock:: {
 		'vim', 		() => Environment.VimMode := !Environment.VimMode,
 		'yy', 		() => Environment.VimMode := !Environment.VimMode,
 		'main',		() => Main.winObj.App(),
-		'install git',	_Install_Git,
+		; 'main',	_Install_Git,
+		; 'main',	_CheckUpdate,
 		'checkupdate',	_CheckUpdate,
-		'test install', () => update_script.updateLib(),
 		; 'main', () => Infos(DriveGetFileSystem('https://fmglobal.sharepoint.com/:u:/r/teams/AutoHotKeyUserGroup/Shared Documents/General/Starter Script Files and Guide - V2/Lib')),
 		; 'main',	bDriveStatus,
 		; 'main',	() => Infos(bStatus := DriveGetStatus('\\corp\data\')),
 		; 'note', (input) => _NoteOpen(input),
-		; 'n', _RunEnvNoter ,
 		'notes', () => Run(Paths.Lib '\Notes') ,
 		'links', () => Run(Paths.Lib '\Links'),
+		; 'n', _RunEnvNoter ,
 		'Lib', () => Run(Paths.Lib),
 		'lib', () => Run(Paths.Lib),
 		'Libv2', () => Run(Paths.v2Lib),
@@ -110,8 +111,7 @@ CapsLock:: {
 		'scr', () => Run(Paths.Lib '\Scr'),
 		'lnchr', () => Run(Paths.lnchr),
 		'run lnchr', () => Run(Paths.lnchr '\LNCHR-Main.ahk'),
-		; 'test', () => u_File(3,0,1),
-		'test', () => testtest(),
+		'test', () => uFile(3,0,1),
 		'key', () => KeyCodeGetter,
 		'uia', () => Run(Paths.v2Lib '\System\UIA.ahk'),
 		; 'bmle', () => FileSystemSearch(Paths.FMGlobal) => FileSystemSearch.StartSearch(),
@@ -136,23 +136,19 @@ CapsLock:: {
 		; "finish",  (input) => Shows._OperateConsumed(input, false),
 		; "dd",      (input) => Shows.SetDownloaded(input),
 		; "drop",    (input) => Shows._OperateConsumed(input, true),
-		; "relink",	(input) => Shows.UpdateLink(input),
-		"ev",		(input) => Infos(Calculator(input)),
-		"evp",		(input) => ClipSend(Calculator(input)),
-		'o',		(input) => _LinkOpen(input),
-		'e',		(input) => _ExpenseReport(input),
-		's',		(input) => InternetSearch.TriggerSearch(input),
+		; "relink",  (input) => Shows.UpdateLink(input),
+		"ev",      (input) => Infos(Calculator(input)),
+		"evp",     (input) => ClipSend(Calculator(input)),
+		'o',       (input) => _LinkOpen(input),
+		
+
 	)
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
+
 	if runner_commands.Has(input) {
 		runner_commands[input].Call()
 		return
 	}
-	;! ---------------------------------------------------------------------------
+
 	regex := "^("
 	for key, _ in runner_regex {
 		regex .= key "|"
@@ -162,41 +158,20 @@ CapsLock:: {
 	if runner_regex.Has(result[1]){
 		runner_regex[result[1]].Call(result[2])
 	}
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	testtest(){
-		; text := "
-		A_Clipboard := "
-		(
-			regex := "^("
-			for key, _ in runner_regex {
-				regex .= key "|"
-			}
-			regex .= ") (.+)"
-			result := input.RegexMatch(regex)
-			if runner_regex.Has(result[1]){
-				runner_regex[result[1]].Call(result[2])
-			}
-		)"
-		infos(A_Clipboard.Length)
-	}
-	; ---------------------------------------------------------------------------
+
 	static _GitLinkOpenCopy(input) {
 		link := Git.Link(input)
 		Browser.RunLink(link)
 		A_Clipboard := link
 	}
-	; ---------------------------------------------------------------------------
+
 	static _LinkPaste(input) {
 		link := Environment.Links.Choose(input)
 		if !link
 			return
 		ClipSend(link,, false)
 	}
-	; ---------------------------------------------------------------------------
+
 	static _LinkOpen(input?) {
 		link := Environment.Links.Choose(input)
 		if (input) {
@@ -207,20 +182,6 @@ CapsLock:: {
 		if !input := CleanInputBox().WaitForInput()
 			return
 
-		if (!link){
-			return
-		}
-		Browser.RunLink(link)
-	}
-	static _ExpenseReport(input?) {
-		link := Environment.Links.Choose(input)
-		if (input) {
-			Browser.RunLink(link)
-			return
-		}
-		if !input := CleanInputBox().WaitForInput(){
-			return
-		}
 		if (!link){
 			return
 		}
@@ -252,24 +213,24 @@ CapsLock:: {
 	; --------------------------------------------------------------------------------
 	static MyTime(){
 		login()
-	}
-	static login(){
-		BlockInput(1)
-		aCtls := []
-		activeWindow := 'EngNET - Work'
-		nCtl := 'Internet Explorer_Server1'
-		; wEx := WinExist()
-		Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp#password')
-		WinWaitActive('EngNET - Work')
-		WinActivate('ahk_exe msedge.exe')
-		hCtl := ControlGetHwnd(nCtl, 'A')
-		ControlFocus(hCtl)
-		WinWaitActive('EngNET - Work', 'EngNET - Internet ExplorerEngNET ')
-		SendLevel(5)
-		Sleep(1000)
-		SendEvent('pw{Enter}')
-		BlockInput(0)
-		return
+		login(){
+			aCtls := []
+			activeWindow := 'EngNET - Work'
+			nCtl := 'Internet Explorer_Server1'
+			; wEx := WinExist()
+			Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp')
+			WinWaitActive('EngNET - Work')
+			WinActivate('ahk_exe msedge.exe')
+			hCtl := ControlGetHwnd(nCtl, 'A')
+			ControlFocus(hCtl)
+			Sleep(1000)
+			BlockInput(1)
+			SendLevel(5)
+			Sleep(1000)
+			SendEvent('pw{Enter}')
+			BlockInput(0)
+			return
+		}
 	}
 	; --------------------------------------------------------------------------------
 		/**
@@ -292,26 +253,89 @@ CapsLock:: {
 		}
 	}
 
-	static approvals(search := '') {
-		approvals_login()
-		
+	static visitplanner(search := '') {
+		vpLink := 'https://app.fmglobal.com/polaris/assignments/'
+
+		login()
+		login(){
+			Run(vpLink)
+			WaitElement_timeDelay := 30000
+			; hWe := WinExist(pIDvp)
+			; WinWaitActive(hWe)
+			; Sleep(100)
+			; WinWaitActive('Sign In - Google Chrome') || WinWaitActive('Polaris - Assignments - Google Chrome')
+			WinWaitActive('Sign In - Google Chrome')
+			vp := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+			vp.WaitElement({AutomationId: 'signInName'},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
+			vpC := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+			; vpC.WaitElement({Name:'Continue', AutomationId:'next'},WaitElement_timeDelay).Invoke()
+			vpC.WaitElement({Name:'Continue', AutomationId:'next'},WaitElement_timeDelay).Click(,,,,true)
+			; ---------------------------------------------------------------------------
+			; WinWaitActive('Polaris - Assignments - Google Chrome')
+			; vpN := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+			; vpN.WaitElement({Type:'button', Name:'Load More'},WaitElement_timeDelay).Invoke()
+			; ---------------------------------------------------------------------------
+			WinWaitActive('Polaris - Assignments - Google Chrome')
+			try {
+				fvL := vL.FindElement({Type: '50000 (Button)', Name: "All Loaded", LocalizedType: "button", AutomationId: "rds-button-8"})
+			}
+			if !fvL {
+				Loop {
+					vL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+					try fvL := vL.FindElement({Type: '50000 (Button)', Name: "All Loaded", LocalizedType: "button", AutomationId: "rds-button-8"})
+					vpN := UIA.ElementFromChromium('A',false,WaitElement_timeDelay)
+					; vpN.WaitElement({Type:'button', Name:'Load More'},WaitElement_timeDelay).Invoke()
+					vpN.WaitElement({Type:'button', Name:'Load More'},WaitElement_timeDelay).Click(,,,,true)
+					; counter++
+					Sleep(200)
+				} until fvL := vL.FindElement({Type: '50000 (Button)', Name: "All Loaded", LocalizedType: "button", AutomationId: "rds-button-8"})
+			} else {
+				return
+			}
+			; vpN.Invoke()
+			; HotIf()
+		}
 	}
-	static approvals_login(){
+	static approvals(search := '') {
 		vpLink := 'https://www.approvalguide.com/'
 		Title := 'FM Approvals - Approval Guide - '
-		Run(vpLink)
-		WaitElement_timeDelay := 30000
-		aG := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},WaitElement_timeDelay).Invoke()
-		agE := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
-		; ---------------------------------------------------------------------------
-		agL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},WaitElement_timeDelay).Invoke()
-		; ---------------------------------------------------------------------------
-		pass := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},WaitElement_timeDelay).Value := '80ab{*}{*}HD19KB'
-		; ---------------------------------------------------------------------------
+		login()
+		
+		login(){
+			Run(vpLink)
+			WaitElement_timeDelay := 30000
+			aG := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},WaitElement_timeDelay).Invoke()
+			agE := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
+			; ---------------------------------------------------------------------------
+			agL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},WaitElement_timeDelay).Invoke()
+			; ---------------------------------------------------------------------------
+			pass := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},WaitElement_timeDelay).Value := '80ab{*}{*}HD19KB'
+			; ---------------------------------------------------------------------------
+			; return
+		}
 	}
 	
 	; --------------------------------------------------------------------------------
-
+	static exitvp(){
+		ehW := WinExist('Polaris ')
+		WaitElement_timeDelay := 30000
+		WinActivate(ehW)
+		exitV := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type:'MenuItem', Name: 'Profile'}, WaitElement_timeDelay).Invoke()
+		
+		UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type:'MenuItem', Name: 'Log Out'}, WaitElement_timeDelay).Invoke()
+		wE := WinExist('FM Global - Google Chrome')
+		WinActivate(wE)
+		wWwE := WinWaitActive(wE)
+		wA := WinActive()
+		iNFOS(wWwE '`n' WinGetTitle(Wa))
+		Sleep(1000)
+		ControlSend('{Ctrl down}{F4}{Ctrl up}',,WinGetTitle(winactive('A')))
+		ControlSend('F4',,WinGetTitle(winactive('A')))
+		ControlSend('{Ctrl up}',,WinGetTitle(winactive('A')))
+		ControlSend('{Ctrl down}{F4}{Ctrl up}',,wA)
+		ControlSend('F4',,wA)
+		ControlSend('{Ctrl up}',,wA)
+	}
 	; --------------------------------------------------------------------------------
 	static EditFile(filename, dir := '') {
 		SplitPath(filename,&sFile,&sDir,&sExt,&sName,&sDrive)
@@ -419,7 +443,7 @@ CapsLock:: {
 		Sleep(500)
 		; SendLevel(0)
 		Send('n')
-		return
+		; return
 	}
 	static _bdrive(){
         ; static b_drive := '\\corp\data\San Francisco\Engineering\AutoHotkey'
@@ -437,11 +461,10 @@ CapsLock:: {
 		Git_Link := 'https://github.com/git-for-windows/git-for-windows.github.io/blob/main/latest-64-bit-installer.url'
 
 		if GetHtml(Git_Link) {
-			new_Link := gitlibrary.git_InstallAHKLibrary(Git_Link,Paths.Lib '\TestTest')
+			new_Link := git_InstallAHKLibrary(Git_Link)
 		}
 		;! Custom Setup & Silent install
 		; https://github.com/git-for-windows/git/wiki/Silent-or-Unattended-Installation
-		return
 	}
 	static _Install_VSCode(){
 		vscode_link := 'https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user'
@@ -449,7 +472,6 @@ CapsLock:: {
 		if GetHtml(vscode_link) {
 			;fix ..: after verifying internet connectivity, perform a silent install of vscode
 		}
-		return
 	}
 	static bDriveStatus() {
 		; drive := '\\corp\data\'
@@ -516,9 +538,8 @@ CapsLock:: {
 		static vNeedle 		:= "i)m_ver := '\d.\d.\d'"
 		static b_uPath 		:= b_drive uFolder '\' uFile
 		; ---------------------------------------------------------------------------
-		; mainLib := 'C:\Users\' A_UserName '\AppData\Local\Programs\AutoHotkey\v2\Lib\TestingStuff'
-		; Infos('Does the directory exist??? [' DirExist(mainLib) ']')
-		; ---------------------------------------------------------------------------
+		mainLib := 'C:\Users\' A_UserName '\AppData\Local\Programs\AutoHotkey\v2\Lib\TestingStuff'
+		Infos('Does the directory exist??? [' DirExist(mainLib) ']')
 		;? set up the variables to simplify things visually, and setup a map() for simpler updating
 		static m:='major', mi:='minor', p:='patch'
 		vArray := []
@@ -543,33 +564,21 @@ CapsLock:: {
 			switch vVer {
 				case  true:
 					if ((major = true) && (minor = true) && (patch = true)) {
-						display_time := 10000
 						Infos(
 							'No need to update at this time.`n'
 							'Local Version: ' vFLocal[m] '.' vFLocal[mi] '.' vFLocal[p] '`n'
-							'Remote Version: ' vFRemote[m] '.' vFRemote[mi] '.' vFRemote[p], display_time
-						)
+							'Remote Version: ' vFRemote[m] '.' vFRemote[mi] '.' vFRemote[p], 10000)
 						return
 					}
 				case false:
 					if (!(major = true) || !(minor != true) || !(patch != true)) {
-						; display_time := 10000
-						display_time := ''
-						Infos(
-							'`n'
-							'Press {Escape} to Exit'
-							'Update Needed.`n'
-							'Local Version: ' vFLocal[m] '.' vFLocal[mi] '.' vFLocal[p] '`n'
-							'Remote Version: ' vFRemote[m] '.' vFRemote[mi] '.' vFRemote[p]
-						)
-						; Infos('false')
+						Infos('false')
 						; fix ..: if false, download crap
 					}
 			}
 			; infos(major '`n' minor '`n' patch) ;? validation
 		}
 		; --------------------------------------------------------------------------
-		return
 	}	
 	static vF_Check(cFile){
 		static m:='major', mi:='minor', p:='patch'
@@ -589,7 +598,7 @@ CapsLock:: {
 		return version_map
 	}
 	
-	static u_File(m, mi, p) {
+	static uFile(m, mi, p) {
 		static b_drive 		:= '\\corp\data\San Francisco\Engineering\AutoHotkey'
 		static uFolder 		:= '\CheckUpdate'
 		static uFile 		:= 'ScriptVersionMap.ahk'
@@ -676,7 +685,7 @@ CapsLock:: {
 			file_Open := ''
 			return rf
 		}
-		return
+		return 0
 	}
 	; --------------------------------------------------------------------------------
 
@@ -699,14 +708,14 @@ class FMCounter {
 	}
 	Stop() {
 		; To turn off the timer, we must pass the same object as before:
-		SetTimer(this.timer, 0)
+		SetTimer( this.timer, 0)
 		Infos("Counter stopped at " this.count)
 	}
 	; In this example, the timer calls this method:
 	Tick() {
-		Infos(++this.count)
+		Infos( ++this.count)
 	}
 	MyCallBack() {
-		SetTimer(this.timer, 1000)
+		SetTimer( this.timer, 1000)
 	}
 }

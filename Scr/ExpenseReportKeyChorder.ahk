@@ -94,16 +94,19 @@ expensereport() {
 		; 'Y', ,
 		; 'Z', ,
 		'A', _ShowInInfo, ;! nothing; testing func; type something in the CleanInputBox and it will be Infos
+		'a',airfare,
 		'c', CompanyCar,
 		; 'e', expensereport, ;! nothing; placeholder
 		'f', AirlineFee,
-		's', CarService,
+		'C', CarService,
 		'E', EmployeeMeal,
 		'm', EmployeeMeal,
 		'h', Hotel,
 		'o', Office_Expenses,
 		'rc', RentalCar,
-		'ta', TravelAgency,
+		; 'ta', TravelAgency,
+		's', () => SelectValidExpenseType,
+		't', TravelAgency,
 		'wc', WorkClothes,
 		'sav', Save,
 		'fee',FeeType,
@@ -128,14 +131,15 @@ expensereport() {
 		; 'l', HznAutoComplete,
 		'l', _ViewLinks(),
 		; 'l', _ViewRecs,
-		"m", () => Browser.RunLink(Links["gmail"]),
+		"m", Meals_Entertainment(),
 		'n', _ViewNote,
 		"o", () => Browser.RunLink(Links["monkeytype"]),
 		'p', () => Infos(A_MyDocuments),
 		;q
 		"r", () => Browser.RunLink(Links["reddit"]),
-		"s", () => Steam.winObj.App(), ;! run an app via a class!!! expand on this!!!
-		"t", () => Browser.RunLink(Links["mastodon"]),
+		; "s", () => Steam.winObj.App(), ;! run an app via a class!!! expand on this!!!
+		; "t", () => Browser.RunLink(Links["mastodon"]),
+		"t", () => travel(),
 		"T", () => Browser.RunLink(Links["twitch"]),
 		"u", () => Infos(GetWeather()),
 		"v", () => Browser.RunLink(Links["vk"]),
@@ -263,6 +267,19 @@ expensereport() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
 		expRpt.WaitElement({Type: '50000 (Button)', Name: "Airline Fee", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
+	static SelectValidExpenseType(){
+		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
+		expRpt.WaitElement({Type: '50020 (Text)', Name: "help", LocalizedType: "text"}, 30000).Highlight(100).Invoke()
+	}
+	static airfare(){
+		travel()
+		Sleep(300)
+		air_fare()
+	}
+	static air_fare(){
+		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Airfare", LocalizedType: "button"}, delay).Highlight(100).Invoke()
+	}
 	static Rental_Car(){
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
 		expRpt.WaitElement({Type: '50000 (Button)', Name: "Car Rental", LocalizedType: "button"}, delay).Highlight(100).Invoke()
@@ -304,16 +321,11 @@ expensereport() {
 	static CarService() {
 		travel()
 		Sleep(500)
-		Car_Service()
-
-		static travel() {
-			expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-			expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Travel", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
-		}
-		static Car_Service() {
-			expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-			expRpt.WaitElement({Type: '50000 (Button)', Name: "Car Service", LocalizedType: "button"}, delay).Highlight(100).Invoke()
-		}
+		Car_ServiceExp()
+	}
+	static Car_ServiceExp() {
+		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
+		expRpt.WaitElement({Type: '50000 (Button)', Name: "Car Service", LocalizedType: "button"}, delay).Highlight(100).Invoke()
 	}
 	static CompanyCar(){
 		Company_Car()
@@ -341,7 +353,7 @@ expensereport() {
 	}
 	static Meals_Entertainment() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')
-		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Meals / Entertainment", LocalizedType: "menu item"}, delay).Highlight(100).Invoke()
+		expRpt.WaitElement({Type: '50011 (MenuItem)', Name: "Meals / Entertainment", LocalizedType: "menu item"}, 30000).Highlight(100).Invoke()
 	}
 	static Employee_Meals() {
 		expRpt := UIA.ElementFromChromium('Chrome River - Google Chrome')

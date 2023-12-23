@@ -16,7 +16,7 @@
 #Include <Misc\Meditate>
 #Include <Misc\CountLibraries>
 #Include <App\Gimp>
-; #Include <App\Shows>
+#Include <App\Shows>
 #Include <Misc\Calculator>
 #Include <App\Explorer>
 
@@ -28,10 +28,10 @@
 	static runner_commands := Map(
 
 		"libs?",	() => Infos(CountLibraries()),
-		; "drop",		() => Shows.DeleteShow(true),
-		; "finish",	() => Shows.DeleteShow(false),
-		; "show",		() => Shows.Run("episode"),
-		; "down",		() => Shows.Run("downloaded"),
+		"drop",		() => Shows.DeleteShow(true),
+		"finish",	() => Shows.DeleteShow(false),
+		"show",		() => Shows.Run("episode"),
+		"down",		() => Shows.Run("downloaded"),
 
 		"gimp", 	() => Gimp.winObj.RunAct(),
 		"davinci", 	() => Davinci.winObj.RunAct(),
@@ -49,12 +49,12 @@
 		"rap",     (input) => Spotify.NewRapper(input),
 		"fav",     (input) => Spotify.FavRapper(input),
 		"disc",    (input) => Spotify.NewDiscovery(input),
-		; "link",    (input) => Shows.SetLink(input),
-		; "ep",      (input) => Shows.SetEpisode(input),
-		; "finish",  (input) => Shows._OperateConsumed(input, false),
-		; "dd",      (input) => Shows.SetDownloaded(input),
-		; "drop",    (input) => Shows._OperateConsumed(input, true),
-		; "relink",  (input) => Shows.UpdateLink(input),
+		"link",    (input) => Shows.SetLink(input),
+		"ep",      (input) => Shows.SetEpisode(input),
+		"finish",  (input) => Shows._OperateConsumed(input, false),
+		"dd",      (input) => Shows.SetDownloaded(input),
+		"drop",    (input) => Shows._OperateConsumed(input, true),
+		"relink",  (input) => Shows.UpdateLink(input),
 		"ev",      (input) => Infos(Calculator(input)),
 		"evp",     (input) => ClipSend(Calculator(input)),
 
@@ -74,10 +74,10 @@
 	if runner_regex.Has(result[1])
 		runner_regex[result[1]].Call(result[2])
 
-	; static _GitLinkOpenCopy(input) {
-	; 	link := Git.Link(input)
-	; 	Browser.RunLink(link)
-	; 	A_Clipboard := link
-	; }
+	static _GitLinkOpenCopy(input) {
+		link := Git.Link(input)
+		Browser.RunLink(link)
+		A_Clipboard := link
+	}
 
 }

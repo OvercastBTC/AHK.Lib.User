@@ -54,7 +54,6 @@ CapsLock:: {
 		'install', () => Run('edit ' '\\corp\data\San Francisco\Engineering\AutoHotkey\Install_Script.V2.ahk'),
 		'visit', () => visitplanner,
 		'get', (runner := GetFilesSortedByDate('Runner.ahk')) => Infos(runner), ;! test func ; finds and shows proper file and path
-		't',Infos(A_ScriptDir),
 		; 'edit runner', () => VSCodeEdit(, Paths.Lib '\Scr\runner.ahk'),
 		; 'edit runner', () => VSCodeEdit(, 'runner.ahk'),
 		; 'edit', (input) => VSCodeEdit(, input),
@@ -110,8 +109,7 @@ CapsLock:: {
 		'scr', () => Run(Paths.Lib '\Scr'),
 		'lnchr', () => Run(Paths.lnchr),
 		'run lnchr', () => Run(Paths.lnchr '\LNCHR-Main.ahk'),
-		; 'test', () => u_File(3,0,1),
-		'test', () => testtest(),
+		'test', () => uFile(3,0,1),
 		'key', () => KeyCodeGetter,
 		'uia', () => Run(Paths.v2Lib '\System\UIA.ahk'),
 		; 'bmle', () => FileSystemSearch(Paths.FMGlobal) => FileSystemSearch.StartSearch(),
@@ -143,16 +141,12 @@ CapsLock:: {
 		'e',		(input) => _ExpenseReport(input),
 		's',		(input) => InternetSearch.TriggerSearch(input),
 	)
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
+
 	if runner_commands.Has(input) {
 		runner_commands[input].Call()
 		return
 	}
-	;! ---------------------------------------------------------------------------
+	; ---------------------------------------------------------------------------
 	regex := "^("
 	for key, _ in runner_regex {
 		regex .= key "|"
@@ -161,27 +155,6 @@ CapsLock:: {
 	result := input.RegexMatch(regex)
 	if runner_regex.Has(result[1]){
 		runner_regex[result[1]].Call(result[2])
-	}
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	;! ---------------------------------------------------------------------------
-	testtest(){
-		; text := "
-		A_Clipboard := "
-		(
-			regex := "^("
-			for key, _ in runner_regex {
-				regex .= key "|"
-			}
-			regex .= ") (.+)"
-			result := input.RegexMatch(regex)
-			if runner_regex.Has(result[1]){
-				runner_regex[result[1]].Call(result[2])
-			}
-		)"
-		infos(A_Clipboard.Length)
 	}
 	; ---------------------------------------------------------------------------
 	static _GitLinkOpenCopy(input) {
@@ -252,24 +225,24 @@ CapsLock:: {
 	; --------------------------------------------------------------------------------
 	static MyTime(){
 		login()
-	}
-	static login(){
-		BlockInput(1)
-		aCtls := []
-		activeWindow := 'EngNET - Work'
-		nCtl := 'Internet Explorer_Server1'
-		; wEx := WinExist()
-		Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp#password')
-		WinWaitActive('EngNET - Work')
-		WinActivate('ahk_exe msedge.exe')
-		hCtl := ControlGetHwnd(nCtl, 'A')
-		ControlFocus(hCtl)
-		WinWaitActive('EngNET - Work', 'EngNET - Internet ExplorerEngNET ')
-		SendLevel(5)
-		Sleep(1000)
-		SendEvent('pw{Enter}')
-		BlockInput(0)
-		return
+		login(){
+			aCtls := []
+			activeWindow := 'EngNET - Work'
+			nCtl := 'Internet Explorer_Server1'
+			; wEx := WinExist()
+			Edge.RunLink('https://engnet/EngNet/engnet/engnet.asp')
+			WinWaitActive('EngNET - Work')
+			WinActivate('ahk_exe msedge.exe')
+			hCtl := ControlGetHwnd(nCtl, 'A')
+			ControlFocus(hCtl)
+			Sleep(1000)
+			BlockInput(1)
+			SendLevel(5)
+			Sleep(1000)
+			SendEvent('pw{Enter}')
+			BlockInput(0)
+			return
+		}
 	}
 	; --------------------------------------------------------------------------------
 		/**
@@ -293,21 +266,22 @@ CapsLock:: {
 	}
 
 	static approvals(search := '') {
-		approvals_login()
-		
-	}
-	static approvals_login(){
 		vpLink := 'https://www.approvalguide.com/'
 		Title := 'FM Approvals - Approval Guide - '
-		Run(vpLink)
-		WaitElement_timeDelay := 30000
-		aG := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},WaitElement_timeDelay).Invoke()
-		agE := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
-		; ---------------------------------------------------------------------------
-		agL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},WaitElement_timeDelay).Invoke()
-		; ---------------------------------------------------------------------------
-		pass := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},WaitElement_timeDelay).Value := '80ab{*}{*}HD19KB'
-		; ---------------------------------------------------------------------------
+		login()
+		
+		login(){
+			Run(vpLink)
+			WaitElement_timeDelay := 30000
+			aG := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50000 (Button)', Name: "Log In", LocalizedType: "button"},WaitElement_timeDelay).Invoke()
+			agE := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Email Address", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_UserIDView_txtUserid_UiInput"},WaitElement_timeDelay).Value := 'adam.bacon@fmglobal.com'
+			; ---------------------------------------------------------------------------
+			agL := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50005 (Link)', Name: "Submit", LocalizedType: "link"},WaitElement_timeDelay).Invoke()
+			; ---------------------------------------------------------------------------
+			pass := UIA.ElementFromChromium('A',false,WaitElement_timeDelay).WaitElement({Type: '50004 (Edit)', Name: "Password", LocalizedType: "edit", AutomationId: "ContentPlaceHolder1_MFALoginControl1_PasswordView_tbxPassword_UiInput"},WaitElement_timeDelay).Value := '80ab{*}{*}HD19KB'
+			; ---------------------------------------------------------------------------
+			; return
+		}
 	}
 	
 	; --------------------------------------------------------------------------------
@@ -543,26 +517,15 @@ CapsLock:: {
 			switch vVer {
 				case  true:
 					if ((major = true) && (minor = true) && (patch = true)) {
-						display_time := 10000
 						Infos(
 							'No need to update at this time.`n'
 							'Local Version: ' vFLocal[m] '.' vFLocal[mi] '.' vFLocal[p] '`n'
-							'Remote Version: ' vFRemote[m] '.' vFRemote[mi] '.' vFRemote[p], display_time
-						)
+							'Remote Version: ' vFRemote[m] '.' vFRemote[mi] '.' vFRemote[p], 10000)
 						return
 					}
 				case false:
 					if (!(major = true) || !(minor != true) || !(patch != true)) {
-						; display_time := 10000
-						display_time := ''
-						Infos(
-							'`n'
-							'Press {Escape} to Exit'
-							'Update Needed.`n'
-							'Local Version: ' vFLocal[m] '.' vFLocal[mi] '.' vFLocal[p] '`n'
-							'Remote Version: ' vFRemote[m] '.' vFRemote[mi] '.' vFRemote[p]
-						)
-						; Infos('false')
+						Infos('false')
 						; fix ..: if false, download crap
 					}
 			}

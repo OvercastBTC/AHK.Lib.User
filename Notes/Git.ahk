@@ -143,6 +143,9 @@ Notes_Git := [
 	)',
 ; )
 
+";This is a line I added to the end of the array, without messing up the array."
+";This is a line I added to the end of the array, without messing up the array."
+";This is a line I added to the end of the array, without messing up the array."
 ] ; end of array
 
 ;! Figure out how to change to MAP() versus an array

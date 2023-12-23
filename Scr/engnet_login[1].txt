@@ -1,0 +1,184 @@
+<html>
+
+<head>
+<title>EngNET: Login</title>
+<link rel="stylesheet" type="text/css" href="../Include/engnet_gray.css" src="../Include/engnet_gray.css">
+
+<script language="JavaScript" type="text/javascript">
+
+//
+// Javascript Function - f_validate_and_submit
+//
+// Description:
+//	This function is designed to be used to capture key presses on an <INPUT>
+//  tag.  Keypresses are looked at and discarded (true returned) until the user
+//  presses the Enter key.  This triggers the validation function which should
+//  itself return true indicating the validation is successful; false for failure.
+//  Successful validation will trigger the form submission.  Failure will cause
+//  False to be returned.
+//
+// Syntax:
+//	onKeyPress="return f_validate_and_submit(event,'f_validate()','form_logn');"
+//
+// Arguments:
+//	event               - an event
+//  validation function - a string
+//  form to submit      - a string
+//
+// Returns:
+//	True if carriage return not entered
+//  False if carriage return entered, but validation failed.
+//  Function not returned if carriage return entered and validation successful.
+//
+// Modification History
+//
+//     Date     Inits       Description
+//  ----------  -----       ---------------------------------------------------
+//  02/18/1999  GBW         Original version
+//
+
+function f_validate_and_submit( evt_event, s_validate_function, s_form_to_submit )
+{
+
+  var key_pressed;
+  var obj_returned;
+  
+  if( navigator.appName == "Netscape" ) {
+    key_pressed = evt_event.which;
+  }
+  else {
+    key_pressed = window.event.keyCode;
+  }
+  
+  if( key_pressed == 13 ) {
+    obj_returned = eval( s_validate_function );
+    if( obj_returned == true ) {
+      eval( "document." + s_form_to_submit + ".submit()" );
+    }
+    return false;
+  }
+  else {
+    return true;
+  }
+
+}
+
+
+<!--
+
+function f_set_focus()
+{
+  with ( document.form_login ) {
+    if( s_username.value == "" )
+      s_username.focus();
+    else
+      s_password.focus();
+  } // with
+
+
+
+}
+
+function f_validate()
+{
+  with ( document.form_login ) {
+
+    if( s_username.value.length == 0 ) {
+      alert( "Your username is required." );
+      s_username.focus();
+      return false;
+    }
+  
+    if( s_password.value.length == 0 ) {
+      alert( "Your password is required." );
+      s_password.focus();
+      return false;
+    }
+    
+  } // with
+  
+  return true;
+}
+
+//-->
+</script>
+
+</head>
+
+<body BGCOLOR="white" onload="f_set_focus();">
+
+<CENTER>
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+<form METHOD="post" ACTION="engnet_welcome.asp" NAME="form_login" onsubmit="return f_validate();">
+
+  <CENTER>
+
+  <table CELLSPACING="0" CELLPADDING="0" BORDER="5" RULES="NONE">
+    <tr>
+      <td>
+
+        <BR>
+
+        <table CELLSPACING="0" CELLPADDING="0" BORDER="0" RULES="NONE">
+          <tr>
+            <td CLASS="label">
+	          Username:
+            </td>
+            <td>
+              <input TYPE="TEXT" SIZE="40" MAXLENGTH="26" NAME="s_username" VALUE="BACONA"
+  	                 onKeyPress="return f_validate_and_submit(event,'f_validate()','form_login');">
+            </td>
+          </tr>
+          <tr>
+	        <td CLASS="label">
+              Password:
+            </td>
+            <td>
+  	          <input TYPE="PASSWORD" SIZE="40" MAXLENGTH="30" NAME="s_password"
+  	                 onKeyPress="return f_validate_and_submit(event,'f_validate()','form_login');">
+            </td>
+          </tr>
+          <tr>
+            <td CLASS="footer" COLSPAN="2">
+              <input TYPE="HIDDEN" NAME="s_from_form" VALUE="engnet_login">
+              <br>
+              <input TYPE="BUTTON" NAME="btn_login" value="Login" onClick="if(f_validate() == true) { document.form_login.submit(); return false; }">
+
+
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+<BR>
+
+	<TABLE width="430" border="0">
+		<TR>
+			<TD class="transparent">
+				<B>
+					<CENTER>
+						Factory Mutual Insurance Company Confidential.
+					</CENTER>
+				</B>
+			</TD>
+		</TR>
+	</TABLE>
+  
+</CENTER>
+  
+</form>
+
+</CENTER>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+Important Transformer: (for the [new - 2021] ABB AC voltage Hoist 2 Bus/Drive conversion project)
+1.5 MVA xfmr
+480 V (line or generator side)
+2.4 kV (load)
+5.73 %Z
+
+Note: This was previously built, and was considered a GSU. This is not a GSU, powergen type, stepping up from 13.8 kV to utility line voltage (e.g., 69 kV, etc.).
+- No relay package/protections, etc. normally found it DS 5-4 with a two-winding transformer
+- Standard breakers with integrated protections (ST, LT, I, GF), and a 480 Amp fuse, provide protections for the transformer.
+
+In order to provide emergency generator power to Hoist 2 (motor and MCC), the following is required:
+- A manual start of the generators
+- A kirk key interlock is provided after the 1.5 MVA "#2 HOIST BCKUP-TX" transformer, before the "#2 HOIST BCKUP-FU TX PRI" (450 A) fuse which then goes to the "#2 HOIST-BU-MV SWGR" switchgear. [dead bus shift]
+
+Hoist 2 Bus: [#2 HOIST-BU-MV SWGR]
+2.4 kV, 63 kA
+
+Hoist 2 Motor Transformer: [#2 HOIST MOTOR-TX]
+.5 MVA
+2.4 kV (line)
+600 V (load)
+4.8 %Z
+
+Hoist 2 ESS MCC Transformer: [TX-2 HOIST]
+.5 MVA
+2.4 kV (line)
+480 V (load)
+4.8 %Z
+
+Hoist 2 ESS MCC Bus: [#2 HOIST-BU-LV SWGR]
+480 V, 66.5 kA

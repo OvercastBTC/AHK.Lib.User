@@ -4,7 +4,6 @@ class Paths {
 
 	static User         := "C:\Users\" A_UserName
 	static FMGlobal 	:= Paths.User '\FM Global'
-	static FMGDocuments := Paths.FMGlobal '\Operating Standards - Documents\general'
 	static AppData 		:= Paths.User "\AppData"
 	static LocalAppData := Paths.AppData "\Local"
 	static AppDataProgs := Paths.LocalAppData "\Programs"
@@ -12,9 +11,9 @@ class Paths {
 	static System32     := "C:\Windows\System32"
 	static OneDrive 	:= Paths.User . '\OneDrive - FM Global'
 	static Startup 		:= Paths.RoamingAppData . '\Microsoft\Windows\Start Menu\Programs\Startup'
-	static VSCode 		:= Paths.AppDataProgs '\Microsoft VS Code'
-	static code 		:= Paths.VSCode '\Code.exe '
-	static Horizon 		:= A_ProgramFiles '\FMGlobal\Horizon'
+	static VSCode := Paths.AppDataProgs '\Microsoft VS Code'
+	static code := Paths.VSCode '\Code.exe '
+	static Horizon := A_ProgramFiles '\FMGlobal\Horizon'
 
 	static StandardAhkLibLocation := A_MyDocuments '\AutoHotkey\Lib'
 	static Prog  := Paths.AppDataProgs '\AutoHotkey\v2'

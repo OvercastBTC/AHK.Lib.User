@@ -4,7 +4,6 @@ class Paths {
 
 	static User         := "C:\Users\" A_UserName
 	static FMGlobal 	:= Paths.User '\FM Global'
-	static FMGDocuments := Paths.FMGlobal '\Operating Standards - Documents\general'
 	static AppData 		:= Paths.User "\AppData"
 	static LocalAppData := Paths.AppData "\Local"
 	static AppDataProgs := Paths.LocalAppData "\Programs"

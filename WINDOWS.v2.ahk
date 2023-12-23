@@ -661,7 +661,6 @@ FormatDateTime(format, datetime:="") {
 ; Hotstrings
 
 :*X:/commitf::FormatDateTime("yyyy.MM.dd HH:mm")
-
 ::/datetime::
 { ; V1toV2: Added bracket
     FormatDateTime("dddd, MMMM dd, yyyy, HH:mm")

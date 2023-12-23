@@ -1,5 +1,5 @@
 ﻿Links := Map(
-	"my github",	'https://github.com/OvercastBTC/',
+	"my github",	'https://github.com/OverCastBTC/',
 	"gmail",		"https://mail.google.com/mail/u/0/#inbox",
 	"monkeytype",	"https://monkeytype.com/",
 	"regex",		"https://regex101.com/",

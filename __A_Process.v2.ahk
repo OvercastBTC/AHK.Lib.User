@@ -1,6 +1,4 @@
-﻿;@Ahk2Exe-IgnoreBegin
-#Requires AutoHotkey v2+
-;@Ahk2Exe-IgnoreEnd
+﻿#Requires AutoHotkey v2+
 #Include <Directives\__AE.v2>
 Persistent(1) ; Keeps script permanently running
 CoordMode("ToolTip", "Screen")
@@ -10,7 +8,7 @@ CoordMode("ToolTip", "Screen")
 ; --------------------------------------------------------------------------------
 ; ICON := '.\ICON\DllCall.ico'
 ; ICON := 'HICON:' Create_DllCall_ico()
-TraySetIcon('HICON:' Create_DllCall_ico()) ; this changes the icon into a little dllcall thing.
+; TraySetIcon('HICON:' Create_DllCall_ico()) ; this changes the icon into a little dllcall thing.
 ; --------------------------------------------------------------------------------
 #HotIf WinActive('ahk_exe hznhorizon.exe')
 ; ShellHook_AProcess()
@@ -138,13 +136,14 @@ SetWinEventHook(callbackFunc, winTitle := 0, eventMin := 0x8000, eventMax := 0x8
 	EVENT_OBJECT_CONTENTSCROLLED 	:= 0x8015, 	EVENT_OBJECT_DEFACTIONCHANGE := 0x8011, 
 	EVENT_OBJECT_DESCRIPTIONCHANGE 	:= 0x800D, 	EVENT_OBJECT_CREATE := 32768, 
 	EVENT_OBJECT_DESTROY 			:= 32769, 	EVENT_OBJECT_DRAGSTART := 0x8021, 
-	EVENT_OBJECT_DRAGCANCEL 		:= 0x8022, 	EVENT_OBJECT_DRAGCOMPLETE := 0x8023, 
+	EVENT_OBJECT_DRAGCANCEL 		:= 0x8022, 	EVENT_OBJECT_DRAGCOMPLETE := 32803 ; 0x8023, 
 	EVENT_OBJECT_DRAGENTER 			:= 0x8024, 	EVENT_OBJECT_DRAGLEAVE := 0x8025, 
 	EVENT_OBJECT_DRAGDROPPED 		:= 0x8026, 	EVENT_OBJECT_END := 32769, 
 	EVENT_OBJECT_FOCUS 				:= 0x8005, 	EVENT_OBJECT_HELPCHANGE := 0x8010, 
 	EVENT_OBJECT_HIDE 				:= 0x8003, 	EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED := 0x8020, 
 	EVENT_OBJECT_IME_HIDE 			:= 0x8028, 	EVENT_OBJECT_IME_SHOW := 0x8027, 
-	EVENT_OBJECT_IME_CHANGE 		:= 0x8029, 	EVENT_OBJECT_INVOKED := 0x8013, 			EVENT_OBJECT_LIVEREGIONCHANGED 	:= 0x8019, 	EVENT_OBJECT_LOCATIONCHANGE := 0x800B, 		
+	EVENT_OBJECT_IME_CHANGE 		:= 0x8029, 	EVENT_OBJECT_INVOKED := 0x8013, 
+	EVENT_OBJECT_LIVEREGIONCHANGED 	:= 0x8019, 	EVENT_OBJECT_LOCATIONCHANGE := 0x800B, 		
 	EVENT_OBJECT_NAMECHANGE 		:= 0x800C, 	EVENT_OBJECT_PARENTCHANGE := 0x800F, 
 	EVENT_OBJECT_REORDER 			:= 0x8004, 	EVENT_OBJECT_SELECTION := 0x8006, 
 	EVENT_OBJECT_SELECTIONADD 		:= 0x8007, 	EVENT_OBJECT_SELECTIONREMOVE := 0x8008, 	
@@ -194,7 +193,7 @@ SetWinEventHook(callbackFunc, winTitle := 0, eventMin := 0x8000, eventMax := 0x8
 	SendLevel(0)
 	return hook
 }
-; #Include <HznPlus.v2>
+
 HandleWinEvent(hWinEventHook, event, ghwnd, idObject, idChild, idEventThread, dwmsEventTime) {
 	initialSendLevel := A_SendLevel
 	SendLevel(((A_SendLevel < 100) && (initialSendLevel >= 1) ? (A_SendLevel):(A_SendLevel + 1)))
