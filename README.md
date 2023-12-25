@@ -1,11 +1,13 @@
 This repo contains the libraries I use
 
-Most of them are mine, but some will be libraries of other people
+Most of them are not mine, and will be libraries of other people.
 
-Not because I'm a fiend for stealing, but because it's simply easier for me to manage
+Why reinvent the wheel right?
 
 ## People to check out for cool libraries:
 
+* [**@GroggyOtter**(https://github.com/GroggyOtter)
+* [**@Axlefublr**](https://github.com/Axlefublr)
 * [**@thqby**](https://github.com/thqby)
 * [**@Descolada**](https://github.com/Descolada)
 
