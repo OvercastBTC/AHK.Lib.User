@@ -6,7 +6,7 @@ Why reinvent the wheel right?
 
 ## People to check out for cool libraries:
 
-* [**@GroggyOtter**(https://github.com/GroggyOtter)
+* [**@GroggyOtter**](https://github.com/GroggyOtter)
 * [**@Axlefublr**](https://github.com/Axlefublr)
 * [**@thqby**](https://github.com/thqby)
 * [**@Descolada**](https://github.com/Descolada)
