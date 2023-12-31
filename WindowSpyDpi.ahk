@@ -201,8 +201,13 @@ TryUpdate() {
 ; WinText/ExcludeText parameters. In "fast" mode, GetWindowText() is used
 ; to retrieve the text of each control.
 ; ===========================================================================================
-WinGetTextFast(detect_hidden) {    
-    controls := WinGetControlsHwnd()
+WinGetTextFast(detect_hidden) {
+    hWnd := ''
+	try hWnd := ControlGetFocus('A')
+	try hWnd := WinActive('A')
+	try hWnd := WinGetID('A')
+    try controls := WinGetControlsHwnd()
+    try controls := WinGetControlsHwnd(hWnd)
     
     static WINDOW_TEXT_SIZE := 32767 ; Defined in AutoHotkey source.
     

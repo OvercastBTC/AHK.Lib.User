@@ -417,13 +417,13 @@ EnableButtons(hTb) {
 	BlockInput(0)
 	SendLevel(0)
 }
+#HotIf
 ; --------------------------------------------------------------------------------
-ShellHook_AProcess()
-{
+ShellHook_A_Process(callback := A_Process_GetInfo) {
 	; Global HSHELL_RUDEAPPACTIVATED := 32772
 	hWnd := WinActive('A')
 	DllCall("RegisterShellHookWindow", "UInt", A_ScriptHwnd)
-	OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), A_Process_GetInfo)
+	OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), callback)
 	; OnMessage(DllCall("RegisterWindowMessage", "Str", "SHELLHOOK"), MyFunc)
 }
 A_Process_GetInfo(event, hwnd,*) {

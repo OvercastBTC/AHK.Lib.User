@@ -1,12 +1,12 @@
 ﻿class receiver {
 	static rect := Map(
-		'width', rwidth := 1715,
-		'height', rheight := 112,
-		'x', rx := 70,
-		'y', ry := 745,
+		'width', rwidth := 1860,
+		'height', rheight := 0,
+		'x', rx := 23,
+		'y', ry := 569,
 		'top', rtop := 0,
 		'bottom', rbottom := 0,
-		'hCtl', hCtl := 39324934,
+		'hCtl', hCtl := 1907796,
 		'nCtl', nCtl := '',
 		'fName', fName := '',
 	)

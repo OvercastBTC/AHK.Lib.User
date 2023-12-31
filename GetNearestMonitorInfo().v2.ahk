@@ -1,17 +1,5 @@
-﻿#Warn All, OutputDebug
-#SingleInstance Force
-SendMode("Input")
-SetWorkingDir(A_ScriptDir)
-SetTitleMatchMode(2)
-; --------------------------------------------------------------------------------
-DetectHiddenText(true)
-DetectHiddenWindows(true)
-; --------------------------------------------------------------------------------
-#Requires AutoHotkey v2
-; --------------------------------------------------------------------------------
-SetControlDelay(-1)
-SetMouseDelay(-1)
-SetWinDelay(-1)
+﻿#Requires AutoHotkey v2
+#Include <Directives\__AE.v2>
 ; --------------------------------------------------------------------------------
 
 GetNearestMonitorInfo(hCtl?, hCtl_title?) {

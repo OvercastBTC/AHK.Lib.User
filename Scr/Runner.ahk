@@ -335,19 +335,13 @@ CapsLock:: {
 		; Infos(Paths.code)
 		; Infos(folder)
 		; return
-		aMatch := []
+		vF := '', vI := '', vS := '', vL := '', list := ''
+		aMatch := [], alist := [], blist := []
+		mAlist := Map()
 		aFolder := [(Paths.Lib), (Paths.v2Proj), (Paths.Prog)]
 		aIgnore := ['.git', '.history', '.vscode', '.Other']
 		fNeedle := '\.*'
 		lFNeedle := '\*.ahk'
-		vF := ''
-		vI := ''
-		vS := ''
-		vL := ''
-		list := ''
-		alist := []
-		blist := []
-		mAlist := Map()
 		; RegExMatch(file, fNeedle, &fMatch)
 		try {
 			; Infos(
